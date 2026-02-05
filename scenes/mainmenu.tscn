@@ -1,11 +1,26 @@
 [gd_scene format=3 uid="uid://d2purte7x74wp"]
 
 [ext_resource type="Script" uid="uid://ceg7uogn7q53o" path="res://scripts/main_menu.gd" id="1_m4ki5"]
-[ext_resource type="Texture2D" uid="uid://ceseidlrku7my" path="res://resources/images/main_menu/Title-Background.png" id="2_srphr"]
+[ext_resource type="Texture2D" path="res://resources/images/main_menu/title.gif" id="2_2r8u5"]
 [ext_resource type="Texture2D" uid="uid://cnkihol71load" path="res://resources/images/main_menu/logo.png" id="3_lpb7j"]
 [ext_resource type="Texture2D" uid="uid://b1ddrq1sqlcv" path="res://resources/images/main_menu/Start.png" id="4_64s5s"]
 [ext_resource type="Texture2D" uid="uid://cprefmjsn5w40" path="res://resources/images/main_menu/Options.png" id="5_h52vu"]
 [ext_resource type="Texture2D" uid="uid://dqmw5tdux8dyt" path="res://resources/images/main_menu/return.png" id="6_jnu17"]
+[ext_resource type="Texture2D" path="res://resources/images/main_menu/smith.gif" id="7_d87wc"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_u8uol"]
+bg_color = Color(0.0509804, 0.0470588, 0.054902, 0.921569)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.678431, 0.517647, 0.14902, 0.901961)
+corner_radius_top_left = 24
+corner_radius_top_right = 24
+corner_radius_bottom_right = 24
+corner_radius_bottom_left = 24
+shadow_color = Color(0, 0, 0, 0.658824)
+shadow_size = 10
 
 [node name="MainMenu" type="Control" unique_id=338512690]
 layout_mode = 3
@@ -21,70 +36,91 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 371.0
-offset_top = 36.0
-offset_right = -368.0
-offset_bottom = -26.0
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("2_srphr")
+texture = ExtResource("2_2r8u5")
 expand_mode = 1
 stretch_mode = 6
 
-[node name="Logo" type="TextureRect" parent="." unique_id=390251558]
-custom_minimum_size = Vector2(480, 0)
+[node name="BackgroundShade" type="ColorRect" parent="." unique_id=842002114]
 layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -243.0
-offset_top = 106.0
-offset_right = 237.0
-offset_bottom = 298.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.48)
+
+[node name="Smith" type="TextureRect" parent="." unique_id=183163573]
+layout_mode = 1
+anchors_preset = 3
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 46.0
+offset_top = -674.0
+offset_right = -838.0
+grow_vertical = 0
+texture = ExtResource("7_d87wc")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="PanelCenter" type="CenterContainer" parent="." unique_id=1355029343]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MenuPanel" type="PanelContainer" parent="PanelCenter" unique_id=1048503911]
+custom_minimum_size = Vector2(420, 560)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_u8uol")
+
+[node name="PanelMargin" type="MarginContainer" parent="PanelCenter/MenuPanel" unique_id=417054607]
+layout_mode = 2
+theme_override_constants/margin_left = 40
+theme_override_constants/margin_top = 36
+theme_override_constants/margin_right = 40
+theme_override_constants/margin_bottom = 36
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelCenter/MenuPanel/PanelMargin" unique_id=378673059]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="Logo" type="TextureRect" parent="PanelCenter/MenuPanel/PanelMargin/VBoxContainer" unique_id=390251558]
+custom_minimum_size = Vector2(0, 220)
+layout_mode = 2
+size_flags_horizontal = 4
 texture = ExtResource("3_lpb7j")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="CenterContainer" type="CenterContainer" parent="." unique_id=1355029343]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -172.0
-offset_top = -24.0
-offset_right = 172.0
-offset_bottom = 252.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer" unique_id=378673059]
+[node name="StartButton" type="TextureButton" parent="PanelCenter/MenuPanel/PanelMargin/VBoxContainer" unique_id=331316424]
+custom_minimum_size = Vector2(340, 76)
 layout_mode = 2
-theme_override_constants/separation = 20
-
-[node name="StartButton" type="TextureButton" parent="CenterContainer/VBoxContainer" unique_id=331316424]
-custom_minimum_size = Vector2(344, 72)
-layout_mode = 2
+size_flags_horizontal = 4
 texture_normal = ExtResource("4_64s5s")
 ignore_texture_size = true
 stretch_mode = 5
 
-[node name="OptionsButton" type="TextureButton" parent="CenterContainer/VBoxContainer" unique_id=903604802]
-custom_minimum_size = Vector2(344, 72)
+[node name="OptionsButton" type="TextureButton" parent="PanelCenter/MenuPanel/PanelMargin/VBoxContainer" unique_id=903604802]
+custom_minimum_size = Vector2(340, 76)
 layout_mode = 2
+size_flags_horizontal = 4
 texture_normal = ExtResource("5_h52vu")
 ignore_texture_size = true
 stretch_mode = 5
 
-[node name="ReturnButton" type="TextureButton" parent="CenterContainer/VBoxContainer" unique_id=1053349442]
-custom_minimum_size = Vector2(344, 72)
+[node name="ReturnButton" type="TextureButton" parent="PanelCenter/MenuPanel/PanelMargin/VBoxContainer" unique_id=1053349442]
+custom_minimum_size = Vector2(340, 76)
 layout_mode = 2
+size_flags_horizontal = 4
 texture_normal = ExtResource("6_jnu17")
 ignore_texture_size = true
 stretch_mode = 5
 
-[connection signal="pressed" from="CenterContainer/VBoxContainer/StartButton" to="." method="_on_start_button_pressed"]
-[connection signal="pressed" from="CenterContainer/VBoxContainer/OptionsButton" to="." method="_on_options_button_pressed"]
-[connection signal="pressed" from="CenterContainer/VBoxContainer/ReturnButton" to="." method="_on_return_button_pressed"]
+[connection signal="pressed" from="PanelCenter/MenuPanel/PanelMargin/VBoxContainer/StartButton" to="." method="_on_start_button_pressed"]
+[connection signal="pressed" from="PanelCenter/MenuPanel/PanelMargin/VBoxContainer/OptionsButton" to="." method="_on_options_button_pressed"]
+[connection signal="pressed" from="PanelCenter/MenuPanel/PanelMargin/VBoxContainer/ReturnButton" to="." method="_on_return_button_pressed"]
