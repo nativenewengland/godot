@@ -1,11 +1,26 @@
 [gd_scene format=3 uid="uid://d2purte7x74wp"]
 
 [ext_resource type="Script" uid="uid://ceg7uogn7q53o" path="res://scripts/main_menu.gd" id="1_m4ki5"]
-[ext_resource type="Texture2D" uid="uid://ceseidlrku7my" path="res://resources/images/main_menu/Title-Background.png" id="2_srphr"]
+[ext_resource type="Texture2D" path="res://resources/images/main_menu/title.gif" id="2_2r8u5"]
 [ext_resource type="Texture2D" uid="uid://cnkihol71load" path="res://resources/images/main_menu/logo.png" id="3_lpb7j"]
 [ext_resource type="Texture2D" uid="uid://b1ddrq1sqlcv" path="res://resources/images/main_menu/Start.png" id="4_64s5s"]
 [ext_resource type="Texture2D" uid="uid://cprefmjsn5w40" path="res://resources/images/main_menu/Options.png" id="5_h52vu"]
 [ext_resource type="Texture2D" uid="uid://dqmw5tdux8dyt" path="res://resources/images/main_menu/return.png" id="6_jnu17"]
+[ext_resource type="Texture2D" path="res://resources/images/main_menu/smith.gif" id="7_d87wc"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_u8uol"]
+bg_color = Color(0.0509804, 0.0470588, 0.054902, 0.921569)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.678431, 0.517647, 0.14902, 0.901961)
+corner_radius_top_left = 24
+corner_radius_top_right = 24
+corner_radius_bottom_right = 24
+corner_radius_bottom_left = 24
+shadow_color = Color(0, 0, 0, 0.658824)
+shadow_size = 10
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_u8uol"]
 bg_color = Color(0.0509804, 0.0470588, 0.054902, 0.921569)
@@ -37,7 +52,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("2_srphr")
+texture = ExtResource("2_2r8u5")
 expand_mode = 1
 stretch_mode = 6
 
@@ -49,6 +64,20 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 0.48)
+
+[node name="Smith" type="TextureRect" parent="." unique_id=183163573]
+layout_mode = 1
+anchors_preset = 3
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 46.0
+offset_top = -674.0
+offset_right = -838.0
+grow_vertical = 0
+texture = ExtResource("7_d87wc")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="PanelCenter" type="CenterContainer" parent="." unique_id=1355029343]
 layout_mode = 1
