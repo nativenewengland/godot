@@ -100,3 +100,6 @@ func _on_gamma_changed(value: float) -> void:
 	_colors[_selected].z = value
 	var shader: ShaderMaterial = target_render.material
 	shader.set_shader_parameter(&"colors", _colors)
+
+func _on_return_button_pressed() -> void:
+	get_tree().change_scene_to_file("res://scenes/mainmenu.tscn")
