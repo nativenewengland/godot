@@ -26,6 +26,11 @@ gdscript/warnings/unsafe_method_access=2
 gdscript/warnings/assert_always_true=2
 gdscript/warnings/assert_always_false=2
 
+[display]
+
+mouse_cursor/custom_image="res://resources/images/cursor/cursor1.png"
+mouse_cursor/custom_image_hotspot=Vector2(0, 0)
+
 [physics]
 
 3d/physics_engine="Dummy"
