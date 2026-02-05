@@ -22,20 +22,6 @@ corner_radius_bottom_left = 24
 shadow_color = Color(0, 0, 0, 0.658824)
 shadow_size = 10
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_u8uol"]
-bg_color = Color(0.0509804, 0.0470588, 0.054902, 0.921569)
-border_width_left = 4
-border_width_top = 4
-border_width_right = 4
-border_width_bottom = 4
-border_color = Color(0.678431, 0.517647, 0.14902, 0.901961)
-corner_radius_top_left = 24
-corner_radius_top_right = 24
-corner_radius_bottom_right = 24
-corner_radius_bottom_left = 24
-shadow_color = Color(0, 0, 0, 0.658824)
-shadow_size = 10
-
 [node name="MainMenu" type="Control" unique_id=338512690]
 layout_mode = 3
 anchors_preset = 15
