@@ -28,8 +28,7 @@ gdscript/warnings/assert_always_false=2
 
 [display]
 
-mouse_cursor/custom_image="res://resources/images/cursor/cursor1.png"
-mouse_cursor/custom_image_hotspot=Vector2(0, 0)
+mouse_cursor/custom_image="uid://cyu3a5pyub4jy"
 
 [physics]
 
