@@ -1,0 +1,9 @@
+.vscode/
+
+# Krita tmp files
+*~
+
+# Godot 4+ specific ignores
+.godot/
+builds/
+/android/

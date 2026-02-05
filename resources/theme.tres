@@ -1,0 +1,36 @@
+[gd_resource type="Theme" format=3 uid="uid://bspkc326ak7q3"]
+
+[ext_resource type="Texture2D" uid="uid://ceoe866pwekpq" path="res://resources/images/character_creator/ui/slider.png" id="1_d4nwg"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_7ct1h"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_886mr"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_b751m"]
+bg_color = Color(0.37008888, 0.19221145, 0.0032683667, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.8760926, 0.55111104, 0.073083766, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+expand_margin_left = 8.0
+expand_margin_top = 4.0
+expand_margin_right = 8.0
+expand_margin_bottom = 4.0
+
+[resource]
+HSlider/icons/grabber = ExtResource("1_d4nwg")
+HSlider/icons/grabber_disabled = ExtResource("1_d4nwg")
+HSlider/icons/grabber_highlight = ExtResource("1_d4nwg")
+HSlider/styles/grabber_area = SubResource("StyleBoxTexture_7ct1h")
+HSlider/styles/grabber_area_highlight = SubResource("StyleBoxEmpty_886mr")
+HSlider/styles/slider = SubResource("StyleBoxFlat_b751m")
+Label/colors/font_color = Color(0.7330082, 0.61398286, 0.09083747, 1)
+MarginContainer/constants/margin_bottom = 15
+MarginContainer/constants/margin_left = 15
+MarginContainer/constants/margin_right = 15
+MarginContainer/constants/margin_top = 15
