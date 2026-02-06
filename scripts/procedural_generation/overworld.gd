@@ -271,10 +271,8 @@ func _generate_landmass_masks(curr_size: Vector2i) -> void:
 			else:
 				lake_cells[cell] = true
 
-	var coastline_groups: Dictionary[String, Array[Vector2i]] = {
-		"sea_island": [] as Array[Vector2i],
-		"lake_island": [] as Array[Vector2i]
-	}
+	var sea_island: Array[Vector2i] = []
+	var lake_island: Array[Vector2i] = []
 
 	for coord: Vector2i in land_mask.keys():
 		var adjacent_ocean := false
@@ -289,15 +287,18 @@ func _generate_landmass_masks(curr_size: Vector2i) -> void:
 				adjacent_ocean = true
 		if adjacent_lake || adjacent_ocean:
 			if adjacent_lake && !adjacent_ocean:
-				coastline_groups["lake_island"].append(coord)
+				lake_island.append(coord)
 			else:
-				coastline_groups["sea_island"].append(coord)
+				sea_island.append(coord)
 
 	_landmass_masks = {
 		"paths": [],
 		"land_mask": land_mask,
 		"water_mask": water_mask,
-		"coastline": coastline_groups,
+		"coastline": {
+			"sea_island": sea_island,
+			"lake_island": lake_island
+		},
 		"lakes": {"freshwater": lake_cells.keys()}
 	}
 
