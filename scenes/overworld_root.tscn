@@ -51,13 +51,6 @@ layout_mode = 2
 layout_mode = 2
 placeholder_text = "seed"
 
-[node name="Button" type="Button" parent="CanvasLayer/Control/MarginContainer2/VBoxContainer" unique_id=453379557]
-layout_mode = 2
-text = "Recreate Noise Image"
-
-[node name="Button2" type="Button" parent="CanvasLayer/Control/MarginContainer2/VBoxContainer" unique_id=2111246425]
-layout_mode = 2
-text = "Recreate Map"
 
 [node name="Seeder" type="Node" parent="." unique_id=1364084117 node_paths=PackedStringArray("seed_input")]
 script = ExtResource("1_gxyk0")
@@ -89,6 +82,3 @@ position = Vector2(80, 98)
 anchor_mode = 0
 zoom = Vector2(0.278, 0.278)
 script = ExtResource("4_b4c7q")
-
-[connection signal="pressed" from="CanvasLayer/Control/MarginContainer2/VBoxContainer/Button" to="Seeder" method="create_seed"]
-[connection signal="pressed" from="CanvasLayer/Control/MarginContainer2/VBoxContainer/Button2" to="Overworld" method="generate_tilemap"]
