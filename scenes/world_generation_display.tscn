@@ -1,6 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://bw1v2ihfuuq5k"]
+[gd_scene load_steps=6 format=3 uid="uid://bw1v2ihfuuq5k"]
 
 [ext_resource type="Script" path="res://scripts/world_generation/world_generation_display.gd" id="1_f31wv"]
+[ext_resource type="Texture2D" path="res://resources/images/main_menu/Titlescreen_image.png" id="2_0moum"]
+[ext_resource type="Shader" path="res://shaders/ui/world_setup_backdrop.gdshader" id="3_hl2fk"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
 bg_color = Color(0.08, 0.1, 0.14, 0.88)
@@ -15,6 +17,13 @@ border_width_bottom = 1
 border_color = Color(0.52, 0.6, 0.74, 0.25)
 shadow_color = Color(0, 0, 0, 0.4)
 shadow_size = 8
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_xcpbu"]
+shader = ExtResource("3_hl2fk")
+shader_parameter/backdrop_texture = ExtResource("2_0moum")
+shader_parameter/pan_speed = 0.02
+shader_parameter/blur_strength = 1.6
+shader_parameter/tint_color = Color(0.18, 0.24, 0.34, 0.92)
 
 [node name="WorldGenerationDisplay" type="Control"]
 layout_mode = 3
@@ -32,7 +41,8 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.03, 0.05, 0.08, 1)
+material = SubResource("ShaderMaterial_xcpbu")
+color = Color(1, 1, 1, 1)
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 1
