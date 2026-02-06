@@ -94,9 +94,10 @@ layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -330.5
-offset_right = 330.5
-offset_bottom = 68.0
+offset_left = -525.0
+offset_top = -23.0
+offset_right = 502.0
+offset_bottom = 82.0
 grow_horizontal = 2
 texture = ExtResource("8_spski")
 expand_mode = 1
@@ -130,10 +131,10 @@ expand_mode = 2
 [node name="TextureRect" type="ColorRect" parent="PanelContainer/VBoxContainer/MarginContainer/HBoxContainer/VBoxContainer/Control2" unique_id=536911494]
 material = SubResource("ShaderMaterial_ja2xc")
 layout_mode = 0
-offset_left = 50.699493
-offset_top = -75.0
-offset_right = 293.6995
-offset_bottom = 284.09998
+offset_left = 52.0
+offset_top = -70.5
+offset_right = 295.0
+offset_bottom = 288.59998
 
 [node name="Grid" type="GridContainer" parent="PanelContainer/VBoxContainer/MarginContainer/HBoxContainer/VBoxContainer" unique_id=1328998500]
 layout_mode = 2
@@ -809,7 +810,7 @@ layout_mode = 2
 custom_minimum_size = Vector2(250, 250)
 layout_mode = 2
 texture = ExtResource("15_dk5wx")
-expand_mode = 2
+stretch_mode = 2
 
 [node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/VBoxContainer/MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer2/MarginContainer/VBoxContainer2" unique_id=236006476]
 layout_mode = 2
