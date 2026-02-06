@@ -14,6 +14,7 @@
 [ext_resource type="Texture2D" uid="uid://boiwdissq1378" path="res://resources/images/character_creator/ui/arrow_left.png" id="11_pma8t"]
 [ext_resource type="Texture2D" uid="uid://cb040ndppr10f" path="res://resources/images/character_creator/ui/arrow_right.png" id="12_mdm0h"]
 [ext_resource type="Texture2D" uid="uid://cyh50wfex42d4" path="res://resources/images/character_creator/ui/gender-button-female.png" id="13_ptvhl"]
+[ext_resource type="Texture2D" uid="uid://b3v3puj777wsv" path="res://resources/images/character_creator/ui/nametype.png" id="14_in210"]
 [ext_resource type="Texture2D" uid="uid://b4jns84p34xsx" path="res://resources/images/character_creator/ui/gender-button-male.png" id="14_yns5i"]
 [ext_resource type="Texture2D" uid="uid://dnsjexh22hslf" path="res://resources/images/character_creator/ui/bodypanel.png" id="15_dk5wx"]
 [ext_resource type="Texture2D" uid="uid://cbutrqks1x08q" path="res://resources/images/character_creator/ui/return.png" id="16_dk5wx"]
@@ -36,7 +37,7 @@ mouse_filter = 1
 theme = ExtResource("3_0yffs")
 script = ExtResource("1_6txqo")
 target_render = NodePath("PanelContainer/VBoxContainer/MarginContainer/HBoxContainer/VBoxContainer/Control2/TextureRect")
-character_name = NodePath("PanelContainer/VBoxContainer/MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer/PanelContainer/LineEdit")
+character_name = NodePath("PanelContainer/VBoxContainer/MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer/NameRect2/LineEdit")
 clan_name = NodePath("PanelContainer/VBoxContainer/MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer2/MarginContainer2/VBoxContainer/GridContainer/OptionButton2")
 portrait_dir = "res://resources/images/character_creator/portraits"
 beard_dir = "res://resources/images/character_creator/beards"
@@ -252,20 +253,15 @@ layout_mode = 2
 
 [node name="NameRect2" type="TextureRect" parent="PanelContainer/VBoxContainer/MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer" unique_id=1461456986]
 layout_mode = 2
-texture = ExtResource("8_spski")
+texture = ExtResource("14_in210")
 stretch_mode = 1
 
-[node name="Label" type="Label" parent="PanelContainer/VBoxContainer/MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer" unique_id=1380141349]
-layout_mode = 2
-text = "Name"
-
-[node name="PanelContainer" type="PanelContainer" parent="PanelContainer/VBoxContainer/MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer" unique_id=524118221]
-custom_minimum_size = Vector2(199.671, 0)
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="LineEdit" type="LineEdit" parent="PanelContainer/VBoxContainer/MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer/PanelContainer" unique_id=28522315]
-layout_mode = 2
+[node name="LineEdit" type="LineEdit" parent="PanelContainer/VBoxContainer/MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer/NameRect2" unique_id=28522315]
+layout_mode = 0
+offset_left = 169.0
+offset_top = 24.0
+offset_right = 595.0
+offset_bottom = 63.0
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="PanelContainer/VBoxContainer/MarginContainer/HBoxContainer/VBoxContainer2" unique_id=1894740005]
 layout_mode = 2
@@ -287,6 +283,7 @@ flat = true
 [node name="TextureRect3" type="Button" parent="PanelContainer/VBoxContainer/MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer2/MarginContainer2/VBoxContainer/HBoxContainer" unique_id=1433334343]
 layout_mode = 2
 icon = ExtResource("14_yns5i")
+flat = true
 
 [node name="GridContainer" type="GridContainer" parent="PanelContainer/VBoxContainer/MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer2/MarginContainer2/VBoxContainer" unique_id=1563533582]
 layout_mode = 2
