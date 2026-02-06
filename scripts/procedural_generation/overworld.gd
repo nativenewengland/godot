@@ -254,7 +254,7 @@ func _build_landmass_masks(curr_size: Vector2i) -> void:
 			else:
 				land_mask[coord] = true
 
-	for coord in water_mask.keys():
+	for coord: Vector2i in water_mask.keys():
 		if visited.has(coord):
 			continue
 		var queue: Array[Vector2i] = [coord]
@@ -269,8 +269,8 @@ func _build_landmass_masks(curr_size: Vector2i) -> void:
 			component.append(current)
 			if current.x == 0 || current.y == 0 || current.x == curr_size.x - 1 || current.y == curr_size.y - 1:
 				touches_edge = true
-			for offset in CARDINAL_OFFSETS:
-				var neighbor := current + offset
+			for offset: Vector2i in CARDINAL_OFFSETS:
+				var neighbor: Vector2i = current + offset
 				if _is_within_bounds(neighbor, curr_size) && water_mask.has(neighbor) && !visited.has(neighbor):
 					queue.append(neighbor)
 
@@ -285,11 +285,11 @@ func _build_landmass_masks(curr_size: Vector2i) -> void:
 		"lake_island": []
 	}
 
-	for coord in land_mask.keys():
+	for coord: Vector2i in land_mask.keys():
 		var adjacent_ocean := false
 		var adjacent_lake := false
-		for offset in CARDINAL_OFFSETS:
-			var neighbor := coord + offset
+		for offset: Vector2i in CARDINAL_OFFSETS:
+			var neighbor: Vector2i = coord + offset
 			if !water_mask.has(neighbor):
 				continue
 			if lake_cells.has(neighbor):
