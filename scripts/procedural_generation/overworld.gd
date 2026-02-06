@@ -97,7 +97,7 @@ var _height_noise: FastNoiseLite
 var _temperature_noise: FastNoiseLite
 var _rainfall_noise: FastNoiseLite
 var _biome_map: Dictionary[Vector2i, String] = {}
-var landmass_masks: Dictionary = {}
+var _landmass_masks: Dictionary = {}
 var settlement_map: Dictionary[Vector2i, Dictionary] = {}
 
 func apply_world_settings(settings: Dictionary) -> void:
@@ -240,11 +240,11 @@ func generate_gridmap(to_paint: Image) -> void:
 	_generate_settlements(curr_size)
 
 func _build_landmass_masks(curr_size: Vector2i) -> void:
-	var land_mask := {}
-	var water_mask := {}
-	var visited := {}
-	var ocean_cells := {}
-	var lake_cells := {}
+	var land_mask: Dictionary[Vector2i, bool] = {}
+	var water_mask: Dictionary[Vector2i, bool] = {}
+	var visited: Dictionary[Vector2i, bool] = {}
+	var ocean_cells: Dictionary[Vector2i, bool] = {}
+	var lake_cells: Dictionary[Vector2i, bool] = {}
 
 	for y in curr_size.y:
 		for x in curr_size.x:
@@ -257,7 +257,7 @@ func _build_landmass_masks(curr_size: Vector2i) -> void:
 	for coord in water_mask.keys():
 		if visited.has(coord):
 			continue
-		var queue := [coord]
+		var queue: Array[Vector2i] = [coord]
 		var component: Array[Vector2i] = []
 		var touches_edge := false
 
@@ -302,7 +302,7 @@ func _build_landmass_masks(curr_size: Vector2i) -> void:
 			else:
 				coastline_groups["sea_island"].append(coord)
 
-	landmass_masks = {
+	_landmass_masks = {
 		"paths": [],
 		"land_mask": land_mask,
 		"water_mask": water_mask,
