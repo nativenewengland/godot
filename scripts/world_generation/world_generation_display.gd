@@ -94,7 +94,7 @@ func _ready() -> void:
 	randomise_chronology_button.pressed.connect(_on_randomise_chronology_pressed)
 	randomise_world_name_button.pressed.connect(_on_randomise_world_name_pressed)
 	embark_button.pressed.connect(_on_embark_pressed)
-	back_button.pressed.connect(func() -> void: back_requested.emit())
+back_button.pressed.connect(func() -> void: back_requested.emit())
 
 func _populate_option_buttons() -> void:
 	for map_size: String in MAP_SIZES:

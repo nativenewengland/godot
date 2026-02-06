@@ -36,7 +36,7 @@ func _ready() -> void:
 func create_seed() -> void:
 	var curr_seed: = seed_global
 	var is_seed_random := false
-	var has_input := seed_input != null and seed_input.text != ""
+var has_input := seed_input != null and seed_input.text != ""
 	if has_input:
 		is_seed_random = true
 		curr_seed = seed_input.text
