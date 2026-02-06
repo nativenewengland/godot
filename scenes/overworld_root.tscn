@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://c58eb7bef55if" path="res://scripts/procedural_generation/seeder.gd" id="1_gxyk0"]
 [ext_resource type="Script" uid="uid://cqackqu1w0by4" path="res://scripts/procedural_generation/overworld.gd" id="2_wpqau"]
 [ext_resource type="PackedScene" uid="uid://cqbjdovq774ym" path="res://assets/tile_map_layer.tscn" id="3_wpqau"]
+[ext_resource type="Script" path="res://scripts/world_generation/overworld_camera.gd" id="4_b4c7q"]
 
 [node name="OverworldRoot" type="Node2D" unique_id=732665136]
 
@@ -87,6 +88,7 @@ metadata/_custom_type_script = "uid://cqackqu1w0by4"
 position = Vector2(80, 98)
 anchor_mode = 0
 zoom = Vector2(0.278, 0.278)
+script = ExtResource("4_b4c7q")
 
 [connection signal="pressed" from="CanvasLayer/Control/MarginContainer2/VBoxContainer/Button" to="Seeder" method="create_seed"]
 [connection signal="pressed" from="CanvasLayer/Control/MarginContainer2/VBoxContainer/Button2" to="Overworld" method="generate_tilemap"]
