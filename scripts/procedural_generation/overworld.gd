@@ -23,6 +23,12 @@ const NEIGHBOR_OFFSETS: Array[Vector2i] = [
 	Vector2i(-1, 1),
 	Vector2i(1, 1)
 ]
+const CARDINAL_OFFSETS: Array[Vector2i] = [
+	Vector2i.LEFT,
+	Vector2i.RIGHT,
+	Vector2i.UP,
+	Vector2i.DOWN
+]
 
 @export var debug_sprite: TextureRect
 @export_group(&"Noise")
@@ -91,6 +97,7 @@ var _height_noise: FastNoiseLite
 var _temperature_noise: FastNoiseLite
 var _rainfall_noise: FastNoiseLite
 var _biome_map: Dictionary[Vector2i, String] = {}
+var landmass_masks: Dictionary = {}
 var settlement_map: Dictionary[Vector2i, Dictionary] = {}
 
 func apply_world_settings(settings: Dictionary) -> void:
@@ -229,7 +236,79 @@ func generate_gridmap(to_paint: Image) -> void:
 				_biome_map[curr_vec] = "grass"
 				to_paint.set_pixel(x, y, LAND_COLOR)
 
+	_build_landmass_masks(curr_size)
 	_generate_settlements(curr_size)
+
+func _build_landmass_masks(curr_size: Vector2i) -> void:
+	var land_mask := {}
+	var water_mask := {}
+	var visited := {}
+	var ocean_cells := {}
+	var lake_cells := {}
+
+	for y in curr_size.y:
+		for x in curr_size.x:
+			var coord := Vector2i(x, y)
+			if _biome_map.get(coord, "") == "water":
+				water_mask[coord] = true
+			else:
+				land_mask[coord] = true
+
+	for coord in water_mask.keys():
+		if visited.has(coord):
+			continue
+		var queue := [coord]
+		var component: Array[Vector2i] = []
+		var touches_edge := false
+
+		while !queue.is_empty():
+			var current: Vector2i = queue.pop_back()
+			if visited.has(current):
+				continue
+			visited[current] = true
+			component.append(current)
+			if current.x == 0 || current.y == 0 || current.x == curr_size.x - 1 || current.y == curr_size.y - 1:
+				touches_edge = true
+			for offset in CARDINAL_OFFSETS:
+				var neighbor := current + offset
+				if _is_within_bounds(neighbor, curr_size) && water_mask.has(neighbor) && !visited.has(neighbor):
+					queue.append(neighbor)
+
+		for cell in component:
+			if touches_edge:
+				ocean_cells[cell] = true
+			else:
+				lake_cells[cell] = true
+
+	var coastline_groups := {
+		"sea_island": [],
+		"lake_island": []
+	}
+
+	for coord in land_mask.keys():
+		var adjacent_ocean := false
+		var adjacent_lake := false
+		for offset in CARDINAL_OFFSETS:
+			var neighbor := coord + offset
+			if !water_mask.has(neighbor):
+				continue
+			if lake_cells.has(neighbor):
+				adjacent_lake = true
+			else:
+				adjacent_ocean = true
+		if adjacent_lake || adjacent_ocean:
+			if adjacent_lake && !adjacent_ocean:
+				coastline_groups["lake_island"].append(coord)
+			else:
+				coastline_groups["sea_island"].append(coord)
+
+	landmass_masks = {
+		"paths": [],
+		"land_mask": land_mask,
+		"water_mask": water_mask,
+		"coastline": coastline_groups,
+		"lakes": {"freshwater": lake_cells.keys()}
+	}
 
 func _generate_settlements(curr_size: Vector2i) -> void:
 	var settings: Dictionary = {}
