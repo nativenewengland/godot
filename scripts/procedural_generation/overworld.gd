@@ -3,12 +3,12 @@ class_name Overworld
 extends ProceduralGeneration
 
 @export_group(&"Tiles")
-@export var sand_coords := Vector2i(0, 0)
+@export var sand_coords := Vector2i(4, 1)
 @export var grass_coords := Vector2i(1, 0)
 @export var badlands_coords := Vector2i(2, 1)
 @export var marsh_coords := Vector2i(2, 4)
 @export var snow_coords := Vector2i(3, 2)
-@export var water_coords := Vector2i(4, 1)
+@export var water_coords := Vector2i(0, 0)
 @export var mountain_coords := Vector2i(3, 0)
 
 const WATER_COLOR := Color(0.168, 0.395, 0.976, 1.0)
