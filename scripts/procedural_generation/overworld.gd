@@ -2,9 +2,10 @@
 class_name Overworld
 extends ProceduralGeneration
 
-const LAND_COORDS := Vector2i(0, 0)
-const WATER_COORDS := Vector2i(0, 1)
-const MOUNTAIN_COORDS := Vector2i(0, 2)
+@export_group(&"Tiles")
+@export var land_coords := Vector2i(0, 0)
+@export var water_coords := Vector2i(0, 1)
+@export var mountain_coords := Vector2i(0, 0)
 
 const WATER_COLOR := Color(0.168, 0.395, 0.976, 1.0)
 const LAND_COLOR := Color(0.49, 0.753, 0.404, 1.0)
@@ -77,11 +78,11 @@ func rebuild() -> void:
 
 func curr_river(from: Vector2i, to: Vector2i) -> Array[Vector2i]:
 	var curr_line := line_coords(from, to)
-	if curr_line.pop_back() != WATER_COORDS:
+	if curr_line.pop_back() != water_coords:
 		return []
 
 	for line_coord in curr_line:
-		if grid_map[line_coord] == WATER_COORDS:
+		if grid_map[line_coord] == water_coords:
 			return []
 
 	return curr_line
@@ -123,7 +124,7 @@ func generate_river(start: Vector2i) -> void:
 
 	for coord in river:
 		var curr_coord := start + coord
-		grid_map[curr_coord] = WATER_COORDS
+		grid_map[curr_coord] = water_coords
 		_curr_image.set_pixel(curr_coord.x, curr_coord.y, WATER_COLOR)
 
 
@@ -139,15 +140,15 @@ func generate_gridmap(to_paint: Image) -> void:
 			var curr_pixel := _orig_resized.get_pixel(x, y)
 
 			if curr_pixel.v < water_ocurrence:
-				grid_map[curr_vec] = WATER_COORDS
+				grid_map[curr_vec] = water_coords
 				to_paint.set_pixel(x, y, WATER_COLOR)
 
 			elif curr_pixel.v < mountain_ocurrence:
-				grid_map[curr_vec] = LAND_COORDS
+				grid_map[curr_vec] = land_coords
 				to_paint.set_pixel(x, y, LAND_COLOR)
 
 			else:
-				grid_map[curr_vec] = MOUNTAIN_COORDS
+				grid_map[curr_vec] = mountain_coords
 
 
 func paint() -> void:
