@@ -2,7 +2,7 @@ extends Camera2D
 
 @export var zoom_step: float = 0.1
 @export var min_zoom: float = 0.2
-@export var max_zoom: float = 2.0
+@export var max_zoom: float = 4.0
 @export var move_speed: float = 600.0
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -10,9 +10,9 @@ func _unhandled_input(event: InputEvent) -> void:
 	if mouse_event == null or not mouse_event.pressed:
 		return
 	if mouse_event.button_index == MOUSE_BUTTON_WHEEL_UP:
-		adjust_zoom(-zoom_step)
-	elif mouse_event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
 		adjust_zoom(zoom_step)
+	elif mouse_event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
+		adjust_zoom(-zoom_step)
 
 func _physics_process(delta: float) -> void:
 	var direction := Vector2.ZERO
