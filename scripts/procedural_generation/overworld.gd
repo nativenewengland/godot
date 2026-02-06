@@ -168,10 +168,20 @@ func _to_normalized(noise_sample: float) -> float:
 func _get_elevation(coord: Vector2i, curr_size: Vector2i) -> float:
 	var centered := (Vector2(coord) / Vector2(curr_size) - Vector2(0.5, 0.5)) * 2.0
 	var radial_falloff := clampf(centered.length(), 0.0, 1.0)
-	var base := _to_normalized(_height_noise.get_noise_2dv(Vector2(coord)))
-	var ridges := 1.0 - absf(_height_noise.get_noise_2dv(Vector2(coord) * 1.9))
-	var tectonic_uplift := lerpf(base, maxf(base, ridges), mountain_linearity)
-	return tectonic_uplift - pow(radial_falloff, 2.2) * 0.35
+	var warp_strength := maxf(1.0, float(curr_size.x)) * 0.015
+	var warp := Vector2(
+		_temperature_noise.get_noise_2dv(Vector2(coord) * 0.8),
+		_rainfall_noise.get_noise_2dv(Vector2(coord) * 0.8)
+	) * warp_strength
+	var warped_coord := Vector2(coord) + warp
+	var continent := _to_normalized(_height_noise.get_noise_2dv(warped_coord * 0.45))
+	var detail := _to_normalized(_height_noise.get_noise_2dv(warped_coord * 1.6))
+	var ridges := 1.0 - absf(_height_noise.get_noise_2dv(warped_coord * 2.4))
+	var tectonic_uplift := lerpf(continent, detail, 0.35)
+	tectonic_uplift = lerpf(tectonic_uplift, maxf(tectonic_uplift, ridges), mountain_linearity * 0.6)
+	var coast_variation := _height_noise.get_noise_2dv(warped_coord * 3.2) * coast_width
+	var edge_falloff := pow(radial_falloff, 2.8) * 0.18
+	return clampf(tectonic_uplift + coast_variation - edge_falloff, 0.0, 1.0)
 
 func _get_farcical_continent_value(coord: Vector2i, curr_size: Vector2i) -> float:
 	var base := _get_elevation(coord, curr_size)
