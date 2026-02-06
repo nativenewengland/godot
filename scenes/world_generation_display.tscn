@@ -1,22 +1,8 @@
-[gd_scene load_steps=6 format=3 uid="uid://bw1v2ihfuuq5k"]
+[gd_scene format=3 uid="uid://bw1v2ihfuuq5k"]
 
-[ext_resource type="Script" path="res://scripts/world_generation/world_generation_display.gd" id="1_f31wv"]
-[ext_resource type="Texture2D" path="res://resources/images/main_menu/Titlescreen_image.png" id="2_0moum"]
-[ext_resource type="Shader" path="res://shaders/ui/world_setup_backdrop.gdshader" id="3_hl2fk"]
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
-bg_color = Color(0.08, 0.1, 0.14, 0.88)
-corner_radius_top_left = 16
-corner_radius_top_right = 16
-corner_radius_bottom_right = 16
-corner_radius_bottom_left = 16
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.52, 0.6, 0.74, 0.25)
-shadow_color = Color(0, 0, 0, 0.4)
-shadow_size = 8
+[ext_resource type="Script" uid="uid://b3r6i5jdm1seg" path="res://scripts/world_generation/world_generation_display.gd" id="1_f31wv"]
+[ext_resource type="Texture2D" uid="uid://cmx84ny343d20" path="res://resources/images/main_menu/Titlescreen_image.png" id="2_0moum"]
+[ext_resource type="Shader" uid="uid://bbqv3q3fbq2vs" path="res://shaders/ui/world_setup_backdrop.gdshader" id="3_hl2fk"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_xcpbu"]
 shader = ExtResource("3_hl2fk")
@@ -25,7 +11,21 @@ shader_parameter/pan_speed = 0.02
 shader_parameter/blur_strength = 1.6
 shader_parameter/tint_color = Color(0.18, 0.24, 0.34, 0.92)
 
-[node name="WorldGenerationDisplay" type="Control"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.08, 0.1, 0.14, 0.88)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.52, 0.6, 0.74, 0.25)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_color = Color(0, 0, 0, 0.4)
+shadow_size = 8
+
+[node name="WorldGenerationDisplay" type="Control" unique_id=1179411946]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -34,25 +34,24 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_f31wv")
 
-[node name="Backdrop" type="ColorRect" parent="."]
+[node name="Backdrop" type="ColorRect" parent="." unique_id=1731600476]
+material = SubResource("ShaderMaterial_xcpbu")
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-material = SubResource("ShaderMaterial_xcpbu")
-color = Color(1, 1, 1, 1)
 
-[node name="MarginContainer" type="MarginContainer" parent="."]
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1934928588]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 40.0
-offset_top = 30.0
-offset_right = -40.0
-offset_bottom = -30.0
+offset_left = 38.0
+offset_top = -18.0
+offset_right = -42.0
+offset_bottom = 20.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/margin_left = 24
@@ -60,391 +59,382 @@ theme_override_constants/margin_top = 24
 theme_override_constants/margin_right = 24
 theme_override_constants/margin_bottom = 24
 
-[node name="MainColumns" type="HBoxContainer" parent="MarginContainer"]
+[node name="MainColumns" type="HBoxContainer" parent="MarginContainer" unique_id=1112246630]
 layout_mode = 2
 theme_override_constants/separation = 24
 
-[node name="WorldGenerationCard" type="PanelContainer" parent="MarginContainer/MainColumns"]
+[node name="WorldGenerationCard" type="PanelContainer" parent="MarginContainer/MainColumns" unique_id=1279885599]
 custom_minimum_size = Vector2(460, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
-[node name="CardPadding" type="MarginContainer" parent="MarginContainer/MainColumns/WorldGenerationCard"]
+[node name="CardPadding" type="MarginContainer" parent="MarginContainer/MainColumns/WorldGenerationCard" unique_id=1038779572]
 layout_mode = 2
 theme_override_constants/margin_left = 20
 theme_override_constants/margin_top = 20
 theme_override_constants/margin_right = 20
 theme_override_constants/margin_bottom = 20
 
-[node name="CardContent" type="VBoxContainer" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding"]
+[node name="CardContent" type="VBoxContainer" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding" unique_id=1703811732]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="CardTitle" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent"]
+[node name="CardTitle" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent" unique_id=1629042005]
 layout_mode = 2
 text = "WORLD GENERATION"
 
-[node name="CardDescription" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent"]
+[node name="CardDescription" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent" unique_id=847728774]
 layout_mode = 2
-autowrap_mode = 2
 text = "Shape the landscape, climate and civilisation before the expedition begins."
+autowrap_mode = 2
 
-[node name="MapSizeLabel" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent"]
+[node name="MapSizeLabel" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent" unique_id=497169910]
 layout_mode = 2
 text = "MAP SIZE"
 
-[node name="MapSizeOptions" type="OptionButton" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent"]
+[node name="MapSizeOptions" type="OptionButton" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent" unique_id=247613697]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="LayoutLabel" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent"]
+[node name="LayoutLabel" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent" unique_id=1033442760]
 layout_mode = 2
 text = "WORLD LAYOUT"
 
-[node name="WorldLayoutOptions" type="OptionButton" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent"]
+[node name="WorldLayoutOptions" type="OptionButton" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent" unique_id=1757031608]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="SeedLabel" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent"]
+[node name="SeedLabel" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent" unique_id=1984457256]
 layout_mode = 2
 text = "WORLD SEED"
 
-[node name="WorldSeedOptions" type="LineEdit" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent"]
+[node name="WorldSeedOptions" type="LineEdit" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent" unique_id=730939433]
 unique_name_in_owner = true
 layout_mode = 2
 placeholder_text = "Enter seed"
 
-[node name="AdvancedSettingsToggle" type="Button" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent"]
+[node name="AdvancedSettingsToggle" type="Button" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent" unique_id=1364239478]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Show Advanced World Controls"
 
-[node name="AdvancedSettingsContainer" type="VBoxContainer" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent"]
+[node name="AdvancedSettingsContainer" type="VBoxContainer" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent" unique_id=426825289]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="ForestRow" type="HBoxContainer" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer"]
+[node name="ForestRow" type="HBoxContainer" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer" unique_id=232845795]
 layout_mode = 2
 
-[node name="ForestLabel" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer/ForestRow"]
+[node name="ForestLabel" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer/ForestRow" unique_id=594167453]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Forest Frequency"
 
-[node name="ForestFrequencyValue" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer/ForestRow"]
+[node name="ForestFrequencyValue" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer/ForestRow" unique_id=955408817]
 unique_name_in_owner = true
 layout_mode = 2
 text = "50%"
 
-[node name="ForestFrequencySlider" type="HSlider" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer"]
+[node name="ForestFrequencySlider" type="HSlider" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer" unique_id=1674425681]
 unique_name_in_owner = true
 layout_mode = 2
-max_value = 100.0
 value = 50.0
 
-[node name="MountainRow" type="HBoxContainer" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer"]
+[node name="MountainRow" type="HBoxContainer" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer" unique_id=1263270971]
 layout_mode = 2
 
-[node name="MountainLabel" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer/MountainRow"]
+[node name="MountainLabel" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer/MountainRow" unique_id=1732547431]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Mountain Frequency"
 
-[node name="MountainFrequencyValue" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer/MountainRow"]
+[node name="MountainFrequencyValue" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer/MountainRow" unique_id=1864668563]
 unique_name_in_owner = true
 layout_mode = 2
 text = "50%"
 
-[node name="MountainFrequencySlider" type="HSlider" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer"]
+[node name="MountainFrequencySlider" type="HSlider" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer" unique_id=1196035300]
 unique_name_in_owner = true
 layout_mode = 2
-max_value = 100.0
 value = 50.0
 
-[node name="RiverRow" type="HBoxContainer" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer"]
+[node name="RiverRow" type="HBoxContainer" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer" unique_id=158006130]
 layout_mode = 2
 
-[node name="RiverLabel" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer/RiverRow"]
+[node name="RiverLabel" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer/RiverRow" unique_id=836532138]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "River Frequency"
 
-[node name="RiverFrequencyValue" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer/RiverRow"]
+[node name="RiverFrequencyValue" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer/RiverRow" unique_id=1950355072]
 unique_name_in_owner = true
 layout_mode = 2
 text = "50%"
 
-[node name="RiverFrequencySlider" type="HSlider" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer"]
+[node name="RiverFrequencySlider" type="HSlider" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer" unique_id=1148398110]
 unique_name_in_owner = true
 layout_mode = 2
-max_value = 100.0
 value = 50.0
 
-[node name="SettlementTitle" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer"]
+[node name="SettlementTitle" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer" unique_id=448219629]
 layout_mode = 2
 text = "SETTLEMENT FREQUENCY"
 
-[node name="HumansSettlementRow" type="HBoxContainer" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer"]
+[node name="HumansSettlementRow" type="HBoxContainer" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer" unique_id=224428925]
 layout_mode = 2
 
-[node name="HumansSettlementLabel" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer/HumansSettlementRow"]
+[node name="HumansSettlementLabel" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer/HumansSettlementRow" unique_id=1283041416]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Humans"
 
-[node name="HumansSettlementValue" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer/HumansSettlementRow"]
+[node name="HumansSettlementValue" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer/HumansSettlementRow" unique_id=83646610]
 unique_name_in_owner = true
 layout_mode = 2
 text = "50%"
 
-[node name="HumansSettlementSlider" type="HSlider" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer"]
+[node name="HumansSettlementSlider" type="HSlider" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer" unique_id=122360304]
 unique_name_in_owner = true
 layout_mode = 2
-max_value = 100.0
 value = 50.0
 
-[node name="DwarvesSettlementRow" type="HBoxContainer" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer"]
+[node name="DwarvesSettlementRow" type="HBoxContainer" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer" unique_id=543753093]
 layout_mode = 2
 
-[node name="DwarvesSettlementLabel" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer/DwarvesSettlementRow"]
+[node name="DwarvesSettlementLabel" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer/DwarvesSettlementRow" unique_id=1265070879]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Dwarves"
 
-[node name="DwarvesSettlementValue" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer/DwarvesSettlementRow"]
+[node name="DwarvesSettlementValue" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer/DwarvesSettlementRow" unique_id=985433835]
 unique_name_in_owner = true
 layout_mode = 2
 text = "50%"
 
-[node name="DwarvesSettlementSlider" type="HSlider" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer"]
+[node name="DwarvesSettlementSlider" type="HSlider" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer" unique_id=769191151]
 unique_name_in_owner = true
 layout_mode = 2
-max_value = 100.0
 value = 50.0
 
-[node name="WoodElvesSettlementRow" type="HBoxContainer" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer"]
+[node name="WoodElvesSettlementRow" type="HBoxContainer" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer" unique_id=2045204104]
 layout_mode = 2
 
-[node name="WoodElvesSettlementLabel" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer/WoodElvesSettlementRow"]
+[node name="WoodElvesSettlementLabel" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer/WoodElvesSettlementRow" unique_id=1111936791]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Wood Elves"
 
-[node name="WoodElvesSettlementValue" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer/WoodElvesSettlementRow"]
+[node name="WoodElvesSettlementValue" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer/WoodElvesSettlementRow" unique_id=1282030829]
 unique_name_in_owner = true
 layout_mode = 2
 text = "50%"
 
-[node name="WoodElvesSettlementSlider" type="HSlider" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer"]
+[node name="WoodElvesSettlementSlider" type="HSlider" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer" unique_id=1738148811]
 unique_name_in_owner = true
 layout_mode = 2
-max_value = 100.0
 value = 50.0
 
-[node name="LizardmenSettlementRow" type="HBoxContainer" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer"]
+[node name="LizardmenSettlementRow" type="HBoxContainer" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer" unique_id=983845327]
 layout_mode = 2
 
-[node name="LizardmenSettlementLabel" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer/LizardmenSettlementRow"]
+[node name="LizardmenSettlementLabel" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer/LizardmenSettlementRow" unique_id=1636531503]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Lizardmen"
 
-[node name="LizardmenSettlementValue" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer/LizardmenSettlementRow"]
+[node name="LizardmenSettlementValue" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer/LizardmenSettlementRow" unique_id=505776544]
 unique_name_in_owner = true
 layout_mode = 2
 text = "50%"
 
-[node name="LizardmenSettlementSlider" type="HSlider" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer"]
+[node name="LizardmenSettlementSlider" type="HSlider" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer" unique_id=727968972]
 unique_name_in_owner = true
 layout_mode = 2
-max_value = 100.0
 value = 50.0
 
-[node name="RegenerateRealmCheck" type="CheckButton" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer"]
+[node name="RegenerateRealmCheck" type="CheckButton" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer" unique_id=26628115]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Regenerate realm when applying in-game"
 
-[node name="ApplyOptionsButton" type="Button" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer"]
+[node name="ApplyOptionsButton" type="Button" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer" unique_id=1831439962]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Apply World Options"
 
-[node name="WorldInfoPanel" type="PanelContainer" parent="MarginContainer/MainColumns"]
+[node name="WorldInfoPanel" type="PanelContainer" parent="MarginContainer/MainColumns" unique_id=914687903]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
-[node name="InfoPadding" type="MarginContainer" parent="MarginContainer/MainColumns/WorldInfoPanel"]
+[node name="InfoPadding" type="MarginContainer" parent="MarginContainer/MainColumns/WorldInfoPanel" unique_id=1907143071]
 layout_mode = 2
 theme_override_constants/margin_left = 20
 theme_override_constants/margin_top = 20
 theme_override_constants/margin_right = 20
 theme_override_constants/margin_bottom = 20
 
-[node name="InfoRoot" type="VBoxContainer" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding"]
+[node name="InfoRoot" type="VBoxContainer" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding" unique_id=140136463]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="InfoTitle" type="Label" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot"]
+[node name="InfoTitle" type="Label" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot" unique_id=1672386529]
 layout_mode = 2
 text = "EMBARK PREPARATION / READY THE EXPEDITION"
 
-[node name="InfoGrid" type="GridContainer" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot"]
+[node name="InfoGrid" type="GridContainer" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot" unique_id=1958617536]
 layout_mode = 2
-columns = 2
 theme_override_constants/h_separation = 16
 theme_override_constants/v_separation = 12
+columns = 2
 
-[node name="SummaryColumn" type="VBoxContainer" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid"]
+[node name="SummaryColumn" type="VBoxContainer" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid" unique_id=1168044956]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="SummaryHeader" type="Label" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/SummaryColumn"]
+[node name="SummaryHeader" type="Label" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/SummaryColumn" unique_id=1223407497]
 layout_mode = 2
 text = "SUMMARY"
 
-[node name="SummaryMapSizeLabel" type="Label" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/SummaryColumn"]
+[node name="SummaryMapSizeLabel" type="Label" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/SummaryColumn" unique_id=1033741702]
 layout_mode = 2
 text = "MAP SIZE"
 
-[node name="SummaryMapSize" type="Label" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/SummaryColumn"]
+[node name="SummaryMapSize" type="Label" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/SummaryColumn" unique_id=418111992]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Medium"
 
-[node name="SummaryLayoutLabel" type="Label" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/SummaryColumn"]
+[node name="SummaryLayoutLabel" type="Label" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/SummaryColumn" unique_id=331460089]
 layout_mode = 2
 text = "WORLD LAYOUT"
 
-[node name="SummaryLayout" type="Label" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/SummaryColumn"]
+[node name="SummaryLayout" type="Label" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/SummaryColumn" unique_id=832403525]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Normal"
 
-[node name="SummarySeedLabel" type="Label" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/SummaryColumn"]
+[node name="SummarySeedLabel" type="Label" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/SummaryColumn" unique_id=1815686630]
 layout_mode = 2
 text = "WORLD SEED"
 
-[node name="SummarySeed" type="Label" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/SummaryColumn"]
+[node name="SummarySeed" type="Label" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/SummaryColumn" unique_id=538505627]
 unique_name_in_owner = true
 layout_mode = 2
-text = ""
 
-[node name="SummaryChronologyLabel" type="Label" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/SummaryColumn"]
+[node name="SummaryChronologyLabel" type="Label" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/SummaryColumn" unique_id=1351161023]
 layout_mode = 2
 text = "CHRONOLOGY"
 
-[node name="SummaryChronology" type="Label" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/SummaryColumn"]
+[node name="SummaryChronology" type="Label" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/SummaryColumn" unique_id=2023318804]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Year 250 · Age of Discovery"
 
-[node name="SummaryWorldNameLabel" type="Label" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/SummaryColumn"]
+[node name="SummaryWorldNameLabel" type="Label" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/SummaryColumn" unique_id=1967751802]
 layout_mode = 2
 text = "WORLD NAME"
 
-[node name="SummaryWorldName" type="Label" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/SummaryColumn"]
+[node name="SummaryWorldName" type="Label" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/SummaryColumn" unique_id=1669841189]
 unique_name_in_owner = true
 layout_mode = 2
-text = ""
 
-[node name="FormColumn" type="VBoxContainer" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid"]
+[node name="FormColumn" type="VBoxContainer" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid" unique_id=1998464230]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="HeroImage" type="ColorRect" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/FormColumn"]
+[node name="HeroImage" type="ColorRect" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/FormColumn" unique_id=1026323628]
 custom_minimum_size = Vector2(0, 120)
 layout_mode = 2
 color = Color(0.17, 0.2, 0.27, 0.9)
 
-[node name="YearLabel" type="Label" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/FormColumn"]
+[node name="YearLabel" type="Label" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/FormColumn" unique_id=1281490943]
 layout_mode = 2
 text = "YEAR"
 
-[node name="YearInput" type="SpinBox" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/FormColumn"]
+[node name="YearInput" type="SpinBox" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/FormColumn" unique_id=1115695521]
 unique_name_in_owner = true
 layout_mode = 2
 min_value = 1.0
 max_value = 9999.0
 value = 250.0
 
-[node name="AgeLabel" type="Label" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/FormColumn"]
+[node name="AgeLabel" type="Label" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/FormColumn" unique_id=952185452]
 layout_mode = 2
 text = "AGE"
 
-[node name="AgeRow" type="HBoxContainer" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/FormColumn"]
+[node name="AgeRow" type="HBoxContainer" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/FormColumn" unique_id=565873004]
 layout_mode = 2
 
-[node name="AgeSelect" type="OptionButton" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/FormColumn/AgeRow"]
+[node name="AgeSelect" type="OptionButton" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/FormColumn/AgeRow" unique_id=874474001]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="RandomiseChronologyButton" type="Button" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/FormColumn/AgeRow"]
+[node name="RandomiseChronologyButton" type="Button" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/FormColumn/AgeRow" unique_id=1285374946]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Randomise"
 
-[node name="MapSizeInfoLabel" type="Label" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/FormColumn"]
+[node name="MapSizeInfoLabel" type="Label" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/FormColumn" unique_id=1166435347]
 layout_mode = 2
 text = "MAP SIZE"
 
-[node name="MapSizeInfo" type="OptionButton" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/FormColumn"]
+[node name="MapSizeInfo" type="OptionButton" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/FormColumn" unique_id=1528028493]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="LayoutInfoLabel" type="Label" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/FormColumn"]
+[node name="LayoutInfoLabel" type="Label" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/FormColumn" unique_id=83571902]
 layout_mode = 2
 text = "WORLD LAYOUT"
 
-[node name="WorldLayoutInfo" type="OptionButton" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/FormColumn"]
+[node name="WorldLayoutInfo" type="OptionButton" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/FormColumn" unique_id=729202822]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="SeedInfoLabel" type="Label" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/FormColumn"]
+[node name="SeedInfoLabel" type="Label" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/FormColumn" unique_id=2083142342]
 layout_mode = 2
 text = "WORLD SEED"
 
-[node name="WorldSeedInfo" type="LineEdit" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/FormColumn"]
+[node name="WorldSeedInfo" type="LineEdit" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/FormColumn" unique_id=932412362]
 unique_name_in_owner = true
 layout_mode = 2
 placeholder_text = "Enter seed"
 
-[node name="WorldNameLabel" type="Label" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/FormColumn"]
+[node name="WorldNameLabel" type="Label" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/FormColumn" unique_id=2041540112]
 layout_mode = 2
 text = "WORLD NAME"
 
-[node name="WorldNameRow" type="HBoxContainer" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/FormColumn"]
+[node name="WorldNameRow" type="HBoxContainer" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/FormColumn" unique_id=948965295]
 layout_mode = 2
 
-[node name="WorldNameInput" type="LineEdit" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/FormColumn/WorldNameRow"]
+[node name="WorldNameInput" type="LineEdit" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/FormColumn/WorldNameRow" unique_id=1466330968]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "World name"
 
-[node name="RandomiseWorldNameButton" type="Button" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/FormColumn/WorldNameRow"]
+[node name="RandomiseWorldNameButton" type="Button" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/FormColumn/WorldNameRow" unique_id=393819284]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Randomise"
 
-[node name="Actions" type="HBoxContainer" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot"]
+[node name="Actions" type="HBoxContainer" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot" unique_id=324406414]
 layout_mode = 2
-alignment = 2
 theme_override_constants/separation = 10
+alignment = 2
 
-[node name="BackButton" type="Button" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/Actions"]
+[node name="BackButton" type="Button" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/Actions" unique_id=1261001353]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Back"
 
-[node name="EmbarkButton" type="Button" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/Actions"]
+[node name="EmbarkButton" type="Button" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/Actions" unique_id=1133943083]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Embark"
