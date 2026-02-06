@@ -1,6 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://bw1v2ihfuuq5k"]
+[gd_scene load_steps=6 format=3 uid="uid://bw1v2ihfuuq5k"]
 
 [ext_resource type="Script" path="res://scripts/world_generation/world_generation_display.gd" id="1_f31wv"]
+[ext_resource type="Texture2D" path="res://resources/images/main_menu/Titlescreen_image.png" id="2_0moum"]
+[ext_resource type="Shader" path="res://shaders/ui/world_setup_backdrop.gdshader" id="3_hl2fk"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
 bg_color = Color(0.08, 0.1, 0.14, 0.88)
@@ -15,6 +17,13 @@ border_width_bottom = 1
 border_color = Color(0.52, 0.6, 0.74, 0.25)
 shadow_color = Color(0, 0, 0, 0.4)
 shadow_size = 8
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_xcpbu"]
+shader = ExtResource("3_hl2fk")
+shader_parameter/backdrop_texture = ExtResource("2_0moum")
+shader_parameter/pan_speed = 0.02
+shader_parameter/blur_strength = 1.6
+shader_parameter/tint_color = Color(0.18, 0.24, 0.34, 0.92)
 
 [node name="WorldGenerationDisplay" type="Control"]
 layout_mode = 3
@@ -32,7 +41,8 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.03, 0.05, 0.08, 1)
+material = SubResource("ShaderMaterial_xcpbu")
+color = Color(1, 1, 1, 1)
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 1
@@ -107,149 +117,160 @@ unique_name_in_owner = true
 layout_mode = 2
 placeholder_text = "Enter seed"
 
-[node name="ForestRow" type="HBoxContainer" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent"]
+[node name="AdvancedSettingsToggle" type="Button" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Show Advanced World Controls"
+
+[node name="AdvancedSettingsContainer" type="VBoxContainer" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="ForestRow" type="HBoxContainer" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer"]
 layout_mode = 2
 
-[node name="ForestLabel" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/ForestRow"]
+[node name="ForestLabel" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer/ForestRow"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Forest Frequency"
 
-[node name="ForestFrequencyValue" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/ForestRow"]
+[node name="ForestFrequencyValue" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer/ForestRow"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "50%"
 
-[node name="ForestFrequencySlider" type="HSlider" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent"]
+[node name="ForestFrequencySlider" type="HSlider" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 max_value = 100.0
 value = 50.0
 
-[node name="MountainRow" type="HBoxContainer" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent"]
+[node name="MountainRow" type="HBoxContainer" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer"]
 layout_mode = 2
 
-[node name="MountainLabel" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/MountainRow"]
+[node name="MountainLabel" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer/MountainRow"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Mountain Frequency"
 
-[node name="MountainFrequencyValue" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/MountainRow"]
+[node name="MountainFrequencyValue" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer/MountainRow"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "50%"
 
-[node name="MountainFrequencySlider" type="HSlider" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent"]
+[node name="MountainFrequencySlider" type="HSlider" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 max_value = 100.0
 value = 50.0
 
-[node name="RiverRow" type="HBoxContainer" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent"]
+[node name="RiverRow" type="HBoxContainer" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer"]
 layout_mode = 2
 
-[node name="RiverLabel" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/RiverRow"]
+[node name="RiverLabel" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer/RiverRow"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "River Frequency"
 
-[node name="RiverFrequencyValue" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/RiverRow"]
+[node name="RiverFrequencyValue" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer/RiverRow"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "50%"
 
-[node name="RiverFrequencySlider" type="HSlider" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent"]
+[node name="RiverFrequencySlider" type="HSlider" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 max_value = 100.0
 value = 50.0
 
-[node name="SettlementTitle" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent"]
+[node name="SettlementTitle" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer"]
 layout_mode = 2
 text = "SETTLEMENT FREQUENCY"
 
-[node name="HumansSettlementRow" type="HBoxContainer" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent"]
+[node name="HumansSettlementRow" type="HBoxContainer" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer"]
 layout_mode = 2
 
-[node name="HumansSettlementLabel" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/HumansSettlementRow"]
+[node name="HumansSettlementLabel" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer/HumansSettlementRow"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Humans"
 
-[node name="HumansSettlementValue" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/HumansSettlementRow"]
+[node name="HumansSettlementValue" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer/HumansSettlementRow"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "50%"
 
-[node name="HumansSettlementSlider" type="HSlider" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent"]
+[node name="HumansSettlementSlider" type="HSlider" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 max_value = 100.0
 value = 50.0
 
-[node name="DwarvesSettlementRow" type="HBoxContainer" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent"]
+[node name="DwarvesSettlementRow" type="HBoxContainer" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer"]
 layout_mode = 2
 
-[node name="DwarvesSettlementLabel" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/DwarvesSettlementRow"]
+[node name="DwarvesSettlementLabel" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer/DwarvesSettlementRow"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Dwarves"
 
-[node name="DwarvesSettlementValue" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/DwarvesSettlementRow"]
+[node name="DwarvesSettlementValue" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer/DwarvesSettlementRow"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "50%"
 
-[node name="DwarvesSettlementSlider" type="HSlider" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent"]
+[node name="DwarvesSettlementSlider" type="HSlider" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 max_value = 100.0
 value = 50.0
 
-[node name="WoodElvesSettlementRow" type="HBoxContainer" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent"]
+[node name="WoodElvesSettlementRow" type="HBoxContainer" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer"]
 layout_mode = 2
 
-[node name="WoodElvesSettlementLabel" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/WoodElvesSettlementRow"]
+[node name="WoodElvesSettlementLabel" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer/WoodElvesSettlementRow"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Wood Elves"
 
-[node name="WoodElvesSettlementValue" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/WoodElvesSettlementRow"]
+[node name="WoodElvesSettlementValue" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer/WoodElvesSettlementRow"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "50%"
 
-[node name="WoodElvesSettlementSlider" type="HSlider" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent"]
+[node name="WoodElvesSettlementSlider" type="HSlider" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 max_value = 100.0
 value = 50.0
 
-[node name="LizardmenSettlementRow" type="HBoxContainer" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent"]
+[node name="LizardmenSettlementRow" type="HBoxContainer" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer"]
 layout_mode = 2
 
-[node name="LizardmenSettlementLabel" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/LizardmenSettlementRow"]
+[node name="LizardmenSettlementLabel" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer/LizardmenSettlementRow"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Lizardmen"
 
-[node name="LizardmenSettlementValue" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/LizardmenSettlementRow"]
+[node name="LizardmenSettlementValue" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer/LizardmenSettlementRow"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "50%"
 
-[node name="LizardmenSettlementSlider" type="HSlider" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent"]
+[node name="LizardmenSettlementSlider" type="HSlider" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 max_value = 100.0
 value = 50.0
 
-[node name="RegenerateRealmCheck" type="CheckButton" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent"]
+[node name="RegenerateRealmCheck" type="CheckButton" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Regenerate realm when applying in-game"
 
-[node name="ApplyOptionsButton" type="Button" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent"]
+[node name="ApplyOptionsButton" type="Button" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/AdvancedSettingsContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Apply World Options"
