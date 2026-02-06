@@ -20,7 +20,7 @@ const MARSH_COLOR := Color(0.482, 0.602, 0.337, 1.0)
 const SNOW_COLOR := Color(0.91, 0.934, 0.968, 1.0)
 const MOUNTAIN_COLOR := Color(0.447, 0.443, 0.427, 1.0)
 
-const NEIGHBOR_OFFSETS := [
+const NEIGHBOR_OFFSETS: Array[Vector2i] = [
 	Vector2i.LEFT,
 	Vector2i.RIGHT,
 	Vector2i.UP,
