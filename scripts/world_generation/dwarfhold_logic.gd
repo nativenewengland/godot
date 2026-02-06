@@ -23,7 +23,8 @@ static func get_map_preset(map_size_label: String) -> Dictionary:
 	return MAP_PRESETS["normal"]
 
 static func to_frequency_ratio(percent: Variant, fallback: float = 0.5) -> float:
-	if !is_instance_of(percent, int) && !is_instance_of(percent, float):
+	var value_type := typeof(percent)
+	if value_type != TYPE_INT && value_type != TYPE_FLOAT:
 		return fallback
 	return clampf(float(percent) / 100.0, 0.0, 1.0)
 

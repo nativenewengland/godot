@@ -1,13 +1,13 @@
 extends Control
 
-const DwarfholdLogic := preload("res://scripts/world_generation/dwarfhold_logic.gd")
+const DWARFHOLD_LOGIC := preload("res://scripts/world_generation/dwarfhold_logic.gd")
 
 signal world_options_applied(settings: Dictionary, regenerate_realm: bool)
 signal back_requested
 signal embark_requested(final_settings: Dictionary)
 
 const MAP_SIZES := ["Mini", "Small", "Medium", "Large", "Extra Large"]
-const MAP_SIZE_KEYS := ["mini", "small", "normal", "large", "extra-large"]
+const MAP_SIZE_KEYS: Array[String] = ["mini", "small", "normal", "large", "extra-large"]
 const WORLD_LAYOUTS := ["Normal", "Major Continent", "Twin Continents", "Inland Sea", "Archipelago"]
 const WORLD_AGES := ["Age of Myth", "Age of Heroes", "Age of Discovery", "Age of Discord", "Age of Ember"]
 
@@ -234,8 +234,8 @@ func _on_embark_pressed() -> void:
 	get_tree().change_scene_to_file("res://scenes/character_creator.tscn")
 
 func _build_settings_payload() -> Dictionary:
-	var map_size_key := MAP_SIZE_KEYS[map_size_info.selected]
-	var map_preset := DwarfholdLogic.get_map_preset(map_size_key)
+	var map_size_key: String = MAP_SIZE_KEYS[map_size_info.selected]
+	var map_preset := DWARFHOLD_LOGIC.get_map_preset(map_size_key)
 	var settings := {
 		"map_size": map_preset["label"],
 		"map_size_key": map_size_key,
@@ -256,12 +256,12 @@ func _build_settings_payload() -> Dictionary:
 	for terrain: String in TERRAIN_SLIDERS:
 		var slider: HSlider = get_node(_slider_lookup[terrain]["slider"])
 		settings["terrain"][terrain] = int(slider.value)
-		settings["terrain_ratios"][terrain] = DwarfholdLogic.to_frequency_ratio(slider.value)
+		settings["terrain_ratios"][terrain] = DWARFHOLD_LOGIC.to_frequency_ratio(slider.value)
 
 	for civilization: String in SETTLEMENT_SLIDERS.keys():
 		var slider: HSlider = get_node(SETTLEMENT_SLIDERS[civilization]["slider"])
 		settings["settlements"][civilization] = int(slider.value)
-		settings["settlement_ratios"][civilization] = DwarfholdLogic.to_frequency_ratio(slider.value)
+		settings["settlement_ratios"][civilization] = DWARFHOLD_LOGIC.to_frequency_ratio(slider.value)
 
 	return settings
 
@@ -282,6 +282,6 @@ func _generate_world_name() -> String:
 
 
 func _store_world_settings(settings: Dictionary) -> void:
-	var game_session := get_node_or_null("/root/GameSession")
+	var game_session := get_node_or_null("/root/GameSession") as GameSession
 	if game_session:
 		game_session.set_world_settings(settings)
