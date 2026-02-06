@@ -44,16 +44,14 @@ theme_override_constants/margin_bottom = 25
 [node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/Control/MarginContainer2" unique_id=1209090727]
 layout_mode = 2
 
-[node name="Seeder" type="Node" parent="." unique_id=1364084117 node_paths=PackedStringArray("seed_input")]
+[node name="Seeder" type="Node" parent="." unique_id=1364084117]
 script = ExtResource("1_gxyk0")
-seed_input = NodePath("")
 seed_not_random = true
 seed_global = &"seed_for_testing"
 metadata/_custom_type_script = "uid://c58eb7bef55if"
 
-[node name="Overworld" type="Node" parent="." unique_id=1761992411 node_paths=PackedStringArray("debug_sprite", "tilemap_container")]
+[node name="Overworld" type="Node" parent="." unique_id=1761992411 node_paths=PackedStringArray("tilemap_container")]
 script = ExtResource("2_wpqau")
-debug_sprite = NodePath("")
 fractal_detail = 0.616
 fractal_size = 2.094
 water_ocurrence = 0.45
@@ -70,8 +68,7 @@ metadata/_custom_type_script = "uid://cqackqu1w0by4"
 [node name="Node2D" type="Node2D" parent="Overworld" unique_id=108315763]
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=476351455]
-position = Vector2(3977, 2577)
+position = Vector2(55, 52)
 anchor_mode = 0
 zoom = Vector2(0.278, 0.278)
 script = ExtResource("4_b4c7q")
-zoom_step = 0.1
