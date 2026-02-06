@@ -94,15 +94,15 @@ func _ready() -> void:
 	back_button.pressed.connect(func() -> void: back_requested.emit())
 
 func _populate_option_buttons() -> void:
-	for map_size in MAP_SIZES:
+	for map_size: String in MAP_SIZES:
 		map_size_options.add_item(map_size)
 		map_size_info.add_item(map_size)
 
-	for layout in WORLD_LAYOUTS:
+	for layout: String in WORLD_LAYOUTS:
 		world_layout_options.add_item(layout)
 		world_layout_info.add_item(layout)
 
-	for age in WORLD_AGES:
+	for age: String in WORLD_AGES:
 		age_select.add_item(age)
 
 	map_size_options.select(2)
@@ -111,7 +111,7 @@ func _populate_option_buttons() -> void:
 	world_layout_info.select(0)
 
 func _bind_slider_feedback() -> void:
-	for terrain in TERRAIN_SLIDERS:
+	for terrain: String in TERRAIN_SLIDERS:
 		var slider: HSlider = get_node(_slider_lookup[terrain]["slider"])
 		var label: Label = get_node(_slider_lookup[terrain]["label"])
 		slider.value_changed.connect(func(value: float) -> void:
@@ -121,7 +121,7 @@ func _bind_slider_feedback() -> void:
 		)
 		slider.value = 50
 
-	for civilization in SETTLEMENT_SLIDERS.keys():
+	for civilization: String in SETTLEMENT_SLIDERS.keys():
 		var slider: HSlider = get_node(SETTLEMENT_SLIDERS[civilization]["slider"])
 		var label: Label = get_node(SETTLEMENT_SLIDERS[civilization]["label"])
 		slider.value_changed.connect(func(value: float) -> void:
@@ -241,11 +241,11 @@ func _build_settings_payload() -> Dictionary:
 		"settlements": {}
 	}
 
-	for terrain in TERRAIN_SLIDERS:
+	for terrain: String in TERRAIN_SLIDERS:
 		var slider: HSlider = get_node(_slider_lookup[terrain]["slider"])
 		settings["terrain"][terrain] = int(slider.value)
 
-	for civilization in SETTLEMENT_SLIDERS.keys():
+	for civilization: String in SETTLEMENT_SLIDERS.keys():
 		var slider: HSlider = get_node(SETTLEMENT_SLIDERS[civilization]["slider"])
 		settings["settlements"][civilization] = int(slider.value)
 
