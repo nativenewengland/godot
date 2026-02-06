@@ -35,10 +35,13 @@ func _ready() -> void:
 
 func create_seed() -> void:
 	var curr_seed: = seed_global
-	var is_seed_random := seed_not_random
-	if seed_input.text:
+	var is_seed_random := false
+	var has_input := seed_input != null and seed_input.text != ""
+	if has_input:
 		is_seed_random = true
 		curr_seed = seed_input.text
+	elif seed_not_random and String(seed_global) != "":
+		is_seed_random = true
 
 	if is_seed_random:
 		current_seed = curr_seed.hash()
