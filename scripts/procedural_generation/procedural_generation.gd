@@ -33,7 +33,7 @@ signal recreate_tilemap
 var noise: FastNoiseLite
 
 var image: Image
-var grid_map: Dictionary[Vector2i, Vector2i]
+var grid_map: Dictionary[Vector2i, Dictionary]
 
 var _curr_tilemap: TileMapLayer
 
@@ -76,6 +76,10 @@ func generate_tilemap() -> void:
 	_curr_tilemap = tile_map.instantiate()
 
 	for curr_key in grid_map:
-		_curr_tilemap.set_cell(curr_key, 0, grid_map[curr_key])
+		var cell: Dictionary = grid_map[curr_key]
+		var source_id := int(cell.get("source", 0))
+		var atlas_coords: Vector2i = cell.get("atlas", Vector2i.ZERO)
+		var alt_id := int(cell.get("alt", 0))
+		_curr_tilemap.set_cell(curr_key, source_id, atlas_coords, alt_id)
 
 	tilemap_container.add_child(_curr_tilemap)
