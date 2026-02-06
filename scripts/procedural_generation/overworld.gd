@@ -5,22 +5,11 @@ extends ProceduralGeneration
 const DWARFHOLD_LOGIC := preload("res://scripts/world_generation/dwarfhold_logic.gd")
 
 @export_group(&"Tiles")
-@export var sand_coords := Vector2i(4, 1)
 @export var grass_coords := Vector2i(1, 0)
-@export var badlands_coords := Vector2i(2, 1)
-@export var marsh_coords := Vector2i(2, 4)
-@export var snow_coords := Vector2i(3, 2)
-@export var water_coords := Vector2i(0, 0)
-@export var mountain_coords := Vector2i(3, 0)
+@export var water_coords := Vector2i(1, 4)
 
 const WATER_COLOR := Color(0.168, 0.395, 0.976, 1.0)
-const SHALLOW_WATER_COLOR := Color(0.274, 0.544, 0.972, 1.0)
-const SAND_COLOR := Color(0.905, 0.823, 0.545, 1.0)
 const LAND_COLOR := Color(0.49, 0.753, 0.404, 1.0)
-const BADLANDS_COLOR := Color(0.729, 0.486, 0.309, 1.0)
-const MARSH_COLOR := Color(0.482, 0.602, 0.337, 1.0)
-const SNOW_COLOR := Color(0.91, 0.934, 0.968, 1.0)
-const MOUNTAIN_COLOR := Color(0.447, 0.443, 0.427, 1.0)
 
 const NEIGHBOR_OFFSETS: Array[Vector2i] = [
 	Vector2i.LEFT,
@@ -182,6 +171,13 @@ func _get_elevation(coord: Vector2i, curr_size: Vector2i) -> float:
 	var tectonic_uplift := lerpf(base, maxf(base, ridges), mountain_linearity)
 	return tectonic_uplift - pow(radial_falloff, 2.2) * 0.35
 
+func _get_farcical_continent_value(coord: Vector2i, curr_size: Vector2i) -> float:
+	var base := _get_elevation(coord, curr_size)
+	var wobble_scale := maxf(1.0, float(curr_size.x)) * 0.35
+	var wobble := sinf(float(coord.x) / wobble_scale * TAU) * cosf(float(coord.y) / (wobble_scale * 0.8) * TAU)
+	var swirl := sinf((float(coord.x + coord.y) / (wobble_scale * 0.6)) * TAU)
+	return clampf(base + wobble * 0.18 + swirl * 0.12, 0.0, 1.0)
+
 func _get_temperature(coord: Vector2i, curr_size: Vector2i, elevation: float) -> float:
 	var latitude := absf((float(coord.y) / maxf(1.0, float(curr_size.y - 1))) * 2.0 - 1.0)
 	var latitudinal_cold := pow(latitude, 1.4)
@@ -191,59 +187,6 @@ func _get_temperature(coord: Vector2i, curr_size: Vector2i, elevation: float) ->
 func _get_rainfall(coord: Vector2i, elevation: float) -> float:
 	var humidity := _to_normalized(_rainfall_noise.get_noise_2dv(Vector2(coord)))
 	return clampf(humidity + maxf(0.0, mountain_ocurrence - elevation) * 0.2, 0.0, 1.0)
-
-func _find_next_river_step(from: Vector2i, curr_size: Vector2i, seen: Dictionary[Vector2i, bool]) -> Vector2i:
-	var lowest := from
-	var lowest_elevation := _get_elevation(from, curr_size)
-
-	for offset in NEIGHBOR_OFFSETS:
-		var next_coord := from + offset
-		if !_is_within_bounds(next_coord, curr_size):
-			continue
-		if seen.has(next_coord):
-			continue
-
-		var next_elevation := _get_elevation(next_coord, curr_size)
-		if next_elevation < lowest_elevation:
-			lowest = next_coord
-			lowest_elevation = next_elevation
-
-	return lowest
-
-func _generate_rivers(curr_size: Vector2i) -> void:
-	var candidates: Array[Vector2i] = []
-
-	for y in curr_size.y:
-		for x in curr_size.x:
-			var coord := Vector2i(x, y)
-			if grid_map.get(coord) == mountain_coords:
-				candidates.append(coord)
-
-	if candidates.is_empty() || river_sources <= 0:
-		return
-
-	for _i in range(min(candidates.size(), river_sources)):
-		var source_index := _rng.randi_range(0, candidates.size() - 1)
-		var source_coord := candidates[source_index]
-		var curr_coord := source_coord
-		var seen: Dictionary[Vector2i, bool] = {}
-
-		for _step in range(river_max_steps):
-			if grid_map.get(curr_coord) == water_coords:
-				break
-
-			seen[curr_coord] = true
-			grid_map[curr_coord] = water_coords
-			_curr_image.set_pixel(curr_coord.x, curr_coord.y, SHALLOW_WATER_COLOR)
-
-			var next_coord := _find_next_river_step(curr_coord, curr_size, seen)
-			if next_coord == curr_coord:
-				break
-
-			if source_coord.distance_to(next_coord) > river_max_distance:
-				break
-
-			curr_coord = next_coord
 
 func generate_gridmap(to_paint: Image) -> void:
 	var curr_seed := Seeder.instance.current_seed
@@ -257,40 +200,17 @@ func generate_gridmap(to_paint: Image) -> void:
 	for y in curr_size.y:
 		for x in curr_size.x:
 			var curr_vec := Vector2i(x, y)
-			var elevation := _get_elevation(curr_vec, curr_size)
-			var temperature := _get_temperature(curr_vec, curr_size, elevation)
-			var rainfall := _get_rainfall(curr_vec, elevation)
+			var elevation := _get_farcical_continent_value(curr_vec, curr_size)
 
 			if elevation < water_ocurrence:
 				grid_map[curr_vec] = water_coords
 				_biome_map[curr_vec] = "water"
 				to_paint.set_pixel(x, y, WATER_COLOR)
-			elif elevation < water_ocurrence + coast_width:
-				grid_map[curr_vec] = sand_coords
-				_biome_map[curr_vec] = "sand"
-				to_paint.set_pixel(x, y, SAND_COLOR)
-			elif elevation > mountain_ocurrence:
-				grid_map[curr_vec] = mountain_coords
-				_biome_map[curr_vec] = "mountain"
-				to_paint.set_pixel(x, y, MOUNTAIN_COLOR)
-			elif temperature < snow_line:
-				grid_map[curr_vec] = snow_coords
-				_biome_map[curr_vec] = "snow"
-				to_paint.set_pixel(x, y, SNOW_COLOR)
-			elif rainfall < arid_threshold && temperature > 0.5:
-				grid_map[curr_vec] = badlands_coords
-				_biome_map[curr_vec] = "badlands"
-				to_paint.set_pixel(x, y, BADLANDS_COLOR)
-			elif rainfall > marsh_threshold && elevation < mountain_ocurrence * 0.8:
-				grid_map[curr_vec] = marsh_coords
-				_biome_map[curr_vec] = "marsh"
-				to_paint.set_pixel(x, y, MARSH_COLOR)
 			else:
 				grid_map[curr_vec] = grass_coords
 				_biome_map[curr_vec] = "grass"
 				to_paint.set_pixel(x, y, LAND_COLOR)
 
-	_generate_rivers(curr_size)
 	_generate_settlements(curr_size)
 
 func _generate_settlements(curr_size: Vector2i) -> void:
