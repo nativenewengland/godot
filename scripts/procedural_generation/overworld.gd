@@ -2,8 +2,6 @@
 class_name Overworld
 extends ProceduralGeneration
 
-const DWARFHOLD_LOGIC := preload("res://scripts/world_generation/dwarfhold_logic.gd")
-
 @export_group(&"Tiles")
 @export var land_source_id := 0
 @export var water_source_id := 1
@@ -91,14 +89,12 @@ const CARDINAL_OFFSETS: Array[Vector2i] = [
 
 var _noise: Image
 var _orig_resized: Image
-var _rng: RandomNumberGenerator
 var _curr_image: Image
 var _height_noise: FastNoiseLite
 var _temperature_noise: FastNoiseLite
 var _rainfall_noise: FastNoiseLite
 var _biome_map: Dictionary[Vector2i, String] = {}
 var _landmass_masks: Dictionary = {}
-var settlement_map: Dictionary[Vector2i, Dictionary] = {}
 
 func apply_world_settings(settings: Dictionary) -> void:
 	if settings.is_empty():
@@ -212,10 +208,6 @@ func generate_gridmap(to_paint: Image) -> void:
 	var curr_size := to_paint.get_size()
 	grid_map.clear()
 	_biome_map.clear()
-	settlement_map.clear()
-	_rng = RandomNumberGenerator.new()
-	_rng.seed = curr_seed
-
 	for y in curr_size.y:
 		for x in curr_size.x:
 			var curr_vec := Vector2i(x, y)
@@ -236,10 +228,9 @@ func generate_gridmap(to_paint: Image) -> void:
 				_biome_map[curr_vec] = "grass"
 				to_paint.set_pixel(x, y, LAND_COLOR)
 
-	_build_landmass_masks(curr_size)
-	_generate_settlements(curr_size)
+	_generate_landmass_masks(curr_size)
 
-func _build_landmass_masks(curr_size: Vector2i) -> void:
+func _generate_landmass_masks(curr_size: Vector2i) -> void:
 	var land_mask: Dictionary[Vector2i, bool] = {}
 	var water_mask: Dictionary[Vector2i, bool] = {}
 	var visited: Dictionary[Vector2i, bool] = {}
@@ -310,50 +301,6 @@ func _build_landmass_masks(curr_size: Vector2i) -> void:
 		"lakes": {"freshwater": lake_cells.keys()}
 	}
 
-func _generate_settlements(curr_size: Vector2i) -> void:
-	var settings: Dictionary = {}
-	var game_session := get_node_or_null("/root/GameSession") as GameSession
-	if game_session:
-		settings = game_session.get_world_settings()
-	var settlement_ratios: Dictionary = settings.get("settlement_ratios", {}) as Dictionary
-	if settlement_ratios.is_empty():
-		settlement_ratios = {"humans": 0.5, "dwarves": 0.5, "wood_elves": 0.5, "lizardmen": 0.5}
-
-	var candidates: Array = []
-	for y in curr_size.y:
-		for x in curr_size.x:
-			var c := Vector2i(x, y)
-			if _biome_map.get(c, "") == "water":
-				continue
-			candidates.append({"coord": c, "biome": _biome_map.get(c, "grass")})
-
-	for faction_key: String in DWARFHOLD_LOGIC.SETTLEMENT_TYPES.keys():
-		var ratio := float(settlement_ratios.get(faction_key, 0.5))
-		var target_count := int(roundi(1 + ratio * 4))
-		var faction_type: String = DWARFHOLD_LOGIC.SETTLEMENT_TYPES[faction_key]
-		for _i in range(target_count):
-			var coord := DWARFHOLD_LOGIC.choose_tile_for_capital(faction_type, candidates, _rng)
-			if coord.x < 0:
-				continue
-			if settlement_map.has(coord):
-				continue
-			settlement_map[coord] = {"faction": faction_key, "type": faction_type}
-			_debug_colorize_settlement(coord, faction_key)
-
-func _debug_colorize_settlement(coord: Vector2i, faction_key: String) -> void:
-	if !_curr_image:
-		return
-	var color := Color.WHITE
-	match faction_key:
-		"humans":
-			color = Color(0.96, 0.91, 0.52)
-		"dwarves":
-			color = Color(0.95, 0.59, 0.22)
-		"wood_elves":
-			color = Color(0.35, 0.9, 0.45)
-		"lizardmen":
-			color = Color(0.25, 0.82, 0.73)
-	_curr_image.set_pixel(coord.x, coord.y, color)
 
 func paint() -> void:
 	if !_noise:
