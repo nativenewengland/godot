@@ -25,9 +25,6 @@ shader = ExtResource("2_0yffs")
 shader_parameter/images = Array[CompressedTexture2D]([ExtResource("2_6txqo"), ExtResource("3_ucp7b"), ExtResource("4_oy0w6")])
 shader_parameter/colors = Array[Vector3]([Vector3(0.07, 0, 1), Vector3(0, 0, 1), Vector3(0, 0, 1)])
 
-[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_s8202"]
-load_path = "res://.godot/imported/facepanel.png-9ff6675b8c3ca103c10e5af722ffb9db.ctex"
-
 [node name="CharacterCreator" type="Control" unique_id=416902352 node_paths=PackedStringArray("target_render", "character_name", "clan_name", "skin_color", "hair_color", "beard_color")]
 layout_mode = 3
 anchors_preset = 15
@@ -255,7 +252,7 @@ layout_mode = 2
 
 [node name="NameRect2" type="TextureRect" parent="PanelContainer/VBoxContainer/MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer" unique_id=1461456986]
 layout_mode = 2
-texture = SubResource("CompressedTexture2D_s8202")
+texture = ExtResource("8_spski")
 stretch_mode = 1
 
 [node name="Label" type="Label" parent="PanelContainer/VBoxContainer/MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer" unique_id=1380141349]
