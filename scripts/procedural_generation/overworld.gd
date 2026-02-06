@@ -5,8 +5,10 @@ extends ProceduralGeneration
 const DWARFHOLD_LOGIC := preload("res://scripts/world_generation/dwarfhold_logic.gd")
 
 @export_group(&"Tiles")
-@export var grass_coords := Vector2i(1, 0)
-@export var water_coords := Vector2i(1, 4)
+@export var land_source_id := 0
+@export var water_source_id := 1
+@export var land_atlas_coords := Vector2i.ZERO
+@export var water_atlas_coords := Vector2i.ZERO
 
 const WATER_COLOR := Color(0.168, 0.395, 0.976, 1.0)
 const LAND_COLOR := Color(0.49, 0.753, 0.404, 1.0)
@@ -203,11 +205,17 @@ func generate_gridmap(to_paint: Image) -> void:
 			var elevation := _get_farcical_continent_value(curr_vec, curr_size)
 
 			if elevation < water_ocurrence:
-				grid_map[curr_vec] = water_coords
+				grid_map[curr_vec] = {
+					"source": water_source_id,
+					"atlas": water_atlas_coords
+				}
 				_biome_map[curr_vec] = "water"
 				to_paint.set_pixel(x, y, WATER_COLOR)
 			else:
-				grid_map[curr_vec] = grass_coords
+				grid_map[curr_vec] = {
+					"source": land_source_id,
+					"atlas": land_atlas_coords
+				}
 				_biome_map[curr_vec] = "grass"
 				to_paint.set_pixel(x, y, LAND_COLOR)
 
