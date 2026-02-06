@@ -350,3 +350,4 @@ func paint() -> void:
 	generate_gridmap(_curr_image)
 	if debug_sprite:
 		debug_sprite.texture = ImageTexture.create_from_image(_curr_image)
+	recreate_tilemap.emit()
