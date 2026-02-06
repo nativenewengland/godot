@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Forge and command a procedurally generated dwarven fortress in your browser."
+    />
+    <meta property="og:title" content="Dwarfhold" />
+    <meta
+      property="og:description"
+      content="Forge and command a procedurally generated dwarven fortress in your browser."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="tilesheet/logo.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Dwarfhold" />
+    <meta
+      name="twitter:description"
+      content="Forge and command a procedurally generated dwarven fortress in your browser."
+    />
+    <meta name="twitter:image" content="tilesheet/logo.png" />
+    <title>Dwarfhold</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Uncial+Antiqua&display=swap"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div id="title-screen" class="screen">
+      <div class="title-background" aria-hidden="true"></div>
+      <div class="title-overlay">
+        <h1 class="game-title">
+          <span class="sr-only">Dwarfhold</span>
+          <img src="tilesheet/logo.png" alt="" class="game-logo" />
+        </h1>
+        <div class="title-buttons">
+          <button id="start-button" class="primary title-image-button" type="button">
+            <span class="sr-only">Start Game</span>
+            <span class="title-button-image title-button-image--start" aria-hidden="true"></span>
+          </button>
+          <button id="title-options-button" class="title-image-button" type="button">
+            <span class="sr-only">Options</span>
+            <span class="title-button-image title-button-image--options" aria-hidden="true"></span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <section
+      id="options-screen"
+      class="screen hidden options-screen"
+      aria-label="Game options"
+    >
+      <div class="options-backdrop" aria-hidden="true"></div>
+      <div class="options-panel">
+        <header class="options-header">
+          <div class="options-header__titles">
+            <p class="options-eyebrow">Settings</p>
+            <h2>Options</h2>
+            <p class="options-description">
+              Tune the realm to your liking before you begin your expedition.
+            </p>
+          </div>
+          <button type="button" id="close-options" class="secondary options-back-button">
+            Back
+          </button>
+        </header>
+        <div class="options-grid">
+          <section class="options-card" aria-label="Audio options">
+            <h3>Audio</h3>
+            <p class="options-card__description">
+              Control the music and ambience that accompany your fortress plans.
+            </p>
+            <div class="options-audio-controls audio-controls">
+              <button id="music-toggle" type="button" class="secondary" aria-pressed="false">
+                Play Music
+              </button>
+              <label class="volume-control" for="music-volume">
+                Music Volume
+                <input id="music-volume" type="range" min="0" max="1" step="0.01" value="0.5" />
+              </label>
+              <div id="music-now-playing" class="now-playing" aria-live="polite"></div>
+            </div>
+            <div class="options-audio-controls audio-controls">
+              <button id="sfx-toggle" type="button" class="secondary" aria-pressed="true">
+                Sound Effects On
+              </button>
+              <label class="volume-control" for="sfx-volume">
+                Effects Volume
+                <input id="sfx-volume" type="range" min="0" max="1" step="0.01" value="0.6" />
+              </label>
+            </div>
+          </section>
+          <form id="options-form" class="options-card options-card--world" aria-label="World options">
+            <h3>World Generation</h3>
+            <p class="options-card__description">
+              Shape the landscape, climate, and civilisation spread before embarking.
+            </p>
+            <label for="map-size">Map size</label>
+            <select id="map-size" name="mapSize">
+              <option value="mini">Mini</option>
+              <option value="small">Small</option>
+              <option value="normal" selected>Normal</option>
+              <option value="large">Large</option>
+              <option value="extra-large">Extra Large</option>
+            </select>
+            <label for="world-generation-type">World layout</label>
+            <select id="world-generation-type" name="worldGenerationType">
+              <option value="normal" selected>Normal</option>
+              <option value="major_continent">Major Continent</option>
+              <option value="twin_continents">Twin Continents</option>
+              <option value="inland_sea">Inland Sea</option>
+              <option value="archipelago">Archipelago</option>
+            </select>
+            <label>
+              World seed
+              <input type="text" id="world-seed" name="worldSeed" placeholder="Random" />
+            </label>
+            <div class="world-generation-sliders">
+              <label for="forest-frequency">
+                Forest frequency
+                <div class="slider-control">
+                  <input
+                    id="forest-frequency"
+                    name="forestFrequency"
+                    type="range"
+                    min="0"
+                    max="100"
+                    step="1"
+                    value="35"
+                  />
+                  <span id="forest-frequency-value" class="slider-value" aria-live="polite"
+                    >35% — Low</span
+                  >
+                </div>
+              </label>
+              <label for="mountain-frequency">
+                Mountain frequency
+                <div class="slider-control">
+                  <input
+                    id="mountain-frequency"
+                    name="mountainFrequency"
+                    type="range"
+                    min="0"
+                    max="100"
+                    step="1"
+                    value="35"
+                  />
+                  <span id="mountain-frequency-value" class="slider-value" aria-live="polite"
+                    >35% — Low</span
+                  >
+                </div>
+              </label>
+              <label for="river-frequency">
+                River frequency
+                <div class="slider-control">
+                  <input
+                    id="river-frequency"
+                    name="riverFrequency"
+                    type="range"
+                    min="0"
+                    max="100"
+                    step="1"
+                    value="50"
+                  />
+                  <span id="river-frequency-value" class="slider-value" aria-live="polite"
+                    >50% — Balanced</span
+                  >
+                </div>
+              </label>
+              <label for="human-settlement-frequency">
+                Human settlement frequency
+                <div class="slider-control">
+                  <input
+                    id="human-settlement-frequency"
+                    name="humanSettlementFrequency"
+                    type="range"
+                    min="0"
+                    max="100"
+                    step="1"
+                    value="50"
+                  />
+                  <span
+                    id="human-settlement-frequency-value"
+                    class="slider-value"
+                    aria-live="polite"
+                    >50% — Balanced</span
+                  >
+                </div>
+              </label>
+              <label for="dwarf-settlement-frequency">
+                Dwarf settlement frequency
+                <div class="slider-control">
+                  <input
+                    id="dwarf-settlement-frequency"
+                    name="dwarfSettlementFrequency"
+                    type="range"
+                    min="0"
+                    max="100"
+                    step="1"
+                    value="50"
+                  />
+                  <span
+                    id="dwarf-settlement-frequency-value"
+                    class="slider-value"
+                    aria-live="polite"
+                    >50% — Balanced</span
+                  >
+                </div>
+              </label>
+              <label for="wood-elf-settlement-frequency">
+                Wood elf settlement frequency
+                <div class="slider-control">
+                  <input
+                    id="wood-elf-settlement-frequency"
+                    name="woodElfSettlementFrequency"
+                    type="range"
+                    min="0"
+                    max="100"
+                    step="1"
+                    value="50"
+                  />
+                  <span
+                    id="wood-elf-settlement-frequency-value"
+                    class="slider-value"
+                    aria-live="polite"
+                    >50% — Balanced</span
+                  >
+                </div>
+              </label>
+              <label for="lizardmen-settlement-frequency">
+                Lizardmen temple-city frequency
+                <div class="slider-control">
+                  <input
+                    id="lizardmen-settlement-frequency"
+                    name="lizardmenSettlementFrequency"
+                    type="range"
+                    min="0"
+                    max="100"
+                    step="1"
+                    value="50"
+                  />
+                  <span
+                    id="lizardmen-settlement-frequency-value"
+                    class="slider-value"
+                    aria-live="polite"
+                    >50% — Balanced</span
+                  >
+                </div>
+              </label>
+            </div>
+            <div class="options-card__actions">
+              <button type="submit" class="primary">Apply</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <section id="world-info" class="screen hidden embark-screen" aria-label="World information">
+      <div class="embark-backdrop" aria-hidden="true"></div>
+      <form id="world-info-form" class="embark-panel">
+        <header class="embark-header">
+          <p class="embark-eyebrow">Embark Preparation</p>
+          <h2>Ready the Expedition</h2>
+          <p class="embark-description">
+            Review the realm before you and give your dwarves a worthy tale to tell.
+          </p>
+        </header>
+        <div class="embark-content">
+          <section class="embark-summary" aria-live="polite">
+            <dl class="world-stats">
+              <div>
+                <dt>Map size</dt>
+                <dd id="world-info-size">—</dd>
+              </div>
+              <div>
+                <dt>World layout</dt>
+                <dd id="world-info-generation-type">—</dd>
+              </div>
+              <div>
+                <dt>Seed</dt>
+                <dd id="world-info-seed">—</dd>
+              </div>
+              <div>
+                <dt>Chronology</dt>
+                <dd id="world-info-chronology">—</dd>
+              </div>
+            </dl>
+            <div class="embark-hero" aria-hidden="true">
+              <div class="embark-hero-overlay"></div>
+            </div>
+          </section>
+          <section class="embark-form">
+            <div class="world-chronology-inputs">
+              <label for="world-year-input">
+                Year
+                <input
+                  type="number"
+                  id="world-year-input"
+                  name="worldYear"
+                  min="0"
+                  max="50000"
+                  inputmode="numeric"
+                  autocomplete="off"
+                  required
+                />
+              </label>
+              <label for="world-age-input">
+                Age
+                <input
+                  type="number"
+                  id="world-age-input"
+                  name="worldAge"
+                  min="2"
+                  max="20"
+                  inputmode="numeric"
+                  autocomplete="off"
+                  required
+                />
+              </label>
+              <button type="button" id="world-chronology-random" class="secondary">Randomise</button>
+            </div>
+            <label class="world-map-size-label" for="world-map-size-select">Map size</label>
+            <div class="world-map-size-input">
+              <select id="world-map-size-select" name="worldMapSize">
+                <option value="mini">Mini — 120 × 90</option>
+                <option value="small">Small — 160 × 120</option>
+                <option value="normal">Normal — 200 × 150</option>
+                <option value="large">Large — 260 × 195</option>
+                <option value="extra-large">Extra Large — 320 × 240</option>
+              </select>
+            </div>
+            <label class="world-layout-label" for="world-generation-type-select">World layout</label>
+            <div class="world-layout-input">
+              <select id="world-generation-type-select" name="worldGenerationType">
+                <option value="normal">Normal</option>
+                <option value="major_continent">Major Continent</option>
+                <option value="twin_continents">Twin Continents</option>
+                <option value="inland_sea">Inland Sea</option>
+                <option value="archipelago">Archipelago</option>
+              </select>
+            </div>
+            <label class="world-seed-label" for="world-seed-input">World seed</label>
+            <div class="world-seed-input">
+              <input
+                type="text"
+                id="world-seed-input"
+                name="worldSeed"
+                maxlength="32"
+                placeholder="Random"
+                autocomplete="off"
+              />
+            </div>
+            <label class="world-name-label" for="world-name-input">World name</label>
+            <div class="world-name-input">
+              <input type="text" id="world-name-input" name="worldName" maxlength="60" autocomplete="off" required />
+              <button type="button" id="world-name-random" class="secondary">Randomise</button>
+            </div>
+            <p class="embark-flavour">
+              "Strike the earth!" whispers through the caverns. Only you can choose the legend they'll carve.
+            </p>
+          </section>
+        </div>
+        <footer class="embark-actions">
+          <button type="button" id="world-info-cancel" class="secondary">Back</button>
+          <button type="submit" class="primary">Embark</button>
+        </footer>
+      </form>
+    </section>
+
+    <section
+      id="dwarf-customizer"
+      class="screen hidden embark-screen"
+      aria-label="Founder customiser"
+    >
+      <div class="embark-backdrop" aria-hidden="true"></div>
+      <form id="dwarf-customizer-form" class="embark-panel pixel-panel">
+        <header class="embark-header embark-header--founder">
+          <img
+            src="tilesheet/charactercreationtitle.png"
+            alt="Character creation title"
+            class="founder-title-image"
+            data-draggable-id="founder-title-image"
+          />
+        </header>
+        <div class="customizer-layout">
+          <section class="customizer-main" aria-live="polite">
+              <div class="customizer-visuals" data-draggable-id="visuals-panel">
+                <div class="customizer-preview" role="group" aria-label="Appearance preview">
+                  <div id="dwarf-portrait" class="dwarf-portrait" role="img" aria-label="Dwarf portrait">
+                    <img
+                      src="tilesheet/facepanel.png"
+                      alt=""
+                      class="dwarf-portrait-frame"
+                      aria-hidden="true"
+                    />
+                    <canvas
+                      id="dwarf-portrait-canvas"
+                      class="dwarf-portrait-canvas"
+                      width="424"
+                      height="377"
+                      aria-hidden="true"
+                    ></canvas>
+                  </div>
+                  <p id="dwarf-trait-summary" class="trait-summary"></p>
+                  <div
+                    class="trait-preview-sliders"
+                    aria-label="Featured appearance adjustments"
+                  >
+                    <div class="field-group" data-draggable-id="trait-skin-tone">
+                      <label for="dwarf-skin-slider" class="field-label">Skin tone</label>
+                      <div class="trait-slider">
+                        <div class="trait-slider-visual">
+                          <input
+                            id="dwarf-skin-slider"
+                            class="trait-slider-input"
+                            type="range"
+                            min="0"
+                            max="0"
+                            step="1"
+                            value="0"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div class="field-group" data-draggable-id="trait-eye-colour">
+                      <label for="dwarf-eye-slider" class="field-label">Eye colour</label>
+                      <div class="trait-slider">
+                        <div class="trait-slider-visual">
+                          <input
+                            id="dwarf-eye-slider"
+                            class="trait-slider-input"
+                            type="range"
+                            min="0"
+                            max="0"
+                            step="1"
+                            value="0"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div class="field-group" data-draggable-id="trait-hair-colour">
+                      <label for="dwarf-hair-slider" class="field-label">Hair colour</label>
+                      <div class="hair-colour-controls">
+                        <div class="trait-slider">
+                          <div class="trait-slider-visual">
+                            <input
+                              id="dwarf-hair-slider"
+                              class="trait-slider-input"
+                              type="range"
+                              min="0"
+                              max="0"
+                              step="1"
+                              value="0"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="field-group" data-draggable-id="trait-hair-style">
+                      <label for="dwarf-hair-style-slider" class="field-label">Hair style</label>
+                      <div class="trait-slider">
+                        <div class="trait-slider-visual">
+                          <input
+                            id="dwarf-hair-style-slider"
+                            class="trait-slider-input"
+                            type="range"
+                            min="0"
+                            max="0"
+                            step="1"
+                            value="0"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class="field-group"
+                      id="dwarf-beard-field-group"
+                      data-draggable-id="trait-beard-style"
+                    >
+                      <label for="dwarf-beard-slider" class="field-label">Beard style</label>
+                      <div class="trait-slider">
+                        <div class="trait-slider-visual">
+                          <input
+                            id="dwarf-beard-slider"
+                            class="trait-slider-input"
+                            type="range"
+                            min="0"
+                            max="0"
+                            step="1"
+                            value="0"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    id="dwarf-trait-attributes"
+                    class="trait-attributes"
+                    aria-live="polite"
+                    role="list"
+                  ></div>
+                </div>
+              </div>
+            <div class="customizer-detail-panel">
+              <div class="customizer-body">
+                <div class="customizer-fields">
+                  <div class="field-group field-group--gender">
+                    <div class="gender-toggle-wrapper">
+                      <div
+                        id="dwarf-gender-buttons"
+                        class="gender-toggle"
+                        role="radiogroup"
+                        aria-label="Select gender"
+                        data-draggable-id="gender-toggle"
+                      >
+                        <button
+                          type="button"
+                          class="gender-toggle-button gender-toggle-button--female"
+                          data-gender-value="female"
+                          role="radio"
+                          aria-checked="true"
+                        >
+                          <img
+                            src="tilesheet/gender-button-female.png"
+                            alt="Female"
+                            width="87"
+                            height="88"
+                            loading="lazy"
+                          />
+                        </button>
+                        <button
+                          type="button"
+                          class="gender-toggle-button gender-toggle-button--male"
+                          data-gender-value="male"
+                          role="radio"
+                          aria-checked="false"
+                        >
+                          <img
+                            src="tilesheet/gender-button-male.png"
+                            alt="Male"
+                            width="87"
+                            height="88"
+                            loading="lazy"
+                          />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="field-group" data-draggable-id="field-profession">
+                    <label for="dwarf-profession-select" class="field-label">Profession</label>
+                    <select id="dwarf-profession-select" class="field-control">
+                      <option value="miner">Miner</option>
+                      <option value="mason">Master Mason</option>
+                      <option value="smith">Master Smith</option>
+                      <option value="brewer">Brewmaster</option>
+                      <option value="engineer">Chief Engineer</option>
+                      <option value="scholar">Lore Scholar</option>
+                      <option value="ranger">Ranger Captain</option>
+                      <option value="carpenter">Master Carpenter</option>
+                      <option value="gemcutter">Gemcutter</option>
+                    </select>
+                  </div>
+
+                  <div class="field-group" data-draggable-id="field-clan">
+                    <label for="dwarf-clan-select" class="field-label">Clan</label>
+                    <select id="dwarf-clan-select" class="field-control">
+                      <option value="ironfist">Ironfist</option>
+                      <option value="coppervein">Coppervein</option>
+                      <option value="graniteheart">Graniteheart</option>
+                      <option value="deepdelver">Deepdelver</option>
+                      <option value="amberpick">Amberpick</option>
+                      <option value="oakenshield">Oakenshield</option>
+                      <option value="frosthammer">Frosthammer</option>
+                      <option value="berylbraid">Berylbraid</option>
+                      <option value="silverhollow">Silverhollow</option>
+                    </select>
+                  </div>
+
+                </div>
+
+              </div>
+            </div>
+          </section>
+          <aside class="customizer-sidebar" aria-label="Body panel">
+            <div class="customizer-sidebar__name pixel-bar">
+              <div class="dwarf-slot-info" aria-labelledby="founder-name-label">
+                <p id="dwarf-slot-label" class="slot-label" aria-live="polite"></p>
+                <label
+                  id="founder-name-label"
+                  class="field-label sr-only"
+                  for="dwarf-name-input"
+                  >Founder name</label
+                >
+                <div class="dwarf-name-nav">
+                  <button
+                    type="button"
+                    id="dwarf-prev"
+                    class="secondary dwarf-nav-button dwarf-nav-button--prev"
+                    aria-label="Previous name"
+                  >
+                    <span class="dwarf-nav-icon" aria-hidden="true"></span>
+                  </button>
+                  <div class="dwarf-name-field">
+                    <input
+                      type="text"
+                      id="dwarf-name-input"
+                      class="dwarf-name-input"
+                      maxlength="40"
+                      autocomplete="off"
+                      required
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    id="dwarf-next"
+                    class="secondary dwarf-nav-button dwarf-nav-button--next"
+                    aria-label="Next name"
+                  >
+                    <span class="dwarf-nav-icon" aria-hidden="true"></span>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="customizer-sidebar__image" aria-hidden="true">
+              <div class="body-panel-frame">
+                <img src="tilesheet/bodypanel.png" alt="" class="body-panel-image" />
+                <canvas
+                  id="dwarf-body-portrait-canvas"
+                  class="dwarf-body-portrait-canvas"
+                  width="444"
+                  height="467"
+                  aria-hidden="true"
+                ></canvas>
+              </div>
+            </div>
+            <div class="customizer-sidebar__actions">
+              <button
+                type="button"
+                id="dwarf-back"
+                class="return-button"
+                data-draggable-id="return-button"
+              >
+                <span class="sr-only">Back</span>
+              </button>
+              <button
+                type="button"
+                id="dwarf-randomise"
+                class="gender-toggle-randomise"
+                aria-label="Randomise dwarf"
+                data-draggable-id="randomise-button"
+              >
+                <span class="randomise-button__dice" aria-hidden="true"></span>
+                <span class="sr-only">Randomise dwarf</span>
+              </button>
+              <button
+                type="submit"
+                class="create-button create-button--inline"
+                data-draggable-id="create-button"
+              >
+                <span class="sr-only">Begin Expedition</span>
+              </button>
+            </div>
+          </aside>
+        </div>
+      </form>
+    </section>
+
+    <div id="game-container" class="screen hidden">
+      <header class="game-ui">
+        <div class="controls">
+          <button id="regenerate-button" class="primary">Regenerate</button>
+          <button id="in-game-options" class="secondary">Options</button>
+          <button
+            id="toggle-political-borders"
+            class="secondary"
+            type="button"
+            aria-pressed="false"
+          >
+            Show Borders
+          </button>
+          <button
+            id="toggle-political-influence"
+            class="secondary"
+            type="button"
+            aria-pressed="false"
+          >
+            Show Cultural Influence
+          </button>
+          <button
+            id="toggle-elevation"
+            class="secondary"
+            type="button"
+            aria-pressed="false"
+          >
+            Show Elevation
+          </button>
+          <button
+            id="toggle-biomes"
+            class="secondary"
+            type="button"
+            aria-pressed="false"
+          >
+            Show Biomes
+          </button>
+          <button
+            id="toggle-temperature"
+            class="secondary"
+            type="button"
+            aria-pressed="false"
+          >
+            Show Temperature
+          </button>
+          <button
+            id="toggle-location-labels"
+            class="secondary"
+            type="button"
+            aria-pressed="false"
+          >
+            Show Location Labels
+          </button>
+          <div class="structure-highlight-control">
+            <button
+              id="toggle-structure-highlights"
+              class="secondary structure-highlight-toggle"
+              type="button"
+              aria-expanded="false"
+              aria-haspopup="true"
+              aria-controls="structure-highlight-menu"
+            >
+              Show Highlights
+            </button>
+            <div
+              id="structure-highlight-menu"
+              class="structure-highlight-menu"
+              role="group"
+              aria-label="Structure highlights"
+              aria-hidden="true"
+              tabindex="-1"
+            >
+              <p class="structure-highlight-menu__hint">
+                Select the structures you want to glow on the world map.
+              </p>
+              <!-- Structure highlight options are populated dynamically -->
+            </div>
+          </div>
+          <div class="map-editor-controls">
+            <button
+              id="toggle-map-editor"
+              class="secondary"
+              type="button"
+              aria-pressed="false"
+              aria-expanded="false"
+              aria-controls="map-editor"
+            >
+              Edit Map
+            </button>
+            <section
+              id="map-editor"
+              class="map-editor hidden"
+              aria-hidden="true"
+              aria-label="World map editor"
+            >
+              <header class="map-editor__header">
+                <h3 class="map-editor__title">Map Editor</h3>
+                <button
+                  type="button"
+                  id="map-editor-close"
+                  class="tertiary map-editor__close"
+                >
+                  Done
+                </button>
+              </header>
+              <div class="map-editor__grid">
+                <label class="map-editor__field" for="map-editor-terrain">
+                  Terrain tile
+                  <input
+                    id="map-editor-terrain"
+                    name="mapEditorTerrain"
+                    type="text"
+                    inputmode="text"
+                    autocapitalize="characters"
+                    spellcheck="false"
+                    list="map-editor-terrain-options"
+                    placeholder="GRASS"
+                  />
+                </label>
+                <label class="map-editor__toggle">
+                  <input
+                    id="map-editor-apply-terrain"
+                    type="checkbox"
+                    checked
+                  />
+                  Apply terrain
+                </label>
+                <label class="map-editor__field" for="map-editor-structure">
+                  Structure
+                  <input
+                    id="map-editor-structure"
+                    name="mapEditorStructure"
+                    type="text"
+                    inputmode="text"
+                    autocapitalize="characters"
+                    spellcheck="false"
+                    list="map-editor-structure-options"
+                    placeholder="None"
+                  />
+                </label>
+                <label class="map-editor__toggle">
+                  <input id="map-editor-apply-structure" type="checkbox" />
+                  Apply structure
+                </label>
+                <label class="map-editor__field" for="map-editor-brush-size">
+                  Brush size
+                  <input
+                    id="map-editor-brush-size"
+                    name="mapEditorBrushSize"
+                    type="number"
+                    min="1"
+                    max="9"
+                    step="1"
+                    value="1"
+                  />
+                </label>
+                <button
+                  type="button"
+                  id="map-editor-clear-structure"
+                  class="secondary map-editor__clear"
+                >
+                  Clear structure
+                </button>
+              </div>
+              <p class="map-editor__hint">
+                Click and drag on the world map to paint with the selected options.
+              </p>
+              <datalist id="map-editor-terrain-options"></datalist>
+              <datalist id="map-editor-structure-options"></datalist>
+            </section>
+          </div>
+        </div>
+        <div class="audio-controls" role="region" aria-label="Music controls">
+          <button id="music-toggle-game" type="button" class="secondary">Play Music</button>
+          <label class="volume-control" for="music-volume-game">
+            Volume
+            <input
+              id="music-volume-game"
+              type="range"
+              min="0"
+              max="1"
+              step="0.01"
+              value="0.5"
+            />
+          </label>
+          <div id="music-now-playing-game" class="now-playing" aria-live="polite"></div>
+        </div>
+        <div class="seed-display" aria-live="polite"></div>
+      </header>
+      <main class="canvas-wrapper" tabindex="-1">
+        <canvas id="world-canvas" width="6400" height="4800"></canvas>
+        <div id="world-tooltip" class="map-tooltip" aria-hidden="true"></div>
+        <div
+          id="structure-context-menu"
+          class="context-menu"
+          role="menu"
+          aria-hidden="true"
+        >
+          <button
+            id="structure-context-menu-begin"
+            type="button"
+            class="context-menu__item"
+            role="menuitem"
+          >
+            Begin your journey here
+          </button>
+          <button
+            id="structure-context-menu-more-info"
+            type="button"
+            class="context-menu__item"
+            role="menuitem"
+          >
+            More information
+          </button>
+        </div>
+      </main>
+      <aside
+        id="local-map-panel"
+        class="local-map-panel hidden"
+        aria-live="polite"
+        aria-hidden="true"
+      >
+        <div class="local-map-header">
+          <div class="local-map-header-text">
+            <h2 id="local-map-title">Local View</h2>
+            <p id="local-map-subtitle" class="local-map-subtitle">
+              Select a site to examine the surrounding terrain.
+            </p>
+          </div>
+          <div class="local-map-header-actions">
+            <div
+              class="local-map-zoom-controls"
+              role="group"
+              aria-label="Local map zoom controls"
+            >
+              <button id="local-map-zoom-out" type="button" class="tertiary" aria-label="Zoom out">
+                −
+              </button>
+              <button id="local-map-zoom-reset" type="button" class="tertiary" aria-label="Reset zoom">
+                1×
+              </button>
+              <button id="local-map-zoom-in" type="button" class="tertiary" aria-label="Zoom in">
+                +
+              </button>
+            </div>
+            <button id="local-map-close" type="button" class="secondary" aria-label="Close local map">
+              Close
+            </button>
+          </div>
+        </div>
+        <canvas
+          id="local-map-canvas"
+          class="local-map-canvas"
+          width="320"
+          height="320"
+          role="img"
+          aria-hidden="true"
+          aria-label="Local map preview"
+        ></canvas>
+        <p id="local-map-coordinates" class="local-map-coordinates"></p>
+        <div id="local-map-details" class="local-map-details">
+          Click the world map to open a local preview.
+        </div>
+      </aside>
+      <section
+        id="structure-details"
+        class="modal hidden"
+        role="dialog"
+        aria-modal="true"
+        aria-hidden="true"
+        aria-labelledby="structure-details-title"
+      >
+        <nav
+          class="structure-details-tabs"
+          aria-label="Settlement information views"
+        >
+          <button
+            type="button"
+            class="structure-details-tab is-active"
+            data-tab-id="history"
+            aria-controls="structure-details-content"
+            aria-current="page"
+          >
+            History
+          </button>
+          <button
+            type="button"
+            class="structure-details-tab"
+            data-tab-id="main"
+            aria-controls="structure-details-content"
+            aria-current="false"
+          >
+            Main
+          </button>
+          <button
+            type="button"
+            class="structure-details-tab"
+            data-tab-id="features"
+            aria-controls="structure-details-content"
+            aria-current="false"
+          >
+            Features
+          </button>
+          <button
+            type="button"
+            class="structure-details-tab"
+            data-tab-id="economy"
+            aria-controls="structure-details-content"
+            aria-current="false"
+          >
+            Economy
+          </button>
+        </nav>
+        <div class="modal-header">
+          <div class="structure-details-titles">
+            <h2 id="structure-details-title">Structure Details</h2>
+            <p id="structure-details-subtitle" class="structure-details-subtitle hidden"></p>
+          </div>
+          <button id="structure-details-close" type="button" aria-label="Close details">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div id="structure-details-content" class="structure-details-content" aria-live="polite"></div>
+      </section>
+    </div>
+
+    <section
+      id="dwarfhold-screen"
+      class="screen hidden dwarfhold-screen"
+      aria-hidden="true"
+      aria-labelledby="dwarfhold-title"
+      aria-describedby="dwarfhold-description"
+    >
+      <div class="dwarfhold-backdrop" aria-hidden="true"></div>
+      <div class="dwarfhold-panel">
+        <header class="dwarfhold-header">
+          <div class="dwarfhold-titles">
+            <p class="dwarfhold-eyebrow">Embark Site</p>
+            <h2 id="dwarfhold-title">Dwarven Hold Interior</h2>
+            <p id="dwarfhold-subtitle" class="dwarfhold-subtitle"></p>
+          </div>
+          <div class="dwarfhold-actions">
+            <p id="dwarfhold-coordinates" class="dwarfhold-coordinates"></p>
+            <button id="dwarfhold-exit" type="button" class="secondary">
+              Return to World Map
+            </button>
+          </div>
+        </header>
+        <div class="dwarfhold-layout">
+          <div class="dwarfhold-map" role="group" aria-label="Dwarven hold interior map">
+            <canvas
+              id="dwarfhold-canvas"
+              class="dwarfhold-canvas"
+              width="640"
+              height="480"
+              role="img"
+              aria-hidden="true"
+            ></canvas>
+          </div>
+          <aside class="dwarfhold-info" aria-live="polite">
+            <p id="dwarfhold-description" class="dwarfhold-description"></p>
+            <section class="dwarfhold-section" aria-labelledby="dwarfhold-features-title">
+              <h3 id="dwarfhold-features-title" class="dwarfhold-section-title">Notable Features</h3>
+              <ul id="dwarfhold-features" class="dwarfhold-feature-list" aria-live="polite"></ul>
+            </section>
+            <section class="dwarfhold-section" aria-labelledby="dwarfhold-legend-title">
+              <h3 id="dwarfhold-legend-title" class="dwarfhold-section-title">Legend</h3>
+              <ul id="dwarfhold-legend" class="dwarfhold-legend-list"></ul>
+            </section>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <div
+      id="loading-screen"
+      class="loading-screen hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-hidden="true"
+      aria-live="assertive"
+      aria-labelledby="loading-title"
+    >
+      <div class="loading-panel" tabindex="-1">
+        <p class="loading-eyebrow">Preparing Expedition</p>
+        <h2 id="loading-title" class="loading-title">Forging Your World</h2>
+        <p id="loading-status" class="loading-status">Calculating terrain layers…</p>
+        <div
+          id="loading-progress"
+          class="loading-progress"
+          role="progressbar"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          aria-valuenow="0"
+        >
+          <div id="loading-progress-fill" class="loading-progress__fill"></div>
+        </div>
+        <p class="loading-hint">Please wait while the realm is generated.</p>
+      </div>
+    </div>
+
+    <audio id="background-music" preload="auto" aria-hidden="true" tabindex="-1"></audio>
+    <audio
+      id="structure-ambience"
+      preload="auto"
+      aria-hidden="true"
+      tabindex="-1"
+      loop
+    ></audio>
+    <script src="loader.js" defer></script>
+  </body>
+</html>
