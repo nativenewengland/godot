@@ -223,7 +223,9 @@ func _on_embark_pressed() -> void:
 	if world_name_input.text.strip_edges().is_empty():
 		world_name_input.text = _generate_world_name()
 	_refresh_summary()
-	embark_requested.emit(_build_settings_payload())
+	var final_settings := _build_settings_payload()
+	embark_requested.emit(final_settings)
+	get_tree().change_scene_to_file("res://scenes/character_creator.tscn")
 
 func _build_settings_payload() -> Dictionary:
 	var settings := {
