@@ -1,4 +1,3 @@
-class_name GameSession
 extends Node
 
 var world_settings: Dictionary = {}
