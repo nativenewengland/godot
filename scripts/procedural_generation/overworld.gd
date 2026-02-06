@@ -131,6 +131,7 @@ func _ready() -> void:
 	recreate_noise.connect(rebuild)
 	recreate_paint.connect(paint)
 	Seeder.instance.seed_changed.connect(rebuild)
+	rebuild()
 
 func _setup_secondary_noise() -> void:
 	var curr_seed := Seeder.instance.current_seed
