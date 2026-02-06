@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://c58eb7bef55if" path="res://scripts/procedural_generation/seeder.gd" id="1_gxyk0"]
 [ext_resource type="Script" uid="uid://cqackqu1w0by4" path="res://scripts/procedural_generation/overworld.gd" id="2_wpqau"]
 [ext_resource type="PackedScene" uid="uid://cqbjdovq774ym" path="res://assets/tile_map_layer.tscn" id="3_wpqau"]
-[ext_resource type="Script" path="res://scripts/world_generation/overworld_camera.gd" id="4_b4c7q"]
+[ext_resource type="Script" uid="uid://cw8vkq82hxmv2" path="res://scripts/world_generation/overworld_camera.gd" id="4_b4c7q"]
 
 [node name="OverworldRoot" type="Node2D" unique_id=732665136]
 
@@ -11,9 +11,10 @@
 
 [node name="Control" type="Control" parent="CanvasLayer" unique_id=1816009667]
 layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
+anchor_right = 7.1130004
+anchor_bottom = 8.52
+offset_right = -0.17675781
+offset_bottom = 0.03955078
 grow_horizontal = 2
 grow_vertical = 2
 
@@ -26,10 +27,6 @@ theme_override_constants/margin_left = 25
 theme_override_constants/margin_top = 25
 theme_override_constants/margin_right = 25
 theme_override_constants/margin_bottom = 25
-
-[node name="TextureRect" type="TextureRect" parent="CanvasLayer/Control/MarginContainer" unique_id=803182702]
-layout_mode = 2
-expand_mode = 2
 
 [node name="MarginContainer2" type="MarginContainer" parent="CanvasLayer/Control" unique_id=1269710421]
 layout_mode = 1
@@ -47,21 +44,16 @@ theme_override_constants/margin_bottom = 25
 [node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/Control/MarginContainer2" unique_id=1209090727]
 layout_mode = 2
 
-[node name="LineEdit" type="LineEdit" parent="CanvasLayer/Control/MarginContainer2/VBoxContainer" unique_id=1066730122]
-layout_mode = 2
-placeholder_text = "seed"
-
-
 [node name="Seeder" type="Node" parent="." unique_id=1364084117 node_paths=PackedStringArray("seed_input")]
 script = ExtResource("1_gxyk0")
-seed_input = NodePath("../CanvasLayer/Control/MarginContainer2/VBoxContainer/LineEdit")
+seed_input = NodePath("")
 seed_not_random = true
 seed_global = &"seed_for_testing"
 metadata/_custom_type_script = "uid://c58eb7bef55if"
 
 [node name="Overworld" type="Node" parent="." unique_id=1761992411 node_paths=PackedStringArray("debug_sprite", "tilemap_container")]
 script = ExtResource("2_wpqau")
-debug_sprite = NodePath("../CanvasLayer/Control/MarginContainer/TextureRect")
+debug_sprite = NodePath("")
 fractal_detail = 0.616
 fractal_size = 2.094
 water_ocurrence = 0.45
@@ -78,7 +70,8 @@ metadata/_custom_type_script = "uid://cqackqu1w0by4"
 [node name="Node2D" type="Node2D" parent="Overworld" unique_id=108315763]
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=476351455]
-position = Vector2(80, 98)
+position = Vector2(3977, 2577)
 anchor_mode = 0
 zoom = Vector2(0.278, 0.278)
 script = ExtResource("4_b4c7q")
+zoom_step = 0.0
