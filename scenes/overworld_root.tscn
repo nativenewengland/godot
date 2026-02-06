@@ -74,4 +74,4 @@ position = Vector2(3977, 2577)
 anchor_mode = 0
 zoom = Vector2(0.278, 0.278)
 script = ExtResource("4_b4c7q")
-zoom_step = 0.0
+zoom_step = 0.1
