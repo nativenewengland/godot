@@ -59,7 +59,7 @@ theme_override_constants/margin_top = 24
 theme_override_constants/margin_right = 24
 theme_override_constants/margin_bottom = 24
 
-[node name="MainColumns" type="HBoxContainer" parent="MarginContainer" unique_id=1112246630]
+[node name="MainColumns" type="VBoxContainer" parent="MarginContainer" unique_id=1112246630]
 layout_mode = 2
 theme_override_constants/separation = 24
 
@@ -267,174 +267,165 @@ unique_name_in_owner = true
 layout_mode = 2
 text = "Apply World Options"
 
-[node name="WorldInfoPanel" type="PanelContainer" parent="MarginContainer/MainColumns" unique_id=914687903]
+[node name="EmbarkSeparator" type="HSeparator" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent"]
 layout_mode = 2
-size_flags_horizontal = 3
-theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
-[node name="InfoPadding" type="MarginContainer" parent="MarginContainer/MainColumns/WorldInfoPanel" unique_id=1907143071]
-layout_mode = 2
-theme_override_constants/margin_left = 20
-theme_override_constants/margin_top = 20
-theme_override_constants/margin_right = 20
-theme_override_constants/margin_bottom = 20
-
-[node name="InfoRoot" type="VBoxContainer" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding" unique_id=140136463]
+[node name="InfoRoot" type="VBoxContainer" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent" unique_id=140136463]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="InfoTitle" type="Label" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot" unique_id=1672386529]
+[node name="InfoTitle" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/InfoRoot" unique_id=1672386529]
 layout_mode = 2
 text = "EMBARK PREPARATION / READY THE EXPEDITION"
 
-[node name="InfoGrid" type="GridContainer" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot" unique_id=1958617536]
+[node name="InfoGrid" type="GridContainer" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/InfoRoot" unique_id=1958617536]
 layout_mode = 2
 theme_override_constants/h_separation = 16
 theme_override_constants/v_separation = 12
 columns = 2
 
-[node name="SummaryColumn" type="VBoxContainer" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid" unique_id=1168044956]
+[node name="SummaryColumn" type="VBoxContainer" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/InfoRoot/InfoGrid" unique_id=1168044956]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="SummaryHeader" type="Label" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/SummaryColumn" unique_id=1223407497]
+[node name="SummaryHeader" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/InfoRoot/InfoGrid/SummaryColumn" unique_id=1223407497]
 layout_mode = 2
 text = "SUMMARY"
 
-[node name="SummaryMapSizeLabel" type="Label" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/SummaryColumn" unique_id=1033741702]
+[node name="SummaryMapSizeLabel" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/InfoRoot/InfoGrid/SummaryColumn" unique_id=1033741702]
 layout_mode = 2
 text = "MAP SIZE"
 
-[node name="SummaryMapSize" type="Label" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/SummaryColumn" unique_id=418111992]
+[node name="SummaryMapSize" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/InfoRoot/InfoGrid/SummaryColumn" unique_id=418111992]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Medium"
 
-[node name="SummaryLayoutLabel" type="Label" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/SummaryColumn" unique_id=331460089]
+[node name="SummaryLayoutLabel" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/InfoRoot/InfoGrid/SummaryColumn" unique_id=331460089]
 layout_mode = 2
 text = "WORLD LAYOUT"
 
-[node name="SummaryLayout" type="Label" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/SummaryColumn" unique_id=832403525]
+[node name="SummaryLayout" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/InfoRoot/InfoGrid/SummaryColumn" unique_id=832403525]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Normal"
 
-[node name="SummarySeedLabel" type="Label" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/SummaryColumn" unique_id=1815686630]
+[node name="SummarySeedLabel" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/InfoRoot/InfoGrid/SummaryColumn" unique_id=1815686630]
 layout_mode = 2
 text = "WORLD SEED"
 
-[node name="SummarySeed" type="Label" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/SummaryColumn" unique_id=538505627]
+[node name="SummarySeed" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/InfoRoot/InfoGrid/SummaryColumn" unique_id=538505627]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="SummaryChronologyLabel" type="Label" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/SummaryColumn" unique_id=1351161023]
+[node name="SummaryChronologyLabel" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/InfoRoot/InfoGrid/SummaryColumn" unique_id=1351161023]
 layout_mode = 2
 text = "CHRONOLOGY"
 
-[node name="SummaryChronology" type="Label" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/SummaryColumn" unique_id=2023318804]
+[node name="SummaryChronology" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/InfoRoot/InfoGrid/SummaryColumn" unique_id=2023318804]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Year 250 · Age of Discovery"
 
-[node name="SummaryWorldNameLabel" type="Label" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/SummaryColumn" unique_id=1967751802]
+[node name="SummaryWorldNameLabel" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/InfoRoot/InfoGrid/SummaryColumn" unique_id=1967751802]
 layout_mode = 2
 text = "WORLD NAME"
 
-[node name="SummaryWorldName" type="Label" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/SummaryColumn" unique_id=1669841189]
+[node name="SummaryWorldName" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/InfoRoot/InfoGrid/SummaryColumn" unique_id=1669841189]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="FormColumn" type="VBoxContainer" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid" unique_id=1998464230]
+[node name="FormColumn" type="VBoxContainer" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/InfoRoot/InfoGrid" unique_id=1998464230]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="HeroImage" type="ColorRect" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/FormColumn" unique_id=1026323628]
+[node name="HeroImage" type="ColorRect" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/InfoRoot/InfoGrid/FormColumn" unique_id=1026323628]
 custom_minimum_size = Vector2(0, 120)
 layout_mode = 2
 color = Color(0.17, 0.2, 0.27, 0.9)
 
-[node name="YearLabel" type="Label" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/FormColumn" unique_id=1281490943]
+[node name="YearLabel" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/InfoRoot/InfoGrid/FormColumn" unique_id=1281490943]
 layout_mode = 2
 text = "YEAR"
 
-[node name="YearInput" type="SpinBox" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/FormColumn" unique_id=1115695521]
+[node name="YearInput" type="SpinBox" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/InfoRoot/InfoGrid/FormColumn" unique_id=1115695521]
 unique_name_in_owner = true
 layout_mode = 2
 min_value = 1.0
 max_value = 9999.0
 value = 250.0
 
-[node name="AgeLabel" type="Label" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/FormColumn" unique_id=952185452]
+[node name="AgeLabel" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/InfoRoot/InfoGrid/FormColumn" unique_id=952185452]
 layout_mode = 2
 text = "AGE"
 
-[node name="AgeRow" type="HBoxContainer" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/FormColumn" unique_id=565873004]
+[node name="AgeRow" type="HBoxContainer" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/InfoRoot/InfoGrid/FormColumn" unique_id=565873004]
 layout_mode = 2
 
-[node name="AgeSelect" type="OptionButton" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/FormColumn/AgeRow" unique_id=874474001]
+[node name="AgeSelect" type="OptionButton" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/InfoRoot/InfoGrid/FormColumn/AgeRow" unique_id=874474001]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="RandomiseChronologyButton" type="Button" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/FormColumn/AgeRow" unique_id=1285374946]
+[node name="RandomiseChronologyButton" type="Button" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/InfoRoot/InfoGrid/FormColumn/AgeRow" unique_id=1285374946]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Randomise"
 
-[node name="MapSizeInfoLabel" type="Label" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/FormColumn" unique_id=1166435347]
+[node name="MapSizeInfoLabel" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/InfoRoot/InfoGrid/FormColumn" unique_id=1166435347]
 layout_mode = 2
 text = "MAP SIZE"
 
-[node name="MapSizeInfo" type="OptionButton" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/FormColumn" unique_id=1528028493]
+[node name="MapSizeInfo" type="OptionButton" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/InfoRoot/InfoGrid/FormColumn" unique_id=1528028493]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="LayoutInfoLabel" type="Label" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/FormColumn" unique_id=83571902]
+[node name="LayoutInfoLabel" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/InfoRoot/InfoGrid/FormColumn" unique_id=83571902]
 layout_mode = 2
 text = "WORLD LAYOUT"
 
-[node name="WorldLayoutInfo" type="OptionButton" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/FormColumn" unique_id=729202822]
+[node name="WorldLayoutInfo" type="OptionButton" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/InfoRoot/InfoGrid/FormColumn" unique_id=729202822]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="SeedInfoLabel" type="Label" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/FormColumn" unique_id=2083142342]
+[node name="SeedInfoLabel" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/InfoRoot/InfoGrid/FormColumn" unique_id=2083142342]
 layout_mode = 2
 text = "WORLD SEED"
 
-[node name="WorldSeedInfo" type="LineEdit" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/FormColumn" unique_id=932412362]
+[node name="WorldSeedInfo" type="LineEdit" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/InfoRoot/InfoGrid/FormColumn" unique_id=932412362]
 unique_name_in_owner = true
 layout_mode = 2
 placeholder_text = "Enter seed"
 
-[node name="WorldNameLabel" type="Label" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/FormColumn" unique_id=2041540112]
+[node name="WorldNameLabel" type="Label" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/InfoRoot/InfoGrid/FormColumn" unique_id=2041540112]
 layout_mode = 2
 text = "WORLD NAME"
 
-[node name="WorldNameRow" type="HBoxContainer" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/FormColumn" unique_id=948965295]
+[node name="WorldNameRow" type="HBoxContainer" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/InfoRoot/InfoGrid/FormColumn" unique_id=948965295]
 layout_mode = 2
 
-[node name="WorldNameInput" type="LineEdit" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/FormColumn/WorldNameRow" unique_id=1466330968]
+[node name="WorldNameInput" type="LineEdit" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/InfoRoot/InfoGrid/FormColumn/WorldNameRow" unique_id=1466330968]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "World name"
 
-[node name="RandomiseWorldNameButton" type="Button" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/InfoGrid/FormColumn/WorldNameRow" unique_id=393819284]
+[node name="RandomiseWorldNameButton" type="Button" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/InfoRoot/InfoGrid/FormColumn/WorldNameRow" unique_id=393819284]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Randomise"
 
-[node name="Actions" type="HBoxContainer" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot" unique_id=324406414]
+[node name="Actions" type="HBoxContainer" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/InfoRoot" unique_id=324406414]
 layout_mode = 2
 theme_override_constants/separation = 10
 alignment = 2
 
-[node name="BackButton" type="Button" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/Actions" unique_id=1261001353]
+[node name="BackButton" type="Button" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/InfoRoot/Actions" unique_id=1261001353]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Back"
 
-[node name="EmbarkButton" type="Button" parent="MarginContainer/MainColumns/WorldInfoPanel/InfoPadding/InfoRoot/Actions" unique_id=1133943083]
+[node name="EmbarkButton" type="Button" parent="MarginContainer/MainColumns/WorldGenerationCard/CardPadding/CardContent/InfoRoot/Actions" unique_id=1133943083]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Embark"
