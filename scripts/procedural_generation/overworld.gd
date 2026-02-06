@@ -1,3 +1,5 @@
+const DwarfholdLogic := preload("res://scripts/world_generation/dwarfhold_logic.gd")
+
 @tool
 class_name Overworld
 extends ProceduralGeneration
@@ -97,8 +99,33 @@ var _curr_image: Image
 var _height_noise: FastNoiseLite
 var _temperature_noise: FastNoiseLite
 var _rainfall_noise: FastNoiseLite
+var _biome_map: Dictionary[Vector2i, String] = {}
+var settlement_map: Dictionary[Vector2i, Dictionary] = {}
+
+func apply_world_settings(settings: Dictionary) -> void:
+	if settings.is_empty():
+		return
+
+	if settings.has("map_dimensions"):
+		var dims: Vector2i = settings["map_dimensions"]
+		tile_map_size = dims
+		size = dims * 2
+
+	var terrain := settings.get("terrain_ratios", {})
+	water_ocurrence = clampf(0.20 + float(terrain.get("river", 0.5)) * 0.2, 0.2, 0.55)
+	mountain_ocurrence = clampf(0.55 + float(terrain.get("mountain", 0.5)) * 0.35, water_ocurrence + 0.05, 0.92)
+	river_sources = int(roundi(6 + float(terrain.get("river", 0.5)) * 26))
+	river_max_distance = 25.0 + float(terrain.get("river", 0.5)) * 90.0
+	marsh_threshold = clampf(0.55 + float(terrain.get("forest", 0.5)) * 0.2, 0.45, 0.9)
+	arid_threshold = clampf(0.2 + (1.0 - float(terrain.get("forest", 0.5))) * 0.4, 0.1, 0.7)
+
+func _apply_cached_world_settings() -> void:
+	var game_session := get_node_or_null("/root/GameSession")
+	if game_session:
+		apply_world_settings(game_session.get_world_settings())
 
 func _ready() -> void:
+	_apply_cached_world_settings()
 	super ()
 	_setup_secondary_noise()
 	recreate_noise.connect(rebuild)
@@ -220,6 +247,8 @@ func _generate_rivers(curr_size: Vector2i) -> void:
 func generate_gridmap(to_paint: Image) -> void:
 	var curr_seed := Seeder.instance.current_seed
 	var curr_size := to_paint.get_size()
+	_biome_map.clear()
+	settlement_map.clear()
 	_rng = RandomNumberGenerator.new()
 	_rng.seed = curr_seed
 
@@ -232,28 +261,80 @@ func generate_gridmap(to_paint: Image) -> void:
 
 			if elevation < water_ocurrence:
 				grid_map[curr_vec] = water_coords
+				_biome_map[curr_vec] = "water"
 				to_paint.set_pixel(x, y, WATER_COLOR)
 			elif elevation < water_ocurrence + coast_width:
 				grid_map[curr_vec] = sand_coords
+				_biome_map[curr_vec] = "sand"
 				to_paint.set_pixel(x, y, SAND_COLOR)
 			elif elevation > mountain_ocurrence:
 				grid_map[curr_vec] = mountain_coords
+				_biome_map[curr_vec] = "mountain"
 				to_paint.set_pixel(x, y, MOUNTAIN_COLOR)
 			elif temperature < snow_line:
 				grid_map[curr_vec] = snow_coords
+				_biome_map[curr_vec] = "snow"
 				to_paint.set_pixel(x, y, SNOW_COLOR)
 			elif rainfall < arid_threshold && temperature > 0.5:
 				grid_map[curr_vec] = badlands_coords
+				_biome_map[curr_vec] = "badlands"
 				to_paint.set_pixel(x, y, BADLANDS_COLOR)
 			elif rainfall > marsh_threshold && elevation < mountain_ocurrence * 0.8:
 				grid_map[curr_vec] = marsh_coords
+				_biome_map[curr_vec] = "marsh"
 				to_paint.set_pixel(x, y, MARSH_COLOR)
 			else:
 				grid_map[curr_vec] = grass_coords
+				_biome_map[curr_vec] = "grass"
 				to_paint.set_pixel(x, y, LAND_COLOR)
 
 	_generate_rivers(curr_size)
+	_generate_settlements(curr_size)
 
+func _generate_settlements(curr_size: Vector2i) -> void:
+	var settings := {}
+	var game_session := get_node_or_null("/root/GameSession")
+	if game_session:
+		settings = game_session.get_world_settings()
+	var settlement_ratios := settings.get("settlement_ratios", {})
+	if settlement_ratios.is_empty():
+		settlement_ratios = {"humans": 0.5, "dwarves": 0.5, "wood_elves": 0.5, "lizardmen": 0.5}
+
+	var candidates: Array = []
+	for y in curr_size.y:
+		for x in curr_size.x:
+			var c := Vector2i(x, y)
+			if _biome_map.get(c, "") == "water":
+				continue
+			candidates.append({"coord": c, "biome": _biome_map.get(c, "grass")})
+
+	for faction_key: String in DwarfholdLogic.SETTLEMENT_TYPES.keys():
+		var ratio := float(settlement_ratios.get(faction_key, 0.5))
+		var target_count := int(roundi(1 + ratio * 4))
+		var faction_type: String = DwarfholdLogic.SETTLEMENT_TYPES[faction_key]
+		for _i in range(target_count):
+			var coord := DwarfholdLogic.choose_tile_for_capital(faction_type, candidates, _rng)
+			if coord.x < 0:
+				continue
+			if settlement_map.has(coord):
+				continue
+			settlement_map[coord] = {"faction": faction_key, "type": faction_type}
+			_debug_colorize_settlement(coord, faction_key)
+
+func _debug_colorize_settlement(coord: Vector2i, faction_key: String) -> void:
+	if !_curr_image:
+		return
+	var color := Color.WHITE
+	match faction_key:
+		"humans":
+			color = Color(0.96, 0.91, 0.52)
+		"dwarves":
+			color = Color(0.95, 0.59, 0.22)
+		"wood_elves":
+			color = Color(0.35, 0.9, 0.45)
+		"lizardmen":
+			color = Color(0.25, 0.82, 0.73)
+	_curr_image.set_pixel(coord.x, coord.y, color)
 
 func paint() -> void:
 	if !_noise:

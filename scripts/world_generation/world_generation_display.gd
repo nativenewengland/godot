@@ -1,10 +1,13 @@
 extends Control
 
+const DwarfholdLogic := preload("res://scripts/world_generation/dwarfhold_logic.gd")
+
 signal world_options_applied(settings: Dictionary, regenerate_realm: bool)
 signal back_requested
 signal embark_requested(final_settings: Dictionary)
 
 const MAP_SIZES := ["Mini", "Small", "Medium", "Large", "Extra Large"]
+const MAP_SIZE_KEYS := ["mini", "small", "normal", "large", "extra-large"]
 const WORLD_LAYOUTS := ["Normal", "Major Continent", "Twin Continents", "Inland Sea", "Archipelago"]
 const WORLD_AGES := ["Age of Myth", "Age of Heroes", "Age of Discovery", "Age of Discord", "Age of Ember"]
 
@@ -204,7 +207,9 @@ func _on_apply_options_pressed() -> void:
 		world_seed_options.text = _generate_seed()
 	_sync_option_values_to_info()
 	_refresh_summary()
-	world_options_applied.emit(_build_settings_payload(), regenerate_realm_checkbox.button_pressed)
+	var settings := _build_settings_payload()
+	_store_world_settings(settings)
+	world_options_applied.emit(settings, regenerate_realm_checkbox.button_pressed)
 
 func _on_randomise_chronology_pressed() -> void:
 	year_input.value = randi_range(50, 1250)
@@ -224,12 +229,17 @@ func _on_embark_pressed() -> void:
 		world_name_input.text = _generate_world_name()
 	_refresh_summary()
 	var final_settings := _build_settings_payload()
+	_store_world_settings(final_settings)
 	embark_requested.emit(final_settings)
 	get_tree().change_scene_to_file("res://scenes/character_creator.tscn")
 
 func _build_settings_payload() -> Dictionary:
+	var map_size_key := MAP_SIZE_KEYS[map_size_info.selected]
+	var map_preset := DwarfholdLogic.get_map_preset(map_size_key)
 	var settings := {
-		"map_size": map_size_info.get_item_text(map_size_info.selected),
+		"map_size": map_preset["label"],
+		"map_size_key": map_size_key,
+		"map_dimensions": map_preset["size"],
 		"world_layout": world_layout_info.get_item_text(world_layout_info.selected),
 		"world_seed": world_seed_info.text.strip_edges(),
 		"world_name": world_name_input.text.strip_edges(),
@@ -238,16 +248,20 @@ func _build_settings_payload() -> Dictionary:
 			"age": age_select.get_item_text(age_select.selected)
 		},
 		"terrain": {},
-		"settlements": {}
+		"terrain_ratios": {},
+		"settlements": {},
+		"settlement_ratios": {}
 	}
 
 	for terrain: String in TERRAIN_SLIDERS:
 		var slider: HSlider = get_node(_slider_lookup[terrain]["slider"])
 		settings["terrain"][terrain] = int(slider.value)
+		settings["terrain_ratios"][terrain] = DwarfholdLogic.to_frequency_ratio(slider.value)
 
 	for civilization: String in SETTLEMENT_SLIDERS.keys():
 		var slider: HSlider = get_node(SETTLEMENT_SLIDERS[civilization]["slider"])
 		settings["settlements"][civilization] = int(slider.value)
+		settings["settlement_ratios"][civilization] = DwarfholdLogic.to_frequency_ratio(slider.value)
 
 	return settings
 
@@ -265,3 +279,9 @@ func _generate_world_name() -> String:
 	var prefixes := ["Stone", "Ember", "Mist", "Verdant", "Iron", "Silver", "Dawn", "Night", "Storm", "Sun"]
 	var suffixes := ["reach", "vale", "hollow", "keep", "wilds", "march", "coast", "ridge", "realm", "expanse"]
 	return "%s%s" % [prefixes.pick_random(), suffixes.pick_random()]
+
+
+func _store_world_settings(settings: Dictionary) -> void:
+	var game_session := get_node_or_null("/root/GameSession")
+	if game_session:
+		game_session.set_world_settings(settings)
