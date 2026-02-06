@@ -52,6 +52,7 @@ static func line_coords(from: Vector2i, to: Vector2i) -> Array[Vector2i]:
 
 func _enter_tree() -> void:
 	noise = FastNoiseLite.new()
+	grid_map = {}
 
 func _ready() -> void:
 	assert(Seeder.instance.current_seed, "Seeder did not execute")

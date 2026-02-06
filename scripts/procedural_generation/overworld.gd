@@ -247,6 +247,7 @@ func _generate_rivers(curr_size: Vector2i) -> void:
 func generate_gridmap(to_paint: Image) -> void:
 	var curr_seed := Seeder.instance.current_seed
 	var curr_size := to_paint.get_size()
+	grid_map.clear()
 	_biome_map.clear()
 	settlement_map.clear()
 	_rng = RandomNumberGenerator.new()
