@@ -37,6 +37,9 @@ var _syncing := false
 @onready var apply_options_button: Button = %ApplyOptionsButton
 @onready var regenerate_realm_checkbox: CheckButton = %RegenerateRealmCheck
 
+@onready var advanced_settings_toggle: Button = %AdvancedSettingsToggle
+@onready var advanced_settings_container: VBoxContainer = %AdvancedSettingsContainer
+
 @onready var map_size_info: OptionButton = %MapSizeInfo
 @onready var world_layout_info: OptionButton = %WorldLayoutInfo
 @onready var world_seed_info: LineEdit = %WorldSeedInfo
@@ -74,6 +77,7 @@ func _ready() -> void:
 	_populate_option_buttons()
 	_bind_slider_feedback()
 	_bind_field_sync()
+	_configure_advanced_settings_panel()
 	year_input.value = 250
 	age_select.select(2)
 	if world_seed_options.text.is_empty():
@@ -126,6 +130,14 @@ func _bind_slider_feedback() -> void:
 			label.text = "%d%%" % sanitized
 		)
 		slider.value = 50
+
+func _configure_advanced_settings_panel() -> void:
+	advanced_settings_container.visible = false
+	advanced_settings_toggle.text = "Show Advanced World Controls"
+	advanced_settings_toggle.pressed.connect(func() -> void:
+		advanced_settings_container.visible = not advanced_settings_container.visible
+		advanced_settings_toggle.text = "Hide Advanced World Controls" if advanced_settings_container.visible else "Show Advanced World Controls"
+	)
 
 func _bind_field_sync() -> void:
 	map_size_options.item_selected.connect(func(index: int) -> void:
