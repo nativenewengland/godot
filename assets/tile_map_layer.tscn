@@ -5,10 +5,12 @@
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_land"]
 texture = ExtResource("1_y0hd1")
+texture_region_size = Vector2i(32, 32)
 0:0/0 = 0
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_water"]
 texture = ExtResource("2_7x8ar")
+texture_region_size = Vector2i(32, 32)
 0:0/0 = 0
 
 [sub_resource type="TileSet" id="TileSet_gxyk0"]
