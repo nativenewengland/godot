@@ -5,5 +5,8 @@ extends Button
 
 
 func _ready() -> void:
-	var bound := PortraitCreator.instance.swap_color.bind(what)
+	var creator := PortraitCreator.instance
+	if creator == null:
+		return
+	var bound: Callable = creator.swap_color.bind(what)
 	pressed.connect(bound)

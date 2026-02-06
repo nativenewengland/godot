@@ -294,6 +294,11 @@ func _on_color_changed(value: float, type: Images) -> void:
 	var shader: ShaderMaterial = target_render.material
 	shader.set_shader_parameter(&"colors", _colors)
 
+func swap_color(type: Images) -> void:
+	_selected = type
+	var shader: ShaderMaterial = target_render.material
+	shader.set_shader_parameter(&"colors", _colors)
+
 func _on_gamma_changed(value: float) -> void:
 	_colors[_selected].z = value
 	var shader: ShaderMaterial = target_render.material

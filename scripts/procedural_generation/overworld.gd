@@ -1,8 +1,8 @@
-const DwarfholdLogic := preload("res://scripts/world_generation/dwarfhold_logic.gd")
-
 @tool
 class_name Overworld
 extends ProceduralGeneration
+
+const DWARFHOLD_LOGIC := preload("res://scripts/world_generation/dwarfhold_logic.gd")
 
 @export_group(&"Tiles")
 @export var sand_coords := Vector2i(4, 1)
@@ -120,7 +120,7 @@ func apply_world_settings(settings: Dictionary) -> void:
 	arid_threshold = clampf(0.2 + (1.0 - float(terrain.get("forest", 0.5))) * 0.4, 0.1, 0.7)
 
 func _apply_cached_world_settings() -> void:
-	var game_session := get_node_or_null("/root/GameSession")
+	var game_session := get_node_or_null("/root/GameSession") as GameSession
 	if game_session:
 		apply_world_settings(game_session.get_world_settings())
 
@@ -293,7 +293,7 @@ func generate_gridmap(to_paint: Image) -> void:
 
 func _generate_settlements(curr_size: Vector2i) -> void:
 	var settings := {}
-	var game_session := get_node_or_null("/root/GameSession")
+	var game_session := get_node_or_null("/root/GameSession") as GameSession
 	if game_session:
 		settings = game_session.get_world_settings()
 	var settlement_ratios := settings.get("settlement_ratios", {})
@@ -308,12 +308,12 @@ func _generate_settlements(curr_size: Vector2i) -> void:
 				continue
 			candidates.append({"coord": c, "biome": _biome_map.get(c, "grass")})
 
-	for faction_key: String in DwarfholdLogic.SETTLEMENT_TYPES.keys():
+	for faction_key: String in DWARFHOLD_LOGIC.SETTLEMENT_TYPES.keys():
 		var ratio := float(settlement_ratios.get(faction_key, 0.5))
 		var target_count := int(roundi(1 + ratio * 4))
-		var faction_type: String = DwarfholdLogic.SETTLEMENT_TYPES[faction_key]
+		var faction_type: String = DWARFHOLD_LOGIC.SETTLEMENT_TYPES[faction_key]
 		for _i in range(target_count):
-			var coord := DwarfholdLogic.choose_tile_for_capital(faction_type, candidates, _rng)
+			var coord := DWARFHOLD_LOGIC.choose_tile_for_capital(faction_type, candidates, _rng)
 			if coord.x < 0:
 				continue
 			if settlement_map.has(coord):
