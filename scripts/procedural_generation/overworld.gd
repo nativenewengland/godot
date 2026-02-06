@@ -3,9 +3,13 @@ class_name Overworld
 extends ProceduralGeneration
 
 @export_group(&"Tiles")
-@export var land_coords := Vector2i(0, 0)
-@export var water_coords := Vector2i(0, 1)
-@export var mountain_coords := Vector2i(0, 0)
+@export var sand_coords := Vector2i(0, 0)
+@export var grass_coords := Vector2i(1, 0)
+@export var badlands_coords := Vector2i(2, 1)
+@export var marsh_coords := Vector2i(2, 4)
+@export var snow_coords := Vector2i(3, 2)
+@export var water_coords := Vector2i(4, 1)
+@export var mountain_coords := Vector2i(3, 0)
 
 const WATER_COLOR := Color(0.168, 0.395, 0.976, 1.0)
 const LAND_COLOR := Color(0.49, 0.753, 0.404, 1.0)
@@ -144,7 +148,7 @@ func generate_gridmap(to_paint: Image) -> void:
 				to_paint.set_pixel(x, y, WATER_COLOR)
 
 			elif curr_pixel.v < mountain_ocurrence:
-				grid_map[curr_vec] = land_coords
+				grid_map[curr_vec] = grass_coords
 				to_paint.set_pixel(x, y, LAND_COLOR)
 
 			else:

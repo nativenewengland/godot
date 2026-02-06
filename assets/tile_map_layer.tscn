@@ -5,7 +5,12 @@
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_d7gl1"]
 texture = ExtResource("1_wipo8")
 0:0/0 = 0
-0:1/0 = 0
+1:0/0 = 0
+2:1/0 = 0
+2:4/0 = 0
+3:2/0 = 0
+4:1/0 = 0
+3:0/0 = 0
 
 [sub_resource type="TileSet" id="TileSet_gxyk0"]
 sources/0 = SubResource("TileSetAtlasSource_d7gl1")
