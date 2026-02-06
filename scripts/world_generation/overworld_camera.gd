@@ -10,9 +10,9 @@ func _unhandled_input(event: InputEvent) -> void:
 	if mouse_event == null or not mouse_event.pressed:
 		return
 	if mouse_event.button_index == MOUSE_BUTTON_WHEEL_UP:
-		adjust_zoom(-zoom_step)
-	elif mouse_event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
 		adjust_zoom(zoom_step)
+	elif mouse_event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
+		adjust_zoom(-zoom_step)
 
 func _physics_process(delta: float) -> void:
 	var direction := Vector2.ZERO
