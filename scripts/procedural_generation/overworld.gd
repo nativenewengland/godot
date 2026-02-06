@@ -280,9 +280,9 @@ func _build_landmass_masks(curr_size: Vector2i) -> void:
 			else:
 				lake_cells[cell] = true
 
-	var coastline_groups: Dictionary = {
-		"sea_island": [] as Array,
-		"lake_island": [] as Array
+	var coastline_groups: Dictionary[String, Array[Vector2i]] = {
+		"sea_island": [] as Array[Vector2i],
+		"lake_island": [] as Array[Vector2i]
 	}
 
 	for coord: Vector2i in land_mask.keys():
