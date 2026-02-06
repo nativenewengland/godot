@@ -174,8 +174,8 @@ func _get_elevation(coord: Vector2i, curr_size: Vector2i) -> float:
 func _get_farcical_continent_value(coord: Vector2i, curr_size: Vector2i) -> float:
 	var base := _get_elevation(coord, curr_size)
 	var wobble_scale := maxf(1.0, float(curr_size.x)) * 0.35
-	var wobble := sinf(float(coord.x) / wobble_scale * TAU) * cosf(float(coord.y) / (wobble_scale * 0.8) * TAU)
-	var swirl := sinf((float(coord.x + coord.y) / (wobble_scale * 0.6)) * TAU)
+	var wobble := sin(float(coord.x) / wobble_scale * TAU) * cos(float(coord.y) / (wobble_scale * 0.8) * TAU)
+	var swirl := sin((float(coord.x + coord.y) / (wobble_scale * 0.6)) * TAU)
 	return clampf(base + wobble * 0.18 + swirl * 0.12, 0.0, 1.0)
 
 func _get_temperature(coord: Vector2i, curr_size: Vector2i, elevation: float) -> float:
