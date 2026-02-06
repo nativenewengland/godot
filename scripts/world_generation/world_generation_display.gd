@@ -282,6 +282,6 @@ func _generate_world_name() -> String:
 
 
 func _store_world_settings(settings: Dictionary) -> void:
-	var game_session := get_node_or_null("/root/GameSession") as GameSession
-	if game_session:
+	var game_session := get_node_or_null("/root/GameSession")
+	if game_session && game_session.has_method("set_world_settings"):
 		game_session.set_world_settings(settings)

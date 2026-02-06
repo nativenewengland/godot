@@ -111,7 +111,7 @@ func apply_world_settings(settings: Dictionary) -> void:
 		tile_map_size = dims
 		size = dims * 2
 
-	var terrain := settings.get("terrain_ratios", {})
+	var terrain: Dictionary = settings.get("terrain_ratios", {}) as Dictionary
 	water_ocurrence = clampf(0.20 + float(terrain.get("river", 0.5)) * 0.2, 0.2, 0.55)
 	mountain_ocurrence = clampf(0.55 + float(terrain.get("mountain", 0.5)) * 0.35, water_ocurrence + 0.05, 0.92)
 	river_sources = int(roundi(6 + float(terrain.get("river", 0.5)) * 26))
@@ -120,8 +120,8 @@ func apply_world_settings(settings: Dictionary) -> void:
 	arid_threshold = clampf(0.2 + (1.0 - float(terrain.get("forest", 0.5))) * 0.4, 0.1, 0.7)
 
 func _apply_cached_world_settings() -> void:
-	var game_session := get_node_or_null("/root/GameSession") as GameSession
-	if game_session:
+	var game_session := get_node_or_null("/root/GameSession")
+	if game_session && game_session.has_method("get_world_settings"):
 		apply_world_settings(game_session.get_world_settings())
 
 func _ready() -> void:
@@ -292,11 +292,11 @@ func generate_gridmap(to_paint: Image) -> void:
 	_generate_settlements(curr_size)
 
 func _generate_settlements(curr_size: Vector2i) -> void:
-	var settings := {}
-	var game_session := get_node_or_null("/root/GameSession") as GameSession
-	if game_session:
+	var settings: Dictionary = {}
+	var game_session := get_node_or_null("/root/GameSession")
+	if game_session && game_session.has_method("get_world_settings"):
 		settings = game_session.get_world_settings()
-	var settlement_ratios := settings.get("settlement_ratios", {})
+	var settlement_ratios: Dictionary = settings.get("settlement_ratios", {}) as Dictionary
 	if settlement_ratios.is_empty():
 		settlement_ratios = {"humans": 0.5, "dwarves": 0.5, "wood_elves": 0.5, "lizardmen": 0.5}
 
