@@ -37,7 +37,7 @@ theme = ExtResource("3_0yffs")
 script = ExtResource("1_6txqo")
 target_render = NodePath("PanelContainer/VBoxContainer/MarginContainer/HBoxContainer/VBoxContainer/Control2/TextureRect")
 character_name = NodePath("PanelContainer/VBoxContainer/MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer/PanelContainer/LineEdit")
-clan_name = NodePath("PanelContainer/VBoxContainer/MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer2/MarginContainer2/VBoxContainer/GridContainer/LineEdit")
+clan_name = NodePath("PanelContainer/VBoxContainer/MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer2/MarginContainer2/VBoxContainer/GridContainer/OptionButton2")
 portrait_dir = "res://resources/images/character_creator/portraits"
 beard_dir = "res://resources/images/character_creator/beards"
 hair_dir = "res://resources/images/character_creator/hair"
@@ -401,10 +401,9 @@ popup/item_49/id = 49
 popup/item_50/text = "Smelter"
 popup/item_50/id = 50
 
-[node name="LineEdit" type="LineEdit" parent="PanelContainer/VBoxContainer/MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer2/MarginContainer2/VBoxContainer/GridContainer" unique_id=1635665934]
+[node name="OptionButton2" type="OptionButton" parent="PanelContainer/VBoxContainer/MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer2/MarginContainer2/VBoxContainer/GridContainer" unique_id=1635665934]
 layout_mode = 2
 size_flags_horizontal = 3
-editable = false
 
 [node name="MarginContainer" type="MarginContainer" parent="PanelContainer/VBoxContainer/MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer2" unique_id=1765104491]
 layout_mode = 2
