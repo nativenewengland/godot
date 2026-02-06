@@ -264,7 +264,7 @@ func _ready() -> void:
 	character_name.text_changed.connect(_on_name_changed)
 
 	clan_name.clear()
-	for clan in CLAN_OPTIONS:
+	for clan: String in CLAN_OPTIONS:
 		clan_name.add_item(clan)
 
 	resend_images.connect(_on_resend_images)
