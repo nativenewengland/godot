@@ -5,7 +5,7 @@ func _on_start_button_pressed() -> void:
 
 
 func _on_options_button_pressed() -> void:
-	push_warning("Options menu is not implemented yet.")
+	get_tree().change_scene_to_file("res://scenes/options_menu.tscn")
 
 
 func _on_return_button_pressed() -> void:

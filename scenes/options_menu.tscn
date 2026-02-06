@@ -1,0 +1,150 @@
+[gd_scene format=3 uid="uid://byqk07xv2qf5e"]
+
+[ext_resource type="Script" path="res://scripts/options_menu.gd" id="1_v76yw"]
+
+[node name="OptionsMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_v76yw")
+
+[node name="Panel" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -280.0
+offset_top = -260.0
+offset_right = 280.0
+offset_bottom = 260.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 24
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Title" type="Label" parent="Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Options"
+horizontal_alignment = 1
+
+[node name="DisplayLabel" type="Label" parent="Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Display"
+
+[node name="FullscreenCheckBox" type="CheckBox" parent="Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Fullscreen"
+
+[node name="VsyncCheckBox" type="CheckBox" parent="Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+button_pressed = true
+text = "V-Sync"
+
+[node name="ResolutionRow" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="ResolutionLabel" type="Label" parent="Panel/MarginContainer/VBoxContainer/ResolutionRow"]
+layout_mode = 2
+text = "Resolution"
+
+[node name="ResolutionOptionButton" type="OptionButton" parent="Panel/MarginContainer/VBoxContainer/ResolutionRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+item_count = 3
+selected = 2
+popup/item_0/text = "1280 x 720"
+popup/item_0/id = 0
+popup/item_1/text = "1600 x 900"
+popup/item_1/id = 1
+popup/item_2/text = "1920 x 1080"
+popup/item_2/id = 2
+
+[node name="AudioLabel" type="Label" parent="Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Audio"
+
+[node name="MasterVolumeRow" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="MasterVolumeLabel" type="Label" parent="Panel/MarginContainer/VBoxContainer/MasterVolumeRow"]
+layout_mode = 2
+text = "Master Volume"
+
+[node name="MasterVolumeSlider" type="HSlider" parent="Panel/MarginContainer/VBoxContainer/MasterVolumeRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+value = 100.0
+max_value = 100.0
+tick_count = 6
+
+[node name="MusicVolumeRow" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="MusicVolumeLabel" type="Label" parent="Panel/MarginContainer/VBoxContainer/MusicVolumeRow"]
+layout_mode = 2
+text = "Music Volume"
+
+[node name="MusicVolumeSlider" type="HSlider" parent="Panel/MarginContainer/VBoxContainer/MusicVolumeRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+value = 80.0
+max_value = 100.0
+tick_count = 6
+
+[node name="SfxVolumeRow" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="SfxVolumeLabel" type="Label" parent="Panel/MarginContainer/VBoxContainer/SfxVolumeRow"]
+layout_mode = 2
+text = "SFX Volume"
+
+[node name="SfxVolumeSlider" type="HSlider" parent="Panel/MarginContainer/VBoxContainer/SfxVolumeRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+value = 80.0
+max_value = 100.0
+tick_count = 6
+
+[node name="GameplayLabel" type="Label" parent="Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Gameplay"
+
+[node name="SubtitlesCheckBox" type="CheckBox" parent="Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+button_pressed = true
+text = "Show Subtitles"
+
+[node name="AutoSaveCheckBox" type="CheckBox" parent="Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+button_pressed = true
+text = "Enable Auto Save"
+
+[node name="BackButton" type="Button" parent="Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Back"
+
+[connection signal="pressed" from="Panel/MarginContainer/VBoxContainer/BackButton" to="." method="_on_back_button_pressed"]
+[connection signal="toggled" from="Panel/MarginContainer/VBoxContainer/FullscreenCheckBox" to="." method="_on_fullscreen_toggled"]
+[connection signal="toggled" from="Panel/MarginContainer/VBoxContainer/VsyncCheckBox" to="." method="_on_vsync_toggled"]
+[connection signal="item_selected" from="Panel/MarginContainer/VBoxContainer/ResolutionRow/ResolutionOptionButton" to="." method="_on_resolution_item_selected"]
+[connection signal="value_changed" from="Panel/MarginContainer/VBoxContainer/MasterVolumeRow/MasterVolumeSlider" to="." method="_on_master_volume_value_changed"]
+[connection signal="value_changed" from="Panel/MarginContainer/VBoxContainer/MusicVolumeRow/MusicVolumeSlider" to="." method="_on_music_volume_value_changed"]
+[connection signal="value_changed" from="Panel/MarginContainer/VBoxContainer/SfxVolumeRow/SfxVolumeSlider" to="." method="_on_sfx_volume_value_changed"]
