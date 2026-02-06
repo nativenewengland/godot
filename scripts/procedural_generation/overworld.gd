@@ -120,8 +120,8 @@ func apply_world_settings(settings: Dictionary) -> void:
 	arid_threshold = clampf(0.2 + (1.0 - float(terrain.get("forest", 0.5))) * 0.4, 0.1, 0.7)
 
 func _apply_cached_world_settings() -> void:
-	var game_session := get_node_or_null("/root/GameSession")
-	if game_session && game_session.has_method("get_world_settings"):
+	var game_session := get_node_or_null("/root/GameSession") as GameSession
+	if game_session:
 		apply_world_settings(game_session.get_world_settings())
 
 func _ready() -> void:
@@ -293,8 +293,8 @@ func generate_gridmap(to_paint: Image) -> void:
 
 func _generate_settlements(curr_size: Vector2i) -> void:
 	var settings: Dictionary = {}
-	var game_session := get_node_or_null("/root/GameSession")
-	if game_session && game_session.has_method("get_world_settings"):
+	var game_session := get_node_or_null("/root/GameSession") as GameSession
+	if game_session:
 		settings = game_session.get_world_settings()
 	var settlement_ratios: Dictionary = settings.get("settlement_ratios", {}) as Dictionary
 	if settlement_ratios.is_empty():
