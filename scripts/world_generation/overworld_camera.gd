@@ -2,7 +2,7 @@ extends Camera2D
 
 @export var zoom_step: float = 0.1
 @export var min_zoom: float = 0.2
-@export var max_zoom: float = 2.0
+@export var max_zoom: float = 4.0
 @export var move_speed: float = 600.0
 
 func _unhandled_input(event: InputEvent) -> void:
