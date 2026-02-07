@@ -38,8 +38,8 @@ func _generate_map() -> void:
 	noise.noise_type = FastNoiseLite.TYPE_SIMPLEX
 
 	var image := Image.create(map_size.x, map_size.y, false, Image.FORMAT_RGBA8)
-	for y in map_size.y:
-		for x in map_size.x:
+	for y in range(map_size.y):
+		for x in range(map_size.x):
 			var height := _sample_height(noise, x, y)
 			var color := _height_to_color(height)
 			image.set_pixel(x, y, color)
