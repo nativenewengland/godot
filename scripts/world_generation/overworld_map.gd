@@ -113,6 +113,21 @@ const BIOME_BADLANDS := "badlands"
 const BIOME_FOREST := "forest"
 const BIOME_JUNGLE := "jungle"
 const BIOME_GRASSLAND := "grassland"
+const DWARFHOLD_LOGIC := preload("res://scripts/world_generation/dwarfhold_logic.gd")
+
+const SETTLEMENT_TILES := {
+	"dwarfhold": [DWARFHOLD_TILE, ABANDONED_DWARFHOLD_TILE, GREAT_DWARFHOLD_TILE, DARK_DWARFHOLD_TILE],
+	"town": [TOWN_TILE, PORT_TOWN_TILE, CASTLE_TILE, HAMLET_TILE],
+	"woodElfGrove": [WOOD_ELF_GROVES_TILE, WOOD_ELF_GROVES_LARGE_TILE, WOOD_ELF_GROVES_GRAND_TILE],
+	"lizardmenCity": [LIZARDMEN_CITY_TILE]
+}
+
+const SETTLEMENT_NAMES := {
+	"dwarves": "Dwarven Hold",
+	"humans": "Town",
+	"wood_elves": "Grove",
+	"lizardmen": "Lizard City"
+}
 
 const TREE_BIOMES: Array[String] = [
 	BIOME_FOREST,
@@ -140,6 +155,7 @@ var _temperature_noise: FastNoiseLite
 var _rainfall_noise: FastNoiseLite
 var _tile_data: Dictionary = {}
 var _last_hovered_tile := Vector2i(-9999, -9999)
+var _world_settings: Dictionary = {}
 
 func _ready() -> void:
 	if map_layer == null:
@@ -253,6 +269,7 @@ func _generate_map() -> void:
 				"resources": _resources_for_biome(biome),
 				"region_name": ""
 			}
+	_place_settlements(biome_map, rng)
 
 func _sample_height(noise: FastNoiseLite, x: int, y: int) -> float:
 	var nx := (float(x) / float(map_size.x)) * 2.0 - 1.0
@@ -472,6 +489,106 @@ func _biome_to_tile(biome: String) -> Vector2i:
 			return JUNGLE_TREE_TILE
 		_:
 			return GRASS_TILE
+
+func _place_settlements(biome_map: Dictionary, rng: RandomNumberGenerator) -> void:
+	var settings := _world_settings
+	var ratios: Dictionary = settings.get("settlement_ratios", {}) as Dictionary
+	var settlements: Dictionary = settings.get("settlements", {}) as Dictionary
+	var base_count := max(1, int(round(float(map_size.x * map_size.y) / 16384.0)))
+	var occupied: Array[Vector2i] = []
+	var candidates := _build_settlement_candidates(biome_map)
+	var min_distance := 8.0
+
+	for civilization: String in DWARFHOLD_LOGIC.SETTLEMENT_TYPES.keys():
+		var settlement_type := String(DWARFHOLD_LOGIC.SETTLEMENT_TYPES[civilization])
+		var ratio := float(ratios.get(civilization, -1.0))
+		if ratio < 0.0:
+			var raw_value := float(settlements.get(civilization, 0.0))
+			ratio = clampf(raw_value / 100.0, 0.0, 1.0)
+		if ratio <= 0.0:
+			continue
+		var count := max(1, int(round(base_count * ratio)))
+		for _i in range(count):
+			var available := _filter_settlement_candidates(candidates, occupied, min_distance)
+			if available.is_empty():
+				break
+			var chosen := DWARFHOLD_LOGIC.choose_tile_for_capital(settlement_type, available, rng)
+			if chosen == Vector2i(-1, -1):
+				break
+			if _is_too_close(chosen, occupied, min_distance):
+				occupied.append(chosen)
+				continue
+			occupied.append(chosen)
+			var biome_label := _settlement_biome_label(biome_map.get(chosen, BIOME_GRASSLAND))
+			var tile := _select_settlement_tile(settlement_type, biome_label, rng)
+			map_layer.set_cell(chosen, _atlas_source_id, tile)
+			var tile_info := _tile_data.get(chosen, {})
+			tile_info["region_name"] = SETTLEMENT_NAMES.get(civilization, "Settlement")
+			tile_info["major_population_groups"] = [civilization]
+			tile_info["minor_population_groups"] = []
+			tile_info["settlement_type"] = settlement_type
+			_tile_data[chosen] = tile_info
+
+func _build_settlement_candidates(biome_map: Dictionary) -> Array:
+	var candidates: Array = []
+	for coord: Vector2i in biome_map.keys():
+		var biome := _settlement_biome_label(biome_map.get(coord, BIOME_GRASSLAND))
+		candidates.append({"coord": coord, "biome": biome})
+	return candidates
+
+func _filter_settlement_candidates(
+	candidates: Array,
+	occupied: Array[Vector2i],
+	min_distance: float
+) -> Array:
+	var filtered: Array = []
+	for candidate: Dictionary in candidates:
+		var coord := candidate.get("coord", Vector2i(-1, -1))
+		if coord == Vector2i(-1, -1):
+			continue
+		if _is_too_close(coord, occupied, min_distance):
+			continue
+		filtered.append(candidate)
+	return filtered
+
+func _is_too_close(coord: Vector2i, occupied: Array[Vector2i], min_distance: float) -> bool:
+	for other: Vector2i in occupied:
+		if coord.distance_to(other) < min_distance:
+			return true
+	return false
+
+func _settlement_biome_label(biome: String) -> String:
+	match biome:
+		BIOME_MOUNTAIN:
+			return "mountain"
+		BIOME_TUNDRA:
+			return "snow"
+		BIOME_FOREST, BIOME_JUNGLE:
+			return "forest"
+		BIOME_MARSH:
+			return "marsh"
+		BIOME_WATER:
+			return "water"
+		_:
+			return "grass"
+
+func _select_settlement_tile(settlement_type: String, biome_label: String, rng: RandomNumberGenerator) -> Vector2i:
+	match settlement_type:
+		"town":
+			if biome_label == "snow":
+				return HAMLET_SNOW_TILE
+			var options: Array = SETTLEMENT_TILES.get("town", [TOWN_TILE]) as Array
+			return options[rng.randi_range(0, options.size() - 1)]
+		"dwarfhold":
+			var dwarf_tiles: Array = SETTLEMENT_TILES.get("dwarfhold", [DWARFHOLD_TILE]) as Array
+			return dwarf_tiles[rng.randi_range(0, dwarf_tiles.size() - 1)]
+		"woodElfGrove":
+			var elf_tiles: Array = SETTLEMENT_TILES.get("woodElfGrove", [WOOD_ELF_GROVES_TILE]) as Array
+			return elf_tiles[rng.randi_range(0, elf_tiles.size() - 1)]
+		"lizardmenCity":
+			return LIZARDMEN_CITY_TILE
+		_:
+			return TOWN_TILE
 
 func _resources_for_biome(biome: String) -> Array[String]:
 	match biome:
@@ -725,5 +842,6 @@ func _apply_cached_world_settings() -> void:
 		return
 	if game_session.has_method("get_world_settings"):
 		var settings: Dictionary = game_session.call("get_world_settings")
+		_world_settings = settings.duplicate(true)
 		if settings.has("map_dimensions"):
 			map_size = settings["map_dimensions"]
