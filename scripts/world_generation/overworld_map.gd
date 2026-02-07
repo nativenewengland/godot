@@ -14,7 +14,7 @@ const GRASS_TEXTURE := "res://resources/images/overworld/land.png"
 const WATER_TEXTURE := "res://resources/images/overworld/water.png"
 
 @onready var map_layer: TileMapLayer = $MapLayer
-@onready var regenerate_button: Button = %RegenerateButton
+@onready var regenerate_button: Button = get_node_or_null("%RegenerateButton")
 
 var _grass_source_id := -1
 var _water_source_id := -1
