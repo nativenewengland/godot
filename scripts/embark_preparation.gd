@@ -15,7 +15,7 @@ const MAP_SIZES := [
 	},
 	{
 		"name": "Large",
-		"dimensions": "260 × 200"
+		"dimensions": "260 × 195"
 	},
 	{
 		"name": "Extra Large",
@@ -31,26 +31,123 @@ const WORLD_LAYOUTS := [
 	"Archipelago"
 ]
 
-const WORLD_NAME_PREFIXES := [
-	"Arc",
-	"Stone",
-	"Amber",
-	"Iron",
-	"Deep",
-	"Frost",
-	"Gold",
-	"Shadow"
-]
-
-const WORLD_NAME_SUFFIXES := [
-	"adia",
-	"spire",
-	"heim",
-	"fell",
-	"hold",
-	"mark",
-	"reach",
-	"crest"
+const WORLD_NAMES := [
+	"Nûrn",
+	"Ardganor",
+	"Drakmor",
+	"Thaldur",
+	"Eldrakis",
+	"Karrûn",
+	"Tholmar",
+	"Torra",
+	"Albia",
+	"Tor",
+	"Lassel",
+	"Marrov'gar",
+	"Planetos",
+	"Ulthos",
+	"Grrth",
+	"Erin",
+	"Nûrnheim",
+	"Midkemia",
+	"Skarnheim",
+	"Shannara",
+	"Alagaësia",
+	"Syf",
+	"Elysium",
+	"Lankhmar",
+	"Arcadia",
+	"Eberron",
+	"Crobuzon",
+	"Valdemar",
+	"Uresia",
+	"Tiassa",
+	"Tairnadal",
+	"Solara",
+	"Golarion",
+	"Aerth",
+	"Khand",
+	"Sanctuary",
+	"Thra",
+	"Acheron",
+	"Cosmere",
+	"Tékumel",
+	"Norrathal",
+	"Prydain",
+	"Kulthea",
+	"Bas-Lag",
+	"Eternia",
+	"Xanth",
+	"Abeir-Toril",
+	"Earthsea",
+	"Pern",
+	"Discworld",
+	"Hyboria",
+	"Avalon",
+	"Tyria",
+	"Tarnadam",
+	"Rokugan",
+	"Glorantha",
+	"Ivalice",
+	"The World of the Five Gods",
+	"Narnia",
+	"Azeroth",
+	"Spira",
+	"Noxus",
+	"Volkran",
+	"Tal'Dorei",
+	"Exandria",
+	"Runeterra",
+	"Eorzea",
+	"Thraenor",
+	"Xadia",
+	"Roshar",
+	"Teldrassil",
+	"Draenor",
+	"Valisthea",
+	"Gensokyo",
+	"Temeria",
+	"Nilfgaard",
+	"Aedirn",
+	"Redania",
+	"Kaedwen",
+	"Toussaint",
+	"Rivellon",
+	"Lucis",
+	"Gransys",
+	"Drangleic",
+	"Lothric",
+	"Boletaria",
+	"Lordran",
+	"Caelid",
+	"Limgrave",
+	"Altus",
+	"Plateauonia",
+	"Iria",
+	"Theros",
+	"Dominaria",
+	"Zendikar",
+	"Innistrad",
+	"Ravnica",
+	"Kamigawa",
+	"Lorwyn",
+	"Tarkir",
+	"Ikoria",
+	"Strixhaven",
+	"Brazenforge",
+	"Solarae",
+	"Ethyra",
+	"Lunathor",
+	"Aethernis",
+	"Veydris",
+	"Nytherra",
+	"Astralis",
+	"Zephyra",
+	"Umbryss",
+	"Eclipthar",
+	"Skibiti Toliterium",
+	"Syx",
+	"Quidd"
 ]
 
 @onready var map_size_select: OptionButton = %MapSizeSelect
@@ -68,8 +165,6 @@ const WORLD_NAME_SUFFIXES := [
 @onready var summary_layout: Label = %SummaryLayout
 @onready var summary_seed: Label = %SummarySeed
 @onready var summary_chronology: Label = %SummaryChronology
-@onready var summary_world_name: Label = %SummaryWorldName
-
 func _ready() -> void:
 	randomize()
 	_populate_options()
@@ -106,13 +201,12 @@ func _refresh_summary() -> void:
 	var map_size := MAP_SIZES[map_size_select.selected]
 	summary_map_size.text = "%s — %s" % [map_size["name"], map_size["dimensions"]]
 	summary_layout.text = world_layout_select.get_item_text(world_layout_select.selected)
-	summary_seed.text = seed_input.text.strip_edges() if not seed_input.text.strip_edges().is_empty() else "—"
+	summary_seed.text = seed_input.text.strip_edges() if not seed_input.text.strip_edges().is_empty() else "Random"
 	summary_chronology.text = "Year %d of the %d Age" % [int(year_input.value), int(age_input.value)]
-	summary_world_name.text = world_name_input.text.strip_edges() if not world_name_input.text.strip_edges().is_empty() else "—"
 
 func _on_randomise_chronology_pressed() -> void:
 	year_input.value = randi_range(200, 2500)
-	age_input.value = randi_range(2, 40)
+	age_input.value = randi_range(2, 20)
 	_refresh_summary()
 
 func _on_randomise_world_name_pressed() -> void:
@@ -127,7 +221,7 @@ func _generate_seed() -> String:
 	]
 
 func _generate_world_name() -> String:
-	return "%s%s" % [WORLD_NAME_PREFIXES.pick_random(), WORLD_NAME_SUFFIXES.pick_random()]
+	return WORLD_NAMES.pick_random()
 
 func _characters_for_seed(amount: int) -> String:
 	const OPTIONS := "abcdefghijklmnopqrstuvwxyz"
@@ -137,6 +231,9 @@ func _characters_for_seed(amount: int) -> String:
 	return result
 
 func _on_embark_pressed() -> void:
+	if world_name_input.text.strip_edges().is_empty():
+		world_name_input.text = _generate_world_name()
+		_refresh_summary()
 	get_tree().change_scene_to_file("res://scenes/overworld.tscn")
 
 func _on_back_pressed() -> void:

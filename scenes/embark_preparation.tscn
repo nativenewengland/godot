@@ -182,29 +182,6 @@ unique_name_in_owner = true
 layout_mode = 2
 text = "—"
 
-[node name="SummaryWorldNameCard" type="PanelContainer" parent="PanelContainer/MarginContainer/MainVBox/ContentRow/SummaryColumn"]
-layout_mode = 2
-
-[node name="SummaryWorldNameMargin" type="MarginContainer" parent="PanelContainer/MarginContainer/MainVBox/ContentRow/SummaryColumn/SummaryWorldNameCard"]
-layout_mode = 2
-theme_override_constants/margin_left = 12
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_right = 12
-theme_override_constants/margin_bottom = 10
-
-[node name="SummaryWorldNameVBox" type="VBoxContainer" parent="PanelContainer/MarginContainer/MainVBox/ContentRow/SummaryColumn/SummaryWorldNameCard/SummaryWorldNameMargin"]
-layout_mode = 2
-
-[node name="SummaryWorldNameLabel" type="Label" parent="PanelContainer/MarginContainer/MainVBox/ContentRow/SummaryColumn/SummaryWorldNameCard/SummaryWorldNameMargin/SummaryWorldNameVBox"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 12
-text = "World name"
-
-[node name="SummaryWorldName" type="Label" parent="PanelContainer/MarginContainer/MainVBox/ContentRow/SummaryColumn/SummaryWorldNameCard/SummaryWorldNameMargin/SummaryWorldNameVBox"]
-unique_name_in_owner = true
-layout_mode = 2
-text = "—"
-
 [node name="MapPreviewCard" type="PanelContainer" parent="PanelContainer/MarginContainer/MainVBox/ContentRow/SummaryColumn"]
 layout_mode = 2
 
@@ -259,7 +236,7 @@ text = "Age"
 unique_name_in_owner = true
 layout_mode = 2
 min_value = 2.0
-max_value = 100.0
+max_value = 20.0
 step = 1.0
 
 [node name="RandomiseChronologyButton" type="Button" parent="PanelContainer/MarginContainer/MainVBox/ContentRow/FormColumn/ChronologyRow"]
@@ -294,7 +271,8 @@ text = "World seed"
 [node name="SeedInput" type="LineEdit" parent="PanelContainer/MarginContainer/MainVBox/ContentRow/FormColumn"]
 unique_name_in_owner = true
 layout_mode = 2
-placeholder_text = "Seed"
+max_length = 32
+placeholder_text = "Random"
 
 [node name="WorldNameLabel" type="Label" parent="PanelContainer/MarginContainer/MainVBox/ContentRow/FormColumn"]
 layout_mode = 2
@@ -309,6 +287,7 @@ theme_override_constants/separation = 10
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
+max_length = 60
 placeholder_text = "World name"
 
 [node name="RandomiseWorldNameButton" type="Button" parent="PanelContainer/MarginContainer/MainVBox/ContentRow/FormColumn/WorldNameRow"]
