@@ -125,9 +125,15 @@ const TREE_BIOMES: Array[String] = [
 @onready var tooltip_control: Control = get_node_or_null("MapUi/MapTooltip")
 @onready var tooltip_panel: Panel = get_node_or_null("MapUi/MapTooltip/Panel")
 @onready var tooltip_title: Label = get_node_or_null("MapUi/MapTooltip/Panel/TooltipLayout/TitleLabel")
-@onready var tooltip_biome: Label = get_node_or_null("MapUi/MapTooltip/Panel/TooltipLayout/BiomeLabel")
-@onready var tooltip_climate: Label = get_node_or_null("MapUi/MapTooltip/Panel/TooltipLayout/ClimateLabel")
-@onready var tooltip_resources: Label = get_node_or_null("MapUi/MapTooltip/Panel/TooltipLayout/ResourcesLabel")
+@onready var tooltip_biome_value: Label = get_node_or_null("MapUi/MapTooltip/Panel/TooltipLayout/TooltipGrid/BiomeValueLabel")
+@onready var tooltip_climate_value: Label = get_node_or_null("MapUi/MapTooltip/Panel/TooltipLayout/TooltipGrid/ClimateValueLabel")
+@onready var tooltip_resources_value: Label = get_node_or_null("MapUi/MapTooltip/Panel/TooltipLayout/TooltipGrid/ResourcesValueLabel")
+@onready var tooltip_major_population_value: Label = get_node_or_null(
+	"MapUi/MapTooltip/Panel/TooltipLayout/TooltipGrid/MajorPopulationValueLabel"
+)
+@onready var tooltip_minor_population_value: Label = get_node_or_null(
+	"MapUi/MapTooltip/Panel/TooltipLayout/TooltipGrid/MinorPopulationValueLabel"
+)
 
 var _atlas_source_id := -1
 var _temperature_noise: FastNoiseLite
@@ -515,20 +521,28 @@ func _update_tooltip() -> void:
 	)
 
 func _update_tooltip_content(tile_info: Dictionary) -> void:
-	if tooltip_title == null or tooltip_biome == null or tooltip_climate == null or tooltip_resources == null:
+	if tooltip_title == null or tooltip_biome_value == null or tooltip_climate_value == null:
+		return
+	if tooltip_resources_value == null or tooltip_major_population_value == null or tooltip_minor_population_value == null:
 		return
 	var region_name := String(tile_info.get("region_name", "")).strip_edges()
 	var biome_type := String(tile_info.get("biome_type", BIOME_GRASSLAND))
 	if region_name.is_empty():
-		tooltip_title.text = "Unnamed %s" % _humanize_biome(biome_type)
+		tooltip_title.text = ("Unnamed %s" % _humanize_biome(biome_type)).to_upper()
 	else:
-		tooltip_title.text = region_name
-	tooltip_biome.text = "Biome: %s" % _humanize_biome(biome_type)
+		tooltip_title.text = region_name.to_upper()
+	tooltip_biome_value.text = _humanize_biome(biome_type)
 	var temperature := float(tile_info.get("temperature", 0.0))
 	var moisture := float(tile_info.get("moisture", 0.0))
-	tooltip_climate.text = "Climate: %s" % _describe_climate(temperature, moisture)
+	tooltip_climate_value.text = _describe_climate(temperature, moisture)
 	var resources: Array[String] = tile_info.get("resources", []) as Array[String]
-	tooltip_resources.text = "Resources: %s" % _format_resource_list(resources)
+	tooltip_resources_value.text = _format_resource_list(resources)
+	tooltip_major_population_value.text = _format_population_list(
+		tile_info.get("major_population_groups", "Unknown")
+	)
+	tooltip_minor_population_value.text = _format_population_list(
+		tile_info.get("minor_population_groups", "Unknown")
+	)
 
 func _describe_climate(temperature: float, moisture: float) -> String:
 	var temp_label := "Mild"
@@ -566,6 +580,31 @@ func _format_resource_list(resources: Array[String]) -> String:
 		else:
 			combined += "%s, " % items[index]
 	return combined
+
+func _format_population_list(value: Variant) -> String:
+	if value is Array:
+		var entries: Array[String] = []
+		for entry: Variant in value:
+			entries.append(String(entry))
+		if entries.is_empty():
+			return "Unknown"
+		if entries.size() == 1:
+			return entries[0]
+		if entries.size() == 2:
+			return "%s and %s" % [entries[0], entries[1]]
+		var combined := ""
+		for index in range(entries.size()):
+			if index == entries.size() - 1:
+				combined += "and %s" % entries[index]
+			else:
+				combined += "%s, " % entries[index]
+		return combined
+	if value is String:
+		var text := String(value).strip_edges()
+		if text.is_empty():
+			return "Unknown"
+		return text
+	return "Unknown"
 
 func _humanize_biome(biome: String) -> String:
 	return biome.replace("_", " ").capitalize()
