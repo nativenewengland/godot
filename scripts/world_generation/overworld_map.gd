@@ -291,7 +291,7 @@ func _smooth_biomes(biome_map: Dictionary, passes: int) -> void:
 	for pass_index in range(passes):
 		var next_map := biome_map.duplicate()
 		for coord: Vector2i in biome_map.keys():
-			var current := biome_map[coord]
+			var current: String = biome_map.get(coord, BIOME_GRASSLAND)
 			if current == BIOME_WATER || current == BIOME_MOUNTAIN:
 				continue
 			var neighbor_counts: Dictionary = {}
@@ -310,7 +310,7 @@ func _smooth_biomes(biome_map: Dictionary, passes: int) -> void:
 				if neighbor_biome == BIOME_WATER || neighbor_biome == BIOME_MOUNTAIN:
 					continue
 				neighbor_counts[neighbor_biome] = int(neighbor_counts.get(neighbor_biome, 0)) + 1
-			var most_common := current
+			var most_common: String = current
 			var most_common_count := -1
 			for biome: String in neighbor_counts.keys():
 				var count: int = neighbor_counts[biome]
