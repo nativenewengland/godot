@@ -239,7 +239,7 @@ func _generate_map() -> void:
 			var coord := Vector2i(x, y)
 			var tile_coords := _biome_to_tile(biome_map.get(coord, BIOME_GRASSLAND))
 			map_layer.set_cell(coord, _atlas_source_id, tile_coords)
-			var biome := biome_map.get(coord, BIOME_GRASSLAND)
+			var biome: String = biome_map.get(coord, BIOME_GRASSLAND) as String
 			_tile_data[coord] = {
 				"biome_type": biome,
 				"temperature": temperature_map.get(coord, 0.0),
@@ -527,7 +527,7 @@ func _update_tooltip_content(tile_info: Dictionary) -> void:
 	var temperature := float(tile_info.get("temperature", 0.0))
 	var moisture := float(tile_info.get("moisture", 0.0))
 	tooltip_climate.text = "Climate: %s" % _describe_climate(temperature, moisture)
-	var resources: Array = tile_info.get("resources", [])
+	var resources: Array[String] = tile_info.get("resources", []) as Array[String]
 	tooltip_resources.text = "Resources: %s" % _format_resource_list(resources)
 
 func _describe_climate(temperature: float, moisture: float) -> String:
@@ -549,9 +549,9 @@ func _describe_climate(temperature: float, moisture: float) -> String:
 		moisture_label = "heavy rainfall"
 	return "%s climate with %s" % [temp_label, moisture_label]
 
-func _format_resource_list(resources: Array) -> String:
+func _format_resource_list(resources: Array[String]) -> String:
 	var items: Array[String] = []
-	for entry in resources:
+	for entry: String in resources:
 		items.append(String(entry))
 	if items.is_empty():
 		return "None"
