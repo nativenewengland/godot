@@ -24,3 +24,34 @@ offset_bottom = 56.0
 [node name="RegenerateButton" type="Button" parent="MapUi/TopBar"]
 layout_mode = 2
 text = "Regenerate Map"
+
+[node name="MapTooltip" type="Control" parent="MapUi"]
+visible = false
+mouse_filter = 2
+
+[node name="Panel" type="Panel" parent="MapUi/MapTooltip"]
+anchors_preset = 0
+offset_right = 240.0
+offset_bottom = 140.0
+
+[node name="TooltipLayout" type="VBoxContainer" parent="MapUi/MapTooltip/Panel"]
+anchors_preset = 15
+offset_left = 12.0
+offset_top = 10.0
+offset_right = -12.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 6
+
+[node name="TitleLabel" type="Label" parent="MapUi/MapTooltip/Panel/TooltipLayout"]
+text = "Unnamed Region"
+
+[node name="BiomeLabel" type="Label" parent="MapUi/MapTooltip/Panel/TooltipLayout"]
+text = "Biome: "
+
+[node name="ClimateLabel" type="Label" parent="MapUi/MapTooltip/Panel/TooltipLayout"]
+text = "Climate: "
+
+[node name="ResourcesLabel" type="Label" parent="MapUi/MapTooltip/Panel/TooltipLayout"]
+text = "Resources: "
