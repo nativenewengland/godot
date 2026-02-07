@@ -1,4 +1,10 @@
-[gd_scene load_steps=3 format=3 uid="uid://c7w33tb1px0ul"]
+[gd_scene load_steps=4 format=3 uid="uid://c7w33tb1px0ul"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_5ukes"]
+radius = 1.6
+height = 3.2
+radial_segments = 64
+rings = 32
 
 [ext_resource type="Script" path="res://scripts/world_generation/overworld_map.gd" id="1_1r0ns"]
 [ext_resource type="Script" path="res://scripts/world_generation/overworld_camera.gd" id="2_o0pfi"]
@@ -13,6 +19,26 @@ position = Vector2(512, 384)
 current = true
 script = ExtResource("2_o0pfi")
 
+[node name="MapViewport" type="SubViewport" parent="."]
+disable_3d = true
+render_target_update_mode = 4
+
+[node name="MapViewportRoot" type="Node2D" parent="MapViewport"]
+
+[node name="GlobeView" type="Node3D" parent="."]
+visible = false
+
+[node name="GlobeCamera" type="Camera3D" parent="GlobeView"]
+transform = Transform3D(1, 0, 0, 0, 0.965926, 0.258819, 0, -0.258819, 0.965926, 0, 1.4, 4.8)
+
+[node name="GlobeLight" type="DirectionalLight3D" parent="GlobeView"]
+transform = Transform3D(0.173648, -0.336824, 0.925417, 0, 0.939693, 0.34202, -0.984808, -0.0593912, 0.163176, 0, 0, 0)
+light_energy = 1.2
+
+[node name="GlobeMesh" type="MeshInstance3D" parent="GlobeView"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+mesh = SubResource("SphereMesh_5ukes")
+
 [node name="MapUi" type="CanvasLayer" parent="."]
 
 [node name="TopBar" type="MarginContainer" parent="MapUi"]
@@ -21,9 +47,18 @@ offset_top = 16.0
 offset_right = 200.0
 offset_bottom = 56.0
 
-[node name="RegenerateButton" type="Button" parent="MapUi/TopBar"]
+[node name="TopBarLayout" type="HBoxContainer" parent="MapUi/TopBar"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="RegenerateButton" type="Button" parent="MapUi/TopBar/TopBarLayout"]
 layout_mode = 2
 text = "Regenerate Map"
+
+[node name="GlobeViewButton" type="Button" parent="MapUi/TopBar/TopBarLayout"]
+layout_mode = 2
+toggle_mode = true
+text = "Globe View"
 
 [node name="MapTooltip" type="Control" parent="MapUi"]
 visible = false

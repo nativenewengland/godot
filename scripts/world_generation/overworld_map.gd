@@ -13,6 +13,7 @@ extends Node2D
 @export var rainfall_frequency: float = 1.7
 @export var map_seed: int = 0
 @export var tile_size: int = 32
+@export var globe_rotation_speed: float = 0.25
 
 @export_group("Biomes")
 @export_range(0.0, 1.0, 0.01) var tundra_threshold: float = 0.28
@@ -129,7 +130,14 @@ const TREE_BIOMES: Array[String] = [
 ]
 
 @onready var map_layer: TileMapLayer = $MapLayer
-@onready var regenerate_button: Button = get_node_or_null("MapUi/TopBar/RegenerateButton")
+@onready var overworld_camera: Camera2D = get_node_or_null("OverworldCamera")
+@onready var globe_view: Node3D = get_node_or_null("GlobeView")
+@onready var globe_camera: Camera3D = get_node_or_null("GlobeView/GlobeCamera")
+@onready var globe_mesh: MeshInstance3D = get_node_or_null("GlobeView/GlobeMesh")
+@onready var map_viewport: SubViewport = get_node_or_null("MapViewport")
+@onready var map_viewport_root: Node2D = get_node_or_null("MapViewport/MapViewportRoot")
+@onready var regenerate_button: Button = get_node_or_null("MapUi/TopBar/TopBarLayout/RegenerateButton")
+@onready var globe_view_button: Button = get_node_or_null("MapUi/TopBar/TopBarLayout/GlobeViewButton")
 @onready var tooltip_control: Control = get_node_or_null("MapUi/MapTooltip")
 @onready var tooltip_panel: Panel = get_node_or_null("MapUi/MapTooltip/Panel")
 @onready var tooltip_title: Label = get_node_or_null("MapUi/MapTooltip/Panel/TooltipLayout/TitleLabel")
@@ -149,6 +157,9 @@ var _rainfall_noise: FastNoiseLite
 var _tile_data: Dictionary = {}
 var _last_hovered_tile := Vector2i(-9999, -9999)
 var _world_settings: Dictionary = {}
+var _map_layer_original_parent: Node = null
+var _map_layer_original_index := -1
+var _is_globe_view := false
 
 func _ready() -> void:
 	if map_layer == null:
@@ -158,13 +169,22 @@ func _ready() -> void:
 	_configure_tileset()
 	_generate_map()
 	if regenerate_button == null:
-		push_error("Overworld map is missing a RegenerateButton at MapUi/TopBar/RegenerateButton.")
+		push_error("Overworld map is missing a RegenerateButton at MapUi/TopBar/TopBarLayout/RegenerateButton.")
 	else:
 		regenerate_button.pressed.connect(_on_regenerate_pressed)
+	if globe_view_button != null:
+		globe_view_button.toggled.connect(_on_globe_view_toggled)
+		globe_view_button.button_pressed = false
+	_cache_map_layer_parent()
+	_configure_globe_viewport()
+	_set_globe_view(false)
 	_hide_tooltip()
 
-func _process(_delta: float) -> void:
-	_update_tooltip()
+func _process(delta: float) -> void:
+	if _is_globe_view:
+		_rotate_globe(delta)
+	else:
+		_update_tooltip()
 
 func _unhandled_input(event: InputEvent) -> void:
 	var key_event := event as InputEventKey
@@ -175,6 +195,9 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _on_regenerate_pressed() -> void:
 	_regenerate_map()
+
+func _on_globe_view_toggled(is_pressed: bool) -> void:
+	_set_globe_view(is_pressed)
 
 func _regenerate_map() -> void:
 	map_seed = 0
@@ -263,6 +286,9 @@ func _generate_map() -> void:
 				"region_name": ""
 			}
 	_place_settlements(biome_map, rng)
+	_configure_globe_viewport()
+	if _is_globe_view:
+		_update_globe_texture()
 
 func _sample_height(noise: FastNoiseLite, x: int, y: int) -> float:
 	var nx := (float(x) / float(map_size.x)) * 2.0 - 1.0
@@ -647,6 +673,9 @@ func _resources_for_biome(biome: String) -> Array[String]:
 			return ["grain", "livestock", "herbs"]
 
 func _update_tooltip() -> void:
+	if _is_globe_view:
+		_hide_tooltip()
+		return
 	if tooltip_control == null or tooltip_panel == null:
 		return
 	if map_layer == null:
@@ -765,6 +794,77 @@ func _hide_tooltip() -> void:
 	if tooltip_control != null:
 		tooltip_control.visible = false
 
+func _cache_map_layer_parent() -> void:
+	if map_layer == null:
+		return
+	_map_layer_original_parent = map_layer.get_parent()
+	if _map_layer_original_parent != null:
+		_map_layer_original_index = map_layer.get_index()
+
+func _configure_globe_viewport() -> void:
+	if map_viewport == null:
+		return
+	var viewport_size := Vector2i(map_size.x * tile_size, map_size.y * tile_size)
+	if viewport_size.x <= 0 or viewport_size.y <= 0:
+		return
+	map_viewport.size = viewport_size
+	map_viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
+
+func _set_globe_view(enabled: bool) -> void:
+	_is_globe_view = enabled
+	if globe_view != null:
+		globe_view.visible = enabled
+	if overworld_camera != null:
+		overworld_camera.current = not enabled
+	if globe_camera != null:
+		globe_camera.current = enabled
+	if enabled:
+		_hide_tooltip()
+		_move_map_layer_to_viewport()
+		_update_globe_texture()
+	else:
+		_restore_map_layer_parent()
+
+func _move_map_layer_to_viewport() -> void:
+	if map_layer == null or map_viewport_root == null:
+		return
+	if map_layer.get_parent() == map_viewport_root:
+		return
+	map_layer.get_parent().remove_child(map_layer)
+	map_viewport_root.add_child(map_layer)
+	map_layer.position = Vector2.ZERO
+
+func _restore_map_layer_parent() -> void:
+	if map_layer == null or _map_layer_original_parent == null:
+		return
+	if map_layer.get_parent() == _map_layer_original_parent:
+		return
+	map_layer.get_parent().remove_child(map_layer)
+	if _map_layer_original_index >= 0:
+		_map_layer_original_parent.add_child(map_layer)
+		_map_layer_original_parent.move_child(map_layer, _map_layer_original_index)
+	else:
+		_map_layer_original_parent.add_child(map_layer)
+	map_layer.position = Vector2.ZERO
+
+func _update_globe_texture() -> void:
+	if globe_mesh == null or map_viewport == null:
+		return
+	var viewport_texture := map_viewport.get_texture()
+	if viewport_texture == null:
+		return
+	var material := globe_mesh.material_override as StandardMaterial3D
+	if material == null:
+		material = StandardMaterial3D.new()
+		material.roughness = 1.0
+	globe_mesh.material_override = material
+	material.albedo_texture = viewport_texture
+
+func _rotate_globe(delta: float) -> void:
+	if globe_mesh == null or globe_rotation_speed == 0.0:
+		return
+	globe_mesh.rotate_y(globe_rotation_speed * delta)
+
 func _configure_tileset() -> void:
 	var tile_set := TileSet.new()
 	tile_set.tile_size = Vector2i(tile_size, tile_size)
@@ -880,3 +980,5 @@ func _apply_cached_world_settings() -> void:
 		_world_settings = settings.duplicate(true)
 		if settings.has("map_dimensions"):
 			map_size = settings["map_dimensions"]
+	_configure_globe_viewport()
+	_update_globe_texture()
