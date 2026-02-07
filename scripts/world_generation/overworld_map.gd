@@ -815,7 +815,9 @@ func _set_globe_view(enabled: bool) -> void:
 	if globe_view != null:
 		globe_view.visible = enabled
 	if overworld_camera != null:
-		overworld_camera.current = not enabled
+		overworld_camera.enabled = not enabled
+		if not enabled:
+			overworld_camera.make_current()
 	if globe_camera != null:
 		globe_camera.current = enabled
 	if enabled:
@@ -853,12 +855,12 @@ func _update_globe_texture() -> void:
 	var viewport_texture := map_viewport.get_texture()
 	if viewport_texture == null:
 		return
-	var material := globe_mesh.material_override as StandardMaterial3D
-	if material == null:
-		material = StandardMaterial3D.new()
-		material.roughness = 1.0
-	globe_mesh.material_override = material
-	material.albedo_texture = viewport_texture
+	var globe_material := globe_mesh.material_override as StandardMaterial3D
+	if globe_material == null:
+		globe_material = StandardMaterial3D.new()
+		globe_material.roughness = 1.0
+	globe_mesh.material_override = globe_material
+	globe_material.albedo_texture = viewport_texture
 
 func _rotate_globe(delta: float) -> void:
 	if globe_mesh == null or globe_rotation_speed == 0.0:
