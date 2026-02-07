@@ -39,8 +39,8 @@ const SNOW_TILE := Vector2i(3, 2)
 const TREE_TILE := Vector2i(0, 1)
 const TREE_LONE_TILE := Vector2i(6, 5)
 const JUNGLE_TREE_TILE := Vector2i(0, 3)
-const CUT_TREES_TILE := Vector2i(1, 6)
-const AMBIENT_LUMBER_MILL_TILE := Vector2i(0, 6)
+const CUT_TREES_TILE := Vector2i(1, 5)
+const AMBIENT_LUMBER_MILL_TILE := Vector2i(0, 5)
 const WATER_TILE := Vector2i(4, 1)
 const MOUNTAIN_TILE := Vector2i(3, 0)
 const MOUNTAIN_TOP_A_TILE := Vector2i(4, 0)
@@ -80,7 +80,7 @@ const HAMLET_SNOW_TILE := Vector2i(13, 0)
 const AMBIENT_SLEEPING_DRAGON_TILE := Vector2i(14, 0)
 const AMBIENT_HUNTING_LODGE_TILE := Vector2i(16, 0)
 const AMBIENT_HOMESTEAD_TILE := Vector2i(13, 1)
-const AMBIENT_MOONWELL_TILE := Vector2i(2, 6)
+const AMBIENT_MOONWELL_TILE := Vector2i(2, 5)
 const AMBIENT_FARM_TILE := Vector2i(15, 1)
 const FARM_CROPS_TILE := Vector2i(15, 0)
 const AMBIENT_FARM_VARIANT_TILE := Vector2i(15, 0)
@@ -303,24 +303,24 @@ func _ellipse_distance(nx: float, ny: float, center: Vector2, radius: Vector2) -
 	return sqrt(dx * dx + dy * dy)
 
 
-func _value_noise(x: float, y: float, seed: int) -> float:
+func _value_noise(x: float, y: float, seed_value: int) -> float:
 	var x0 := floori(x)
 	var y0 := floori(y)
 	var x1 := x0 + 1
 	var y1 := y0 + 1
 	var sx := _fade(x - float(x0))
 	var sy := _fade(y - float(y0))
-	var n00 := _hash_coords(x0, y0, seed)
-	var n10 := _hash_coords(x1, y0, seed)
-	var n01 := _hash_coords(x0, y1, seed)
-	var n11 := _hash_coords(x1, y1, seed)
+	var n00 := _hash_coords(x0, y0, seed_value)
+	var n10 := _hash_coords(x1, y0, seed_value)
+	var n01 := _hash_coords(x0, y1, seed_value)
+	var n11 := _hash_coords(x1, y1, seed_value)
 	var ix0 := lerpf(n00, n10, sx)
 	var ix1 := lerpf(n01, n11, sx)
 	return lerpf(ix0, ix1, sy)
 
 
-func _hash_coords(x: int, y: int, seed: int) -> float:
-	var h := (x * 374761393) ^ (y * 668265263) ^ seed
+func _hash_coords(x: int, y: int, seed_value: int) -> float:
+	var h := (x * 374761393) ^ (y * 668265263) ^ seed_value
 	h = int(h ^ (h >> 13)) * 1274126177
 	h = h ^ (h >> 16)
 	var unsigned := h & 0xffffffff
