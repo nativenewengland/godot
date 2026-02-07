@@ -33,6 +33,7 @@ mouse_filter = 2
 anchors_preset = 0
 offset_right = 360.0
 offset_bottom = 220.0
+clip_contents = true
 
 [node name="TooltipLayout" type="VBoxContainer" parent="MapUi/MapTooltip/Panel"]
 anchors_preset = 15
@@ -49,6 +50,7 @@ text = "Unnamed Region"
 
 [node name="TooltipGrid" type="GridContainer" parent="MapUi/MapTooltip/Panel/TooltipLayout"]
 columns = 2
+size_flags_horizontal = 3
 theme_override_constants/h_separation = 16
 theme_override_constants/v_separation = 6
 
@@ -56,13 +58,16 @@ theme_override_constants/v_separation = 6
 text = "BIOME"
 
 [node name="BiomeValueLabel" type="Label" parent="MapUi/MapTooltip/Panel/TooltipLayout/TooltipGrid"]
+size_flags_horizontal = 3
 horizontal_alignment = 2
 text = "Forest"
+autowrap_mode = 3
 
 [node name="ClimateTitleLabel" type="Label" parent="MapUi/MapTooltip/Panel/TooltipLayout/TooltipGrid"]
 text = "CLIMATE"
 
 [node name="ClimateValueLabel" type="Label" parent="MapUi/MapTooltip/Panel/TooltipLayout/TooltipGrid"]
+size_flags_horizontal = 3
 horizontal_alignment = 2
 text = "Warm climate with humid air"
 autowrap_mode = 3
@@ -71,6 +76,7 @@ autowrap_mode = 3
 text = "RESOURCES"
 
 [node name="ResourcesValueLabel" type="Label" parent="MapUi/MapTooltip/Panel/TooltipLayout/TooltipGrid"]
+size_flags_horizontal = 3
 horizontal_alignment = 2
 text = "Hardwood timber, Game animals, and Medicinal herbs"
 autowrap_mode = 3
@@ -79,6 +85,7 @@ autowrap_mode = 3
 text = "MAJOR POPULATION GROUPS"
 
 [node name="MajorPopulationValueLabel" type="Label" parent="MapUi/MapTooltip/Panel/TooltipLayout/TooltipGrid"]
+size_flags_horizontal = 3
 horizontal_alignment = 2
 text = "Beastmen (63%) and Humans (27%)"
 autowrap_mode = 3
@@ -87,6 +94,7 @@ autowrap_mode = 3
 text = "MINOR POPULATION GROUPS"
 
 [node name="MinorPopulationValueLabel" type="Label" parent="MapUi/MapTooltip/Panel/TooltipLayout/TooltipGrid"]
+size_flags_horizontal = 3
 horizontal_alignment = 2
 text = "Trolls (7%) and Dwarves (6%)"
 autowrap_mode = 3
