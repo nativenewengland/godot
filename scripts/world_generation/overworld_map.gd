@@ -22,6 +22,7 @@ func _ready() -> void:
 	if map_layer == null:
 		push_error("Overworld map is missing a TileMapLayer named MapLayer.")
 		return
+	_apply_cached_world_settings()
 	_configure_tileset()
 	_generate_map()
 
@@ -92,3 +93,12 @@ func _configure_tileset() -> void:
 	_water_source_id = tile_set.add_source(water_atlas)
 	map_layer.tile_set = tile_set
 	map_layer.position = Vector2.ZERO
+
+func _apply_cached_world_settings() -> void:
+	var game_session := get_node_or_null("/root/GameSession")
+	if game_session == null:
+		return
+	if game_session.has_method("get_world_settings"):
+		var settings: Dictionary = game_session.call("get_world_settings")
+		if settings.has("map_dimensions"):
+			map_size = settings["map_dimensions"]
