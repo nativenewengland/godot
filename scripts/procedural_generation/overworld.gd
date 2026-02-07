@@ -106,7 +106,7 @@ func apply_world_settings(settings: Dictionary) -> void:
 		size = dims * 2
 
 	var terrain: Dictionary = settings.get("terrain_ratios", {}) as Dictionary
-	water_ocurrence = clampf(0.20 + float(terrain.get("river", 0.5)) * 0.2, 0.2, 0.55)
+	water_ocurrence = clampf(0.16 + float(terrain.get("river", 0.5)) * 0.16, 0.16, 0.5)
 	mountain_ocurrence = clampf(0.55 + float(terrain.get("mountain", 0.5)) * 0.35, water_ocurrence + 0.05, 0.92)
 	river_sources = int(roundi(6 + float(terrain.get("river", 0.5)) * 26))
 	river_max_distance = 25.0 + float(terrain.get("river", 0.5)) * 90.0
@@ -180,18 +180,21 @@ func _get_elevation(coord: Vector2i, curr_size: Vector2i) -> float:
 	var continent := _to_normalized(_height_noise.get_noise_2dv(warped_coord * 0.45))
 	var detail := _to_normalized(_height_noise.get_noise_2dv(warped_coord * 1.6))
 	var ridges := 1.0 - absf(_height_noise.get_noise_2dv(warped_coord * 2.4))
+	var micro_detail := _height_noise.get_noise_2dv(warped_coord * 4.8) * 0.12
+	var breakup := _height_noise.get_noise_2dv(warped_coord * 0.28) * 0.08
 	var tectonic_uplift := lerpf(continent, detail, 0.35)
 	tectonic_uplift = lerpf(tectonic_uplift, maxf(tectonic_uplift, ridges), mountain_linearity * 0.6)
 	var coast_variation := _height_noise.get_noise_2dv(warped_coord * 3.2) * coast_width
-	var edge_falloff := pow(radial_falloff, 2.8) * 0.18
-	return clampf(tectonic_uplift + coast_variation - edge_falloff, 0.0, 1.0)
+	var edge_falloff := pow(radial_falloff, 2.6) * 0.12
+	return clampf(tectonic_uplift + coast_variation + micro_detail + breakup - edge_falloff, 0.0, 1.0)
 
 func _get_farcical_continent_value(coord: Vector2i, curr_size: Vector2i) -> float:
 	var base := _get_elevation(coord, curr_size)
 	var wobble_scale := maxf(1.0, float(curr_size.x)) * 0.35
 	var wobble := sin(float(coord.x) / wobble_scale * TAU) * cos(float(coord.y) / (wobble_scale * 0.8) * TAU)
 	var swirl := sin((float(coord.x + coord.y) / (wobble_scale * 0.6)) * TAU)
-	return clampf(base + wobble * 0.18 + swirl * 0.12, 0.0, 1.0)
+	var fray := _height_noise.get_noise_2dv(Vector2(coord) * 2.2) * 0.09
+	return clampf(base + wobble * 0.18 + swirl * 0.12 + fray, 0.0, 1.0)
 
 func _get_temperature(coord: Vector2i, curr_size: Vector2i, elevation: float) -> float:
 	var latitude := absf((float(coord.y) / maxf(1.0, float(curr_size.y - 1))) * 2.0 - 1.0)
