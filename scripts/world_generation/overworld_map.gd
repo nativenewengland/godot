@@ -511,6 +511,8 @@ func _update_tooltip() -> void:
 		_update_tooltip_content(_tile_data[tile_coords])
 	tooltip_control.visible = true
 	var tooltip_size := tooltip_panel.get_combined_minimum_size()
+	tooltip_panel.size = tooltip_size
+	tooltip_control.size = tooltip_size
 	var viewport_rect := get_viewport().get_visible_rect()
 	var desired := mouse_pos + Vector2(18, 18)
 	var max_x := maxf(viewport_rect.position.x, viewport_rect.position.x + viewport_rect.size.x - tooltip_size.x)
