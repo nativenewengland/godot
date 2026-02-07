@@ -16,7 +16,7 @@ const WATER_TILE := Vector2i(4, 1)
 const MOUNTAIN_TILE := Vector2i(3, 0)
 
 @onready var map_layer: TileMapLayer = $MapLayer
-@onready var regenerate_button: Button = get_node_or_null("%RegenerateButton")
+@onready var regenerate_button: Button = get_node_or_null("MapUi/TopBar/RegenerateButton")
 
 var _atlas_source_id := -1
 
@@ -27,7 +27,9 @@ func _ready() -> void:
 	_apply_cached_world_settings()
 	_configure_tileset()
 	_generate_map()
-	if regenerate_button:
+	if regenerate_button == null:
+		push_error("Overworld map is missing a RegenerateButton at MapUi/TopBar/RegenerateButton.")
+	else:
 		regenerate_button.pressed.connect(_on_regenerate_pressed)
 
 func _unhandled_input(event: InputEvent) -> void:
