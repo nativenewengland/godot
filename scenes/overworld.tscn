@@ -12,3 +12,15 @@ script = ExtResource("1_1r0ns")
 position = Vector2(512, 384)
 current = true
 script = ExtResource("2_o0pfi")
+
+[node name="MapUi" type="CanvasLayer" parent="."]
+
+[node name="TopBar" type="MarginContainer" parent="MapUi"]
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 200.0
+offset_bottom = 56.0
+
+[node name="RegenerateButton" type="Button" parent="MapUi/TopBar"]
+layout_mode = 2
+text = "Regenerate Map"
