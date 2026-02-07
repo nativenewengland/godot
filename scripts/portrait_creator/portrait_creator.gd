@@ -308,4 +308,4 @@ func _on_return_button_pressed() -> void:
 	get_tree().change_scene_to_file("res://scenes/mainmenu.tscn")
 
 func _on_create_button_pressed() -> void:
-	get_tree().change_scene_to_file("res://scenes/overworld_root.tscn")
+	get_tree().change_scene_to_file("res://scenes/embark_preparation.tscn")
