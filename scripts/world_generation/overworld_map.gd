@@ -9,12 +9,14 @@ extends Node2D
 @export var map_seed: int = 0
 @export var tile_size: int = 16
 
-const GRASS_ATLAS_COORDS := Vector2i(1, 0)
-const WATER_ATLAS_COORDS := Vector2i(4, 1)
+const DEFAULT_TILE_COORDS := Vector2i.ZERO
+const GRASS_TEXTURE := "res://resources/images/overworld/land.png"
+const WATER_TEXTURE := "res://resources/images/overworld/water.png"
 
 @onready var map_layer: TileMapLayer = $MapLayer
 
-var _tile_source_id := -1
+var _grass_source_id := -1
+var _water_source_id := -1
 
 func _ready() -> void:
 	if map_layer == null:
@@ -57,8 +59,8 @@ func _generate_map() -> void:
 	for y in range(map_size.y):
 		for x in range(map_size.x):
 			var height := _sample_height(noise, x, y)
-			var atlas_coords := _height_to_tile(height)
-			map_layer.set_cell(Vector2i(x, y), _tile_source_id, atlas_coords)
+			var source_id := _height_to_source(height)
+			map_layer.set_cell(Vector2i(x, y), source_id, DEFAULT_TILE_COORDS)
 
 func _sample_height(noise: FastNoiseLite, x: int, y: int) -> float:
 	var nx := (float(x) / float(map_size.x)) * 2.0 - 1.0
@@ -69,19 +71,24 @@ func _sample_height(noise: FastNoiseLite, x: int, y: int) -> float:
 	var height := (noise_value + 1.0) * 0.5
 	return clampf(height - falloff, 0.0, 1.0)
 
-func _height_to_tile(height: float) -> Vector2i:
+func _height_to_source(height: float) -> int:
 	if height < water_level:
-		return WATER_ATLAS_COORDS
-	return GRASS_ATLAS_COORDS
+		return _water_source_id
+	return _grass_source_id
 
 func _configure_tileset() -> void:
 	var tile_set := TileSet.new()
 	tile_set.tile_size = Vector2i(tile_size, tile_size)
-	var atlas := TileSetAtlasSource.new()
-	atlas.texture = load("res://resources/images/overworld/atlas/overworld.png")
-	atlas.texture_region_size = Vector2i(tile_size, tile_size)
-	atlas.create_tile(GRASS_ATLAS_COORDS)
-	atlas.create_tile(WATER_ATLAS_COORDS)
-	_tile_source_id = tile_set.add_source(atlas)
+	var grass_atlas := TileSetAtlasSource.new()
+	grass_atlas.texture = load(GRASS_TEXTURE)
+	grass_atlas.texture_region_size = Vector2i(tile_size, tile_size)
+	grass_atlas.create_tile(DEFAULT_TILE_COORDS)
+	_grass_source_id = tile_set.add_source(grass_atlas)
+
+	var water_atlas := TileSetAtlasSource.new()
+	water_atlas.texture = load(WATER_TEXTURE)
+	water_atlas.texture_region_size = Vector2i(tile_size, tile_size)
+	water_atlas.create_tile(DEFAULT_TILE_COORDS)
+	_water_source_id = tile_set.add_source(water_atlas)
 	map_layer.tile_set = tile_set
 	map_layer.position = Vector2.ZERO
