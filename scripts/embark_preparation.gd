@@ -198,7 +198,7 @@ func _populate_options() -> void:
 	world_layout_select.select(0)
 
 func _refresh_summary() -> void:
-	var map_size := MAP_SIZES[map_size_select.selected]
+	var map_size: Dictionary = MAP_SIZES[map_size_select.selected]
 	summary_map_size.text = "%s — %s" % [map_size["name"], map_size["dimensions"]]
 	summary_layout.text = world_layout_select.get_item_text(world_layout_select.selected)
 	summary_seed.text = seed_input.text.strip_edges() if not seed_input.text.strip_edges().is_empty() else "Random"
