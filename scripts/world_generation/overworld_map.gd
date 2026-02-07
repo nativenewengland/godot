@@ -95,7 +95,7 @@ func _configure_tileset() -> void:
 	var overworld_atlas := TileSetAtlasSource.new()
 	overworld_atlas.texture = load(ATLAS_TEXTURE)
 	overworld_atlas.texture_region_size = Vector2i(tile_size, tile_size)
-	for tile_coords in [GRASS_TILE, WATER_TILE, MOUNTAIN_TILE]:
+	for tile_coords: Vector2i in [GRASS_TILE, WATER_TILE, MOUNTAIN_TILE]:
 		overworld_atlas.create_tile(tile_coords)
 	_atlas_source_id = tile_set.add_source(overworld_atlas)
 	map_layer.tile_set = tile_set
