@@ -159,6 +159,9 @@ func _generate_map() -> void:
 		return
 	if map_layer.tile_set == null:
 		_configure_tileset()
+	if _atlas_source_id < 0:
+		push_error("Overworld map tileset is missing a valid atlas source.")
+		return
 	map_layer.clear()
 
 	var height_map: Dictionary = {}
@@ -445,8 +448,25 @@ func _configure_tileset() -> void:
 	var tile_set := TileSet.new()
 	tile_set.tile_size = Vector2i(tile_size, tile_size)
 	var overworld_atlas := TileSetAtlasSource.new()
-	overworld_atlas.texture = load(ATLAS_TEXTURE)
+	var atlas_texture := load(ATLAS_TEXTURE) as Texture2D
+	if atlas_texture == null:
+		push_error("Overworld atlas texture could not be loaded: %s" % ATLAS_TEXTURE)
+		_atlas_source_id = -1
+		if map_layer != null:
+			map_layer.tile_set = tile_set
+		return
+	var texture_size := atlas_texture.get_size()
+	var max_columns := int(texture_size.x / tile_size)
+	var max_rows := int(texture_size.y / tile_size)
+	if max_columns <= 0 or max_rows <= 0:
+		push_error("Overworld atlas texture has no valid tile regions: %s" % ATLAS_TEXTURE)
+		_atlas_source_id = -1
+		if map_layer != null:
+			map_layer.tile_set = tile_set
+		return
+	overworld_atlas.texture = atlas_texture
 	overworld_atlas.texture_region_size = Vector2i(tile_size, tile_size)
+	var seen_tiles: Dictionary = {}
 	for tile_coords: Vector2i in [
 		SAND_TILE,
 		GRASS_TILE,
@@ -516,6 +536,15 @@ func _configure_tileset() -> void:
 		DUNGEON_TILE,
 		CENTAUR_ENCAMPMENT_TILE
 	]:
+		if seen_tiles.has(tile_coords):
+			continue
+		seen_tiles[tile_coords] = true
+		if tile_coords.x < 0 or tile_coords.y < 0 or tile_coords.x >= max_columns or tile_coords.y >= max_rows:
+			push_warning(
+				"Skipping overworld tile %s because it is outside the atlas bounds (%s x %s)." %
+				[tile_coords, max_columns, max_rows]
+			)
+			continue
 		overworld_atlas.create_tile(tile_coords)
 	_atlas_source_id = tile_set.add_source(overworld_atlas)
 	map_layer.tile_set = tile_set
