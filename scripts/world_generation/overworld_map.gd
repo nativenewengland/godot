@@ -19,6 +19,8 @@ extends Node2D
 @export_range(0.0, 1.0, 0.01) var forest_threshold: float = 0.6
 @export_range(0.0, 1.0, 0.01) var jungle_threshold: float = 0.75
 @export_range(0.0, 1.0, 0.01) var marsh_threshold: float = 0.68
+@export_range(0.0, 1.0, 0.01) var hot_threshold: float = 0.7
+@export_range(0.0, 1.0, 0.01) var warm_threshold: float = 0.55
 
 const ATLAS_TEXTURE := "res://resources/images/overworld/atlas/overworld.png"
 const SAND_TILE := Vector2i(0, 0)
@@ -30,6 +32,21 @@ const TREE_TILE := Vector2i(0, 1)
 const JUNGLE_TREE_TILE := Vector2i(0, 3)
 const WATER_TILE := Vector2i(4, 1)
 const MOUNTAIN_TILE := Vector2i(3, 0)
+const BIOME_WATER := "water"
+const BIOME_MOUNTAIN := "mountain"
+const BIOME_MARSH := "marsh"
+const BIOME_TUNDRA := "tundra"
+const BIOME_DESERT := "desert"
+const BIOME_BADLANDS := "badlands"
+const BIOME_FOREST := "forest"
+const BIOME_JUNGLE := "jungle"
+const BIOME_GRASSLAND := "grassland"
+
+const TREE_BIOMES: Array[String] = [
+	BIOME_FOREST,
+	BIOME_JUNGLE,
+	BIOME_TUNDRA
+]
 
 @onready var map_layer: TileMapLayer = $MapLayer
 @onready var regenerate_button: Button = get_node_or_null("MapUi/TopBar/RegenerateButton")
@@ -72,6 +89,11 @@ func _generate_map() -> void:
 		_configure_tileset()
 	map_layer.clear()
 
+	var height_map: Dictionary = {}
+	var temperature_map: Dictionary = {}
+	var moisture_map: Dictionary = {}
+	var biome_map: Dictionary = {}
+
 	var rng := RandomNumberGenerator.new()
 	if map_seed == 0:
 		rng.randomize()
@@ -105,9 +127,28 @@ func _generate_map() -> void:
 		for x in range(map_size.x):
 			var height := _sample_height(noise, x, y)
 			var temperature := _sample_temperature(x, y, height)
-			var rainfall := _sample_rainfall(x, y, height)
-			var tile_coords := _biome_to_tile(height, temperature, rainfall)
-			map_layer.set_cell(Vector2i(x, y), _atlas_source_id, tile_coords)
+			var moisture := _sample_moisture(x, y, height)
+			var coord := Vector2i(x, y)
+			height_map[coord] = height
+			temperature_map[coord] = temperature
+			moisture_map[coord] = moisture
+
+	for y in range(map_size.y):
+		for x in range(map_size.x):
+			var coord := Vector2i(x, y)
+			var height: float = height_map[coord]
+			var temperature: float = temperature_map[coord]
+			var moisture: float = moisture_map[coord]
+			biome_map[coord] = _assign_base_biome(coord, height, temperature, moisture, height_map)
+
+	_apply_tree_overlays(biome_map, temperature_map, moisture_map)
+	_smooth_biomes(biome_map, 2)
+
+	for y in range(map_size.y):
+		for x in range(map_size.x):
+			var coord := Vector2i(x, y)
+			var tile_coords := _biome_to_tile(biome_map.get(coord, BIOME_GRASSLAND))
+			map_layer.set_cell(coord, _atlas_source_id, tile_coords)
 
 func _sample_height(noise: FastNoiseLite, x: int, y: int) -> float:
 	var nx := (float(x) / float(map_size.x)) * 2.0 - 1.0
@@ -119,36 +160,190 @@ func _sample_height(noise: FastNoiseLite, x: int, y: int) -> float:
 	return clampf(height - falloff, 0.0, 1.0)
 
 
+func _to_normalized(noise_sample: float) -> float:
+	return clampf((noise_sample + 1.0) * 0.5, 0.0, 1.0)
+
+
 func _sample_temperature(x: int, y: int, elevation: float) -> float:
 	var latitude := absf((float(y) / maxf(1.0, float(map_size.y - 1))) * 2.0 - 1.0)
 	var latitudinal_cold := pow(latitude, 1.4)
-	var variation := (_temperature_noise.get_noise_2d(float(x), float(y)) + 1.0) * 0.5
-	return clampf((variation * 0.55 + (1.0 - latitudinal_cold) * 0.45) - maxf(0.0, elevation - mountain_level) * 0.8, 0.0, 1.0)
+	var base_variation := _to_normalized(_temperature_noise.get_noise_2d(float(x), float(y)))
+	var detail_variation := _to_normalized(_temperature_noise.get_noise_2d(float(x) * 2.1, float(y) * 2.1))
+	var layered_noise := base_variation * 0.7 + detail_variation * 0.3
+	var above_sea := maxf(0.0, elevation - water_level)
+	var elevation_cooling := above_sea * 0.9
+	return clampf((layered_noise * 0.55 + (1.0 - latitudinal_cold) * 0.45) - elevation_cooling, 0.0, 1.0)
 
 
 func _sample_rainfall(x: int, y: int, elevation: float) -> float:
-	var humidity := (_rainfall_noise.get_noise_2d(float(x), float(y)) + 1.0) * 0.5
-	return clampf(humidity + maxf(0.0, mountain_level - elevation) * 0.2, 0.0, 1.0)
+	var humidity := _to_normalized(_rainfall_noise.get_noise_2d(float(x), float(y)))
+	var orographic := maxf(0.0, mountain_level - elevation) * 0.25
+	return clampf(humidity + orographic, 0.0, 1.0)
 
 
-func _biome_to_tile(height: float, temperature: float, rainfall: float) -> Vector2i:
+func _sample_moisture(x: int, y: int, elevation: float) -> float:
+	var rainfall := _sample_rainfall(x, y, elevation)
+	var drainage := clampf(1.0 - elevation, 0.0, 1.0)
+	var noise_variation := _to_normalized(_rainfall_noise.get_noise_2d(float(x) * 1.9, float(y) * 1.9))
+	return clampf(rainfall * 0.55 + drainage * 0.3 + noise_variation * 0.15, 0.0, 1.0)
+
+
+func _assign_base_biome(
+	coord: Vector2i,
+	height: float,
+	temperature: float,
+	moisture: float,
+	height_map: Dictionary
+) -> String:
 	if height < water_level:
-		return WATER_TILE
+		return BIOME_WATER
 	if height > mountain_level:
-		return MOUNTAIN_TILE
+		return BIOME_MOUNTAIN
+	if _is_marsh(coord, height, moisture, height_map):
+		return BIOME_MARSH
 	if temperature < tundra_threshold:
-		return SNOW_TILE
-	if rainfall > marsh_threshold:
-		return MARSH_TILE
-	if rainfall < desert_threshold:
-		return SAND_TILE
-	if rainfall < badlands_threshold:
-		return BADLANDS_TILE
-	if rainfall > jungle_threshold && temperature > 0.6:
-		return JUNGLE_TREE_TILE
-	if rainfall > forest_threshold:
-		return TREE_TILE
-	return GRASS_TILE
+		return BIOME_TUNDRA
+	if temperature >= hot_threshold && moisture <= desert_threshold:
+		return BIOME_DESERT
+	if temperature >= warm_threshold && moisture <= badlands_threshold:
+		return BIOME_BADLANDS
+	if moisture >= jungle_threshold:
+		return _resolve_jungle_overlay(temperature, moisture)
+	if moisture >= forest_threshold:
+		return BIOME_GRASSLAND
+	return BIOME_GRASSLAND
+
+
+func _resolve_jungle_overlay(temperature: float, moisture: float) -> String:
+	if moisture >= jungle_threshold && temperature >= hot_threshold:
+		return BIOME_JUNGLE
+	if temperature < tundra_threshold:
+		return BIOME_TUNDRA
+	return BIOME_FOREST
+
+
+func _tree_overlay_biome(temperature: float) -> String:
+	if temperature < tundra_threshold:
+		return BIOME_TUNDRA
+	return BIOME_FOREST
+
+
+func _apply_tree_overlays(
+	biome_map: Dictionary,
+	temperature_map: Dictionary,
+	moisture_map: Dictionary
+) -> void:
+	var next_map := biome_map.duplicate()
+	for coord: Vector2i in biome_map.keys():
+		if biome_map[coord] != BIOME_GRASSLAND:
+			continue
+		var moisture: float = moisture_map.get(coord, 0.0)
+		if moisture < forest_threshold:
+			continue
+		if _has_tree_neighbor(coord, biome_map):
+			var temperature: float = temperature_map.get(coord, 0.0)
+			next_map[coord] = _tree_overlay_biome(temperature)
+	biome_map.clear()
+	for coord: Vector2i in next_map.keys():
+		biome_map[coord] = next_map[coord]
+
+
+func _has_tree_neighbor(coord: Vector2i, biome_map: Dictionary) -> bool:
+	for offset: Vector2i in [
+		Vector2i.LEFT,
+		Vector2i.RIGHT,
+		Vector2i.UP,
+		Vector2i.DOWN,
+		Vector2i(-1, -1),
+		Vector2i(1, -1),
+		Vector2i(-1, 1),
+		Vector2i(1, 1)
+	]:
+		var neighbor := coord + offset
+		if TREE_BIOMES.has(biome_map.get(neighbor, "")):
+			return true
+	return false
+
+
+func _is_marsh(coord: Vector2i, height: float, moisture: float, height_map: Dictionary) -> bool:
+	if moisture < marsh_threshold:
+		return false
+	if height <= water_level + 0.08:
+		return true
+	for offset: Vector2i in [
+		Vector2i.LEFT,
+		Vector2i.RIGHT,
+		Vector2i.UP,
+		Vector2i.DOWN,
+		Vector2i(-1, -1),
+		Vector2i(1, -1),
+		Vector2i(-1, 1),
+		Vector2i(1, 1)
+	]:
+		var neighbor := coord + offset
+		var neighbor_height: float = height_map.get(neighbor, 1.0)
+		if neighbor_height < water_level:
+			return true
+	return false
+
+
+func _smooth_biomes(biome_map: Dictionary, passes: int) -> void:
+	for pass_index in range(passes):
+		var next_map := biome_map.duplicate()
+		for coord: Vector2i in biome_map.keys():
+			var current := biome_map[coord]
+			if current == BIOME_WATER || current == BIOME_MOUNTAIN:
+				continue
+			var neighbor_counts: Dictionary = {}
+			for offset: Vector2i in [
+				Vector2i.LEFT,
+				Vector2i.RIGHT,
+				Vector2i.UP,
+				Vector2i.DOWN,
+				Vector2i(-1, -1),
+				Vector2i(1, -1),
+				Vector2i(-1, 1),
+				Vector2i(1, 1)
+			]:
+				var neighbor := coord + offset
+				var neighbor_biome: String = biome_map.get(neighbor, current)
+				if neighbor_biome == BIOME_WATER || neighbor_biome == BIOME_MOUNTAIN:
+					continue
+				neighbor_counts[neighbor_biome] = int(neighbor_counts.get(neighbor_biome, 0)) + 1
+			var most_common := current
+			var most_common_count := -1
+			for biome: String in neighbor_counts.keys():
+				var count: int = neighbor_counts[biome]
+				if count > most_common_count:
+					most_common = biome
+					most_common_count = count
+			if most_common != current and most_common_count >= 0:
+				next_map[coord] = most_common
+		biome_map.clear()
+		for coord: Vector2i in next_map.keys():
+			biome_map[coord] = next_map[coord]
+
+
+func _biome_to_tile(biome: String) -> Vector2i:
+	match biome:
+		BIOME_WATER:
+			return WATER_TILE
+		BIOME_MOUNTAIN:
+			return MOUNTAIN_TILE
+		BIOME_MARSH:
+			return MARSH_TILE
+		BIOME_TUNDRA:
+			return SNOW_TILE
+		BIOME_DESERT:
+			return SAND_TILE
+		BIOME_BADLANDS:
+			return BADLANDS_TILE
+		BIOME_FOREST:
+			return TREE_TILE
+		BIOME_JUNGLE:
+			return JUNGLE_TREE_TILE
+		_:
+			return GRASS_TILE
 
 func _configure_tileset() -> void:
 	var tile_set := TileSet.new()
