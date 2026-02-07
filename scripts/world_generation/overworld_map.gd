@@ -494,7 +494,7 @@ func _place_settlements(biome_map: Dictionary, rng: RandomNumberGenerator) -> vo
 	var settings := _world_settings
 	var ratios: Dictionary = settings.get("settlement_ratios", {}) as Dictionary
 	var settlements: Dictionary = settings.get("settlements", {}) as Dictionary
-	var base_count := max(1, int(round(float(map_size.x * map_size.y) / 16384.0)))
+	var base_count: int = max(1, int(round(float(map_size.x * map_size.y) / 16384.0)))
 	var occupied: Array[Vector2i] = []
 	var candidates := _build_settlement_candidates(biome_map)
 	var min_distance := 8.0
@@ -507,7 +507,7 @@ func _place_settlements(biome_map: Dictionary, rng: RandomNumberGenerator) -> vo
 			ratio = clampf(raw_value / 100.0, 0.0, 1.0)
 		if ratio <= 0.0:
 			continue
-		var count := max(1, int(round(base_count * ratio)))
+		var count: int = max(1, int(round(base_count * ratio)))
 		for _i in range(count):
 			var available := _filter_settlement_candidates(candidates, occupied, min_distance)
 			if available.is_empty():
@@ -522,7 +522,7 @@ func _place_settlements(biome_map: Dictionary, rng: RandomNumberGenerator) -> vo
 			var biome_label := _settlement_biome_label(biome_map.get(chosen, BIOME_GRASSLAND))
 			var tile := _select_settlement_tile(settlement_type, biome_label, rng)
 			map_layer.set_cell(chosen, _atlas_source_id, tile)
-			var tile_info := _tile_data.get(chosen, {})
+			var tile_info: Dictionary = _tile_data.get(chosen, {}) as Dictionary
 			tile_info["region_name"] = SETTLEMENT_NAMES.get(civilization, "Settlement")
 			tile_info["major_population_groups"] = [civilization]
 			tile_info["minor_population_groups"] = []
@@ -543,7 +543,7 @@ func _filter_settlement_candidates(
 ) -> Array:
 	var filtered: Array = []
 	for candidate: Dictionary in candidates:
-		var coord := candidate.get("coord", Vector2i(-1, -1))
+		var coord: Vector2i = candidate.get("coord", Vector2i(-1, -1)) as Vector2i
 		if coord == Vector2i(-1, -1):
 			continue
 		if _is_too_close(coord, occupied, min_distance):
