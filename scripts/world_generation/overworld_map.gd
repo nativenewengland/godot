@@ -12,11 +12,14 @@ extends Node2D
 const GRASS_ATLAS_COORDS := Vector2i(1, 0)
 const WATER_ATLAS_COORDS := Vector2i(4, 1)
 
-@onready var map_layer: TileMapLayer = %MapLayer
+@onready var map_layer: TileMapLayer = $MapLayer
 
 var _tile_source_id := -1
 
 func _ready() -> void:
+	if map_layer == null:
+		push_error("Overworld map is missing a TileMapLayer named MapLayer.")
+		return
 	_configure_tileset()
 	_generate_map()
 
@@ -28,6 +31,9 @@ func _unhandled_input(event: InputEvent) -> void:
 		_generate_map()
 
 func _generate_map() -> void:
+	if map_layer == null:
+		push_error("Overworld map is missing a TileMapLayer named MapLayer.")
+		return
 	if map_layer.tile_set == null:
 		_configure_tileset()
 	map_layer.clear()
