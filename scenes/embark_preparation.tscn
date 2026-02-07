@@ -1,0 +1,340 @@
+[gd_scene format=3 uid="uid://cq5l0jpl0ip4w"]
+
+[ext_resource type="Script" path="res://scripts/embark_preparation.gd" id="1_1b4s7"]
+[ext_resource type="Theme" uid="uid://bspkc326ak7q3" path="res://resources/theme.tres" id="2_2f5e4"]
+[ext_resource type="Texture2D" uid="uid://cjthh4jgyf1kl" path="res://resources/images/overworld/land.png" id="3_3m0a0"]
+
+[node name="EmbarkPreparation" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+theme = ExtResource("2_2f5e4")
+script = ExtResource("1_1b4s7")
+
+[node name="BackgroundMap" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("3_3m0a0")
+expand_mode = 3
+stretch_mode = 6
+modulate = Color(0.35, 0.4, 0.35, 1)
+
+[node name="Backdrop" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.55)
+
+[node name="PanelContainer" type="PanelContainer" parent="."]
+custom_minimum_size = Vector2(940, 560)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -470.0
+offset_top = -280.0
+offset_right = 470.0
+offset_bottom = 280.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 28
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 28
+
+[node name="MainVBox" type="VBoxContainer" parent="PanelContainer/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="Header" type="VBoxContainer" parent="PanelContainer/MarginContainer/MainVBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Eyebrow" type="Label" parent="PanelContainer/MarginContainer/MainVBox/Header"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Embark Preparation"
+
+[node name="Title" type="Label" parent="PanelContainer/MarginContainer/MainVBox/Header"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "Ready the Expedition"
+
+[node name="Description" type="Label" parent="PanelContainer/MarginContainer/MainVBox/Header"]
+layout_mode = 2
+text = "Review the realm before you and give your dwarves a worthy tale to tell."
+autowrap_mode = 3
+
+[node name="ContentRow" type="HBoxContainer" parent="PanelContainer/MarginContainer/MainVBox"]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="SummaryColumn" type="VBoxContainer" parent="PanelContainer/MarginContainer/MainVBox/ContentRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(280, 0)
+theme_override_constants/separation = 12
+
+[node name="SummaryMapSizeCard" type="PanelContainer" parent="PanelContainer/MarginContainer/MainVBox/ContentRow/SummaryColumn"]
+layout_mode = 2
+
+[node name="SummaryMapSizeMargin" type="MarginContainer" parent="PanelContainer/MarginContainer/MainVBox/ContentRow/SummaryColumn/SummaryMapSizeCard"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 10
+
+[node name="SummaryMapSizeVBox" type="VBoxContainer" parent="PanelContainer/MarginContainer/MainVBox/ContentRow/SummaryColumn/SummaryMapSizeCard/SummaryMapSizeMargin"]
+layout_mode = 2
+
+[node name="SummaryMapSizeLabel" type="Label" parent="PanelContainer/MarginContainer/MainVBox/ContentRow/SummaryColumn/SummaryMapSizeCard/SummaryMapSizeMargin/SummaryMapSizeVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Map size"
+
+[node name="SummaryMapSize" type="Label" parent="PanelContainer/MarginContainer/MainVBox/ContentRow/SummaryColumn/SummaryMapSizeCard/SummaryMapSizeMargin/SummaryMapSizeVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "—"
+
+[node name="SummaryLayoutCard" type="PanelContainer" parent="PanelContainer/MarginContainer/MainVBox/ContentRow/SummaryColumn"]
+layout_mode = 2
+
+[node name="SummaryLayoutMargin" type="MarginContainer" parent="PanelContainer/MarginContainer/MainVBox/ContentRow/SummaryColumn/SummaryLayoutCard"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 10
+
+[node name="SummaryLayoutVBox" type="VBoxContainer" parent="PanelContainer/MarginContainer/MainVBox/ContentRow/SummaryColumn/SummaryLayoutCard/SummaryLayoutMargin"]
+layout_mode = 2
+
+[node name="SummaryLayoutLabel" type="Label" parent="PanelContainer/MarginContainer/MainVBox/ContentRow/SummaryColumn/SummaryLayoutCard/SummaryLayoutMargin/SummaryLayoutVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "World layout"
+
+[node name="SummaryLayout" type="Label" parent="PanelContainer/MarginContainer/MainVBox/ContentRow/SummaryColumn/SummaryLayoutCard/SummaryLayoutMargin/SummaryLayoutVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "—"
+
+[node name="SummarySeedCard" type="PanelContainer" parent="PanelContainer/MarginContainer/MainVBox/ContentRow/SummaryColumn"]
+layout_mode = 2
+
+[node name="SummarySeedMargin" type="MarginContainer" parent="PanelContainer/MarginContainer/MainVBox/ContentRow/SummaryColumn/SummarySeedCard"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 10
+
+[node name="SummarySeedVBox" type="VBoxContainer" parent="PanelContainer/MarginContainer/MainVBox/ContentRow/SummaryColumn/SummarySeedCard/SummarySeedMargin"]
+layout_mode = 2
+
+[node name="SummarySeedLabel" type="Label" parent="PanelContainer/MarginContainer/MainVBox/ContentRow/SummaryColumn/SummarySeedCard/SummarySeedMargin/SummarySeedVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Seed"
+
+[node name="SummarySeed" type="Label" parent="PanelContainer/MarginContainer/MainVBox/ContentRow/SummaryColumn/SummarySeedCard/SummarySeedMargin/SummarySeedVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "—"
+
+[node name="SummaryChronologyCard" type="PanelContainer" parent="PanelContainer/MarginContainer/MainVBox/ContentRow/SummaryColumn"]
+layout_mode = 2
+
+[node name="SummaryChronologyMargin" type="MarginContainer" parent="PanelContainer/MarginContainer/MainVBox/ContentRow/SummaryColumn/SummaryChronologyCard"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 10
+
+[node name="SummaryChronologyVBox" type="VBoxContainer" parent="PanelContainer/MarginContainer/MainVBox/ContentRow/SummaryColumn/SummaryChronologyCard/SummaryChronologyMargin"]
+layout_mode = 2
+
+[node name="SummaryChronologyLabel" type="Label" parent="PanelContainer/MarginContainer/MainVBox/ContentRow/SummaryColumn/SummaryChronologyCard/SummaryChronologyMargin/SummaryChronologyVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Chronology"
+
+[node name="SummaryChronology" type="Label" parent="PanelContainer/MarginContainer/MainVBox/ContentRow/SummaryColumn/SummaryChronologyCard/SummaryChronologyMargin/SummaryChronologyVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "—"
+
+[node name="SummaryWorldNameCard" type="PanelContainer" parent="PanelContainer/MarginContainer/MainVBox/ContentRow/SummaryColumn"]
+layout_mode = 2
+
+[node name="SummaryWorldNameMargin" type="MarginContainer" parent="PanelContainer/MarginContainer/MainVBox/ContentRow/SummaryColumn/SummaryWorldNameCard"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 10
+
+[node name="SummaryWorldNameVBox" type="VBoxContainer" parent="PanelContainer/MarginContainer/MainVBox/ContentRow/SummaryColumn/SummaryWorldNameCard/SummaryWorldNameMargin"]
+layout_mode = 2
+
+[node name="SummaryWorldNameLabel" type="Label" parent="PanelContainer/MarginContainer/MainVBox/ContentRow/SummaryColumn/SummaryWorldNameCard/SummaryWorldNameMargin/SummaryWorldNameVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "World name"
+
+[node name="SummaryWorldName" type="Label" parent="PanelContainer/MarginContainer/MainVBox/ContentRow/SummaryColumn/SummaryWorldNameCard/SummaryWorldNameMargin/SummaryWorldNameVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "—"
+
+[node name="MapPreviewCard" type="PanelContainer" parent="PanelContainer/MarginContainer/MainVBox/ContentRow/SummaryColumn"]
+layout_mode = 2
+
+[node name="MapPreviewMargin" type="MarginContainer" parent="PanelContainer/MarginContainer/MainVBox/ContentRow/SummaryColumn/MapPreviewCard"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="MapPreview" type="TextureRect" parent="PanelContainer/MarginContainer/MainVBox/ContentRow/SummaryColumn/MapPreviewCard/MapPreviewMargin"]
+custom_minimum_size = Vector2(240, 170)
+layout_mode = 2
+texture = ExtResource("3_3m0a0")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="FormColumn" type="VBoxContainer" parent="PanelContainer/MarginContainer/MainVBox/ContentRow"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="ChronologyRow" type="HBoxContainer" parent="PanelContainer/MarginContainer/MainVBox/ContentRow/FormColumn"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="YearColumn" type="VBoxContainer" parent="PanelContainer/MarginContainer/MainVBox/ContentRow/FormColumn/ChronologyRow"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="YearLabel" type="Label" parent="PanelContainer/MarginContainer/MainVBox/ContentRow/FormColumn/ChronologyRow/YearColumn"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Year"
+
+[node name="YearInput" type="SpinBox" parent="PanelContainer/MarginContainer/MainVBox/ContentRow/FormColumn/ChronologyRow/YearColumn"]
+unique_name_in_owner = true
+layout_mode = 2
+min_value = 0.0
+max_value = 50000.0
+step = 1.0
+
+[node name="AgeColumn" type="VBoxContainer" parent="PanelContainer/MarginContainer/MainVBox/ContentRow/FormColumn/ChronologyRow"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="AgeLabel" type="Label" parent="PanelContainer/MarginContainer/MainVBox/ContentRow/FormColumn/ChronologyRow/AgeColumn"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Age"
+
+[node name="AgeInput" type="SpinBox" parent="PanelContainer/MarginContainer/MainVBox/ContentRow/FormColumn/ChronologyRow/AgeColumn"]
+unique_name_in_owner = true
+layout_mode = 2
+min_value = 2.0
+max_value = 100.0
+step = 1.0
+
+[node name="RandomiseChronologyButton" type="Button" parent="PanelContainer/MarginContainer/MainVBox/ContentRow/FormColumn/ChronologyRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 40)
+layout_mode = 2
+text = "Randomise"
+
+[node name="MapSizeLabel" type="Label" parent="PanelContainer/MarginContainer/MainVBox/ContentRow/FormColumn"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Map size"
+
+[node name="MapSizeSelect" type="OptionButton" parent="PanelContainer/MarginContainer/MainVBox/ContentRow/FormColumn"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="WorldLayoutLabel" type="Label" parent="PanelContainer/MarginContainer/MainVBox/ContentRow/FormColumn"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "World layout"
+
+[node name="WorldLayoutSelect" type="OptionButton" parent="PanelContainer/MarginContainer/MainVBox/ContentRow/FormColumn"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="WorldSeedLabel" type="Label" parent="PanelContainer/MarginContainer/MainVBox/ContentRow/FormColumn"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "World seed"
+
+[node name="SeedInput" type="LineEdit" parent="PanelContainer/MarginContainer/MainVBox/ContentRow/FormColumn"]
+unique_name_in_owner = true
+layout_mode = 2
+placeholder_text = "Seed"
+
+[node name="WorldNameLabel" type="Label" parent="PanelContainer/MarginContainer/MainVBox/ContentRow/FormColumn"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "World name"
+
+[node name="WorldNameRow" type="HBoxContainer" parent="PanelContainer/MarginContainer/MainVBox/ContentRow/FormColumn"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="WorldNameInput" type="LineEdit" parent="PanelContainer/MarginContainer/MainVBox/ContentRow/FormColumn/WorldNameRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "World name"
+
+[node name="RandomiseWorldNameButton" type="Button" parent="PanelContainer/MarginContainer/MainVBox/ContentRow/FormColumn/WorldNameRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 40)
+layout_mode = 2
+text = "Randomise"
+
+[node name="FlavorText" type="Label" parent="PanelContainer/MarginContainer/MainVBox/ContentRow/FormColumn"]
+layout_mode = 2
+text = "\"Strike the earth,\" whispers through the caverns. Only you can choose the legend they'll carve."
+autowrap_mode = 3
+
+[node name="ActionsRow" type="HBoxContainer" parent="PanelContainer/MarginContainer/MainVBox"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 12
+
+[node name="BackButton" type="Button" parent="PanelContainer/MarginContainer/MainVBox/ActionsRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 40)
+layout_mode = 2
+text = "Back"
+
+[node name="EmbarkButton" type="Button" parent="PanelContainer/MarginContainer/MainVBox/ActionsRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(140, 40)
+layout_mode = 2
+text = "Embark"
