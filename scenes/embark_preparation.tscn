@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/embark_preparation.gd" id="1_1b4s7"]
 [ext_resource type="Theme" uid="uid://bspkc326ak7q3" path="res://resources/theme.tres" id="2_2f5e4"]
-[ext_resource type="Texture2D" uid="uid://cjthh4jgyf1kl" path="res://resources/images/overworld/land.png" id="3_3m0a0"]
+[ext_resource type="Texture2D" path="res://resources/images/overworld/land.png" id="3_3m0a0"]
 
 [node name="EmbarkPreparation" type="Control"]
 layout_mode = 3
