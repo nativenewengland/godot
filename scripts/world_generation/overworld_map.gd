@@ -7,6 +7,8 @@ extends Node2D
 @export var noise_frequency: float = 2.0
 @export var noise_octaves: int = 4
 @export var mountain_level: float = 0.72
+@export var landmass_mask_strength: float = 0.55
+@export var landmass_mask_power: float = 0.82
 @export var temperature_frequency: float = 1.2
 @export var rainfall_frequency: float = 1.7
 @export var map_seed: int = 0
@@ -22,19 +24,10 @@ extends Node2D
 @export_range(0.0, 1.0, 0.01) var hot_threshold: float = 0.7
 @export_range(0.0, 1.0, 0.01) var warm_threshold: float = 0.55
 
-const CONTINENT_INFLUENCES := [
-	{"center": Vector2(0.62, 0.16), "radius": 0.48, "strength": 0.42},
-	{"center": Vector2(0.58, 0.62), "radius": 0.55, "strength": 0.38},
-	{"center": Vector2(0.25, 0.55), "radius": 0.36, "strength": 0.25},
-	{"center": Vector2(0.78, 0.47), "radius": 0.32, "strength": 0.2},
-	{"center": Vector2(0.18, 0.3), "radius": 0.22, "strength": 0.16},
-	{"center": Vector2(0.82, 0.78), "radius": 0.24, "strength": 0.14}
-]
-const SEA_BASINS := [
-	{"center": Vector2(0.46, 0.42), "radius": 0.28, "strength": 0.28},
-	{"center": Vector2(0.38, 0.32), "radius": 0.18, "strength": 0.2},
-	{"center": Vector2(0.72, 0.33), "radius": 0.16, "strength": 0.16}
-]
+const MASK_TWIN_LEFT_CENTER := Vector2(0.32, 0.48)
+const MASK_TWIN_RIGHT_CENTER := Vector2(0.68, 0.52)
+const MASK_TWIN_RADIUS := Vector2(0.55, 0.33)
+const MASK_SADDLE_SCALE := 2.2
 
 const ATLAS_TEXTURE := "res://resources/images/overworld/atlas/overworld.png"
 const SAND_TILE := Vector2i(0, 0)
@@ -285,23 +278,57 @@ func _sample_height(noise: FastNoiseLite, x: int, y: int) -> float:
 func _sample_continent_bias(x: int, y: int) -> float:
 	var denom_x := maxf(1.0, float(map_size.x - 1))
 	var denom_y := maxf(1.0, float(map_size.y - 1))
-	var uv := Vector2(float(x) / denom_x, float(y) / denom_y)
-	var influence := 0.0
-	for entry: Dictionary in CONTINENT_INFLUENCES:
-		var center: Vector2 = entry["center"]
-		var radius: float = entry["radius"]
-		var strength: float = entry["strength"]
-		var dist := uv.distance_to(center) / maxf(0.001, radius)
-		var falloff := clampf(1.0 - pow(dist, 2.0), 0.0, 1.0)
-		influence += falloff * strength
-	for basin: Dictionary in SEA_BASINS:
-		var center: Vector2 = basin["center"]
-		var radius: float = basin["radius"]
-		var strength: float = basin["strength"]
-		var dist := uv.distance_to(center) / maxf(0.001, radius)
-		var falloff := clampf(1.0 - pow(dist, 2.0), 0.0, 1.0)
-		influence -= falloff * strength
-	return influence
+	var nx := float(x) / denom_x
+	var ny := float(y) / denom_y
+	var mask_value := _sample_landmass_mask(nx, ny)
+	return (mask_value - 0.5) * landmass_mask_strength
+
+
+func _sample_landmass_mask(nx: float, ny: float) -> float:
+	var left := _ellipse_distance(nx, ny, MASK_TWIN_LEFT_CENTER, MASK_TWIN_RADIUS)
+	var right := _ellipse_distance(nx, ny, MASK_TWIN_RIGHT_CENTER, MASK_TWIN_RADIUS)
+	var value := 1.0 - minf(left, right)
+	value = pow(clampf(value, 0.0, 1.0), landmass_mask_power)
+	var saddle := cos((ny - 0.5) * PI * MASK_SADDLE_SCALE) * 0.05
+	var base_seed := map_seed + 0x9e3779b
+	var noise := (_value_noise(nx * 12.5 + 3.1, ny * 12.5 + 7.9, base_seed) - 0.5) * 0.12
+	var detail := (_value_noise(nx * 34.2 + 11.3, ny * 34.2 + 4.6, base_seed + 0x85ebca6) - 0.5) * 0.06
+	value += saddle + noise + detail
+	return clampf(value, 0.0, 1.0)
+
+
+func _ellipse_distance(nx: float, ny: float, center: Vector2, radius: Vector2) -> float:
+	var dx := (nx - center.x) / maxf(0.001, radius.x)
+	var dy := (ny - center.y) / maxf(0.001, radius.y)
+	return sqrt(dx * dx + dy * dy)
+
+
+func _value_noise(x: float, y: float, seed: int) -> float:
+	var x0 := floori(x)
+	var y0 := floori(y)
+	var x1 := x0 + 1
+	var y1 := y0 + 1
+	var sx := _fade(x - float(x0))
+	var sy := _fade(y - float(y0))
+	var n00 := _hash_coords(x0, y0, seed)
+	var n10 := _hash_coords(x1, y0, seed)
+	var n01 := _hash_coords(x0, y1, seed)
+	var n11 := _hash_coords(x1, y1, seed)
+	var ix0 := lerpf(n00, n10, sx)
+	var ix1 := lerpf(n01, n11, sx)
+	return lerpf(ix0, ix1, sy)
+
+
+func _hash_coords(x: int, y: int, seed: int) -> float:
+	var h := (x * 374761393) ^ (y * 668265263) ^ seed
+	h = int(h ^ (h >> 13)) * 1274126177
+	h = h ^ (h >> 16)
+	var unsigned := h & 0xffffffff
+	return float(unsigned) / 4294967295.0
+
+
+func _fade(t: float) -> float:
+	return t * t * t * (t * (t * 6.0 - 15.0) + 10.0)
 
 
 func _to_normalized(noise_sample: float) -> float:
