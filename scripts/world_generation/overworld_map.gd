@@ -501,10 +501,14 @@ func _place_settlements(biome_map: Dictionary, rng: RandomNumberGenerator) -> vo
 
 	for civilization: String in DWARFHOLD_LOGIC.SETTLEMENT_TYPES.keys():
 		var settlement_type := String(DWARFHOLD_LOGIC.SETTLEMENT_TYPES[civilization])
-		var ratio := float(ratios.get(civilization, -1.0))
-		if ratio < 0.0:
+		var ratio := -1.0
+		if ratios.has(civilization):
+			ratio = float(ratios.get(civilization, 0.0))
+		elif settlements.has(civilization):
 			var raw_value := float(settlements.get(civilization, 0.0))
 			ratio = clampf(raw_value / 100.0, 0.0, 1.0)
+		else:
+			ratio = 0.5
 		if ratio <= 0.0:
 			continue
 		var count: int = maxi(1, int(round(base_count * ratio)))
