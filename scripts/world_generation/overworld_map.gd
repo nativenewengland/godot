@@ -1,17 +1,23 @@
 extends Node2D
 
 @export var map_size: Vector2i = Vector2i(256, 256)
-@export var pixel_scale: int = 4
 @export var water_level: float = 0.45
 @export var falloff_strength: float = 0.55
 @export var falloff_power: float = 2.4
 @export var noise_frequency: float = 2.0
 @export var noise_octaves: int = 4
 @export var seed: int = 0
+@export var tile_size: int = 16
 
-@onready var map_sprite: Sprite2D = %MapSprite
+const GRASS_ATLAS_COORDS := Vector2i(1, 0)
+const WATER_ATLAS_COORDS := Vector2i(4, 1)
+
+@onready var map_layer: TileMapLayer = %MapLayer
+
+var _tile_source_id := -1
 
 func _ready() -> void:
+	_configure_tileset()
 	_generate_map()
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -22,6 +28,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		_generate_map()
 
 func _generate_map() -> void:
+	if map_layer.tile_set == null:
+		_configure_tileset()
+	map_layer.clear()
+
 	var rng := RandomNumberGenerator.new()
 	if seed == 0:
 		rng.randomize()
@@ -37,19 +47,11 @@ func _generate_map() -> void:
 	noise.fractal_gain = 0.5
 	noise.noise_type = FastNoiseLite.TYPE_SIMPLEX
 
-	var image := Image.create(map_size.x, map_size.y, false, Image.FORMAT_RGBA8)
-	for y in map_size.y:
-		for x in map_size.x:
+	for y in range(map_size.y):
+		for x in range(map_size.x):
 			var height := _sample_height(noise, x, y)
-			var color := _height_to_color(height)
-			image.set_pixel(x, y, color)
-
-	var texture := ImageTexture.create_from_image(image)
-	map_sprite.texture = texture
-	map_sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	map_sprite.position = Vector2.ZERO
-	map_sprite.centered = false
-	map_sprite.scale = Vector2(pixel_scale, pixel_scale)
+			var atlas_coords := _height_to_tile(height)
+			map_layer.set_cell(Vector2i(x, y), _tile_source_id, atlas_coords)
 
 func _sample_height(noise: FastNoiseLite, x: int, y: int) -> float:
 	var nx := (float(x) / float(map_size.x)) * 2.0 - 1.0
@@ -60,17 +62,19 @@ func _sample_height(noise: FastNoiseLite, x: int, y: int) -> float:
 	var height := (noise_value + 1.0) * 0.5
 	return clampf(height - falloff, 0.0, 1.0)
 
-func _height_to_color(height: float) -> Color:
-	if height < water_level * 0.6:
-		return Color8(10, 20, 60)
+func _height_to_tile(height: float) -> Vector2i:
 	if height < water_level:
-		return Color8(20, 60, 120)
-	if height < water_level + 0.08:
-		return Color8(180, 170, 110)
-	if height < water_level + 0.25:
-		return Color8(50, 110, 60)
-	if height < water_level + 0.45:
-		return Color8(40, 80, 50)
-	if height < water_level + 0.65:
-		return Color8(110, 110, 110)
-	return Color8(230, 230, 230)
+		return WATER_ATLAS_COORDS
+	return GRASS_ATLAS_COORDS
+
+func _configure_tileset() -> void:
+	var tile_set := TileSet.new()
+	tile_set.tile_size = Vector2i(tile_size, tile_size)
+	var atlas := TileSetAtlasSource.new()
+	atlas.texture = load("res://resources/images/overworld/atlas/overworld.png")
+	atlas.texture_region_size = Vector2i(tile_size, tile_size)
+	atlas.create_tile(GRASS_ATLAS_COORDS)
+	atlas.create_tile(WATER_ATLAS_COORDS)
+	_tile_source_id = tile_set.add_source(atlas)
+	map_layer.tile_set = tile_set
+	map_layer.position = Vector2.ZERO
