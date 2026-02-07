@@ -24,9 +24,9 @@ static var instance: Seeder
 
 @export_tool_button("Recreate Seed", "Callable") var refresh_seed := create_seed
 
-var current_seed: int
+var current_seed: int = 0
 
-func _enter_tree() ->void:
+func _enter_tree() -> void:
 	instance = self
 
 func _ready() -> void:
@@ -34,9 +34,9 @@ func _ready() -> void:
 	create_seed()
 
 func create_seed() -> void:
-	var curr_seed: = seed_global
+	var curr_seed := String(seed_global)
 	var is_seed_random := false
-var has_input := seed_input != null and seed_input.text != ""
+	var has_input := seed_input != null and seed_input.text != ""
 	if has_input:
 		is_seed_random = true
 		curr_seed = seed_input.text

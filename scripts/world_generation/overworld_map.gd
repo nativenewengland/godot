@@ -6,7 +6,7 @@ extends Node2D
 @export var falloff_power: float = 2.4
 @export var noise_frequency: float = 2.0
 @export var noise_octaves: int = 4
-@export var seed: int = 0
+@export var map_seed: int = 0
 @export var tile_size: int = 16
 
 const GRASS_ATLAS_COORDS := Vector2i(1, 0)
@@ -33,14 +33,14 @@ func _generate_map() -> void:
 	map_layer.clear()
 
 	var rng := RandomNumberGenerator.new()
-	if seed == 0:
+	if map_seed == 0:
 		rng.randomize()
-		seed = rng.randi()
+		map_seed = rng.randi()
 	else:
-		rng.seed = seed
+		rng.seed = map_seed
 
 	var noise := FastNoiseLite.new()
-	noise.seed = seed
+	noise.seed = map_seed
 	noise.frequency = noise_frequency / float(map_size.x)
 	noise.fractal_octaves = noise_octaves
 	noise.fractal_lacunarity = 2.1
