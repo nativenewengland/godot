@@ -3,23 +3,28 @@ extends Control
 const MAP_SIZES := [
 	{
 		"name": "Mini",
-		"dimensions": "120 × 90"
+		"dimensions": "90 × 120",
+		"size": Vector2i(90, 120)
 	},
 	{
 		"name": "Small",
-		"dimensions": "160 × 120"
+		"dimensions": "148 × 195",
+		"size": Vector2i(148, 195)
 	},
 	{
 		"name": "Normal",
-		"dimensions": "200 × 150"
+		"dimensions": "205 × 270",
+		"size": Vector2i(205, 270)
 	},
 	{
 		"name": "Large",
-		"dimensions": "260 × 195"
+		"dimensions": "262 × 345",
+		"size": Vector2i(262, 345)
 	},
 	{
 		"name": "Extra Large",
-		"dimensions": "320 × 240"
+		"dimensions": "320 × 420",
+		"size": Vector2i(320, 420)
 	}
 ]
 
@@ -234,7 +239,20 @@ func _on_embark_pressed() -> void:
 	if world_name_input.text.strip_edges().is_empty():
 		world_name_input.text = _generate_world_name()
 		_refresh_summary()
+	_store_world_settings()
 	get_tree().change_scene_to_file("res://scenes/overworld.tscn")
 
 func _on_back_pressed() -> void:
 	get_tree().change_scene_to_file("res://scenes/character_creator.tscn")
+
+func _store_world_settings() -> void:
+	var map_size: Dictionary = MAP_SIZES[map_size_select.selected]
+	var settings := {
+		"map_size": map_size["name"],
+		"map_dimensions": map_size["size"],
+		"world_layout": world_layout_select.get_item_text(world_layout_select.selected),
+		"world_seed": seed_input.text.strip_edges()
+	}
+	var game_session := get_node_or_null("/root/GameSession")
+	if game_session && game_session.has_method("set_world_settings"):
+		game_session.call("set_world_settings", settings)
