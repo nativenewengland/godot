@@ -40,12 +40,70 @@ const ATLAS_TEXTURE := "res://resources/images/overworld/atlas/overworld.png"
 const SAND_TILE := Vector2i(0, 0)
 const GRASS_TILE := Vector2i(1, 0)
 const BADLANDS_TILE := Vector2i(2, 1)
+const MINE_TILE := Vector2i(3, 1)
 const MARSH_TILE := Vector2i(2, 4)
 const SNOW_TILE := Vector2i(3, 2)
 const TREE_TILE := Vector2i(0, 1)
+const TREE_LONE_TILE := Vector2i(6, 5)
 const JUNGLE_TREE_TILE := Vector2i(0, 3)
+const CUT_TREES_TILE := Vector2i(1, 6)
+const AMBIENT_LUMBER_MILL_TILE := Vector2i(0, 6)
 const WATER_TILE := Vector2i(4, 1)
 const MOUNTAIN_TILE := Vector2i(3, 0)
+const MOUNTAIN_TOP_A_TILE := Vector2i(4, 0)
+const MOUNTAIN_TOP_B_TILE := Vector2i(5, 0)
+const MOUNTAIN_BOTTOM_A_TILE := Vector2i(7, 0)
+const MOUNTAIN_BOTTOM_B_TILE := Vector2i(8, 0)
+const DAM_TILE := Vector2i(8, 1)
+const MOUNTAIN_PEAK_TILE := Vector2i(10, 0)
+const STONE_TILE := Vector2i(2, 0)
+const DWARFHOLD_TILE := Vector2i(9, 2)
+const ABANDONED_DWARFHOLD_TILE := Vector2i(8, 2)
+const GREAT_DWARFHOLD_TILE := Vector2i(6, 0)
+const DARK_DWARFHOLD_TILE := Vector2i(17, 0)
+const HILLHOLD_TILE := Vector2i(7, 4)
+const CAVE_TILE := Vector2i(5, 1)
+const TOWER_TILE := Vector2i(6, 1)
+const EVIL_WIZARDS_TOWER_TILE := Vector2i(3, 3)
+const WOOD_ELF_GROVES_TILE := Vector2i(4, 2)
+const WOOD_ELF_GROVES_LARGE_TILE := Vector2i(5, 2)
+const WOOD_ELF_GROVES_GRAND_TILE := Vector2i(6, 2)
+const HILLS_TILE := Vector2i(1, 3)
+const HILLS_BADLANDS_TILE := Vector2i(1, 4)
+const HILLS_VARIANT_A_TILE := Vector2i(4, 4)
+const HILLS_VARIANT_B_TILE := Vector2i(2, 5)
+const HILLS_SNOW_TILE := Vector2i(2, 3)
+const TOWN_TILE := Vector2i(1, 2)
+const PORT_TOWN_TILE := Vector2i(5, 4)
+const CASTLE_TILE := Vector2i(6, 4)
+const ROADSIDE_TAVERN_TILE := Vector2i(12, 1)
+const HAMLET_TILE := Vector2i(16, 1)
+const TREE_SNOW_TILE := Vector2i(1, 1)
+const ACTIVE_VOLCANO_TILE := Vector2i(12, 2)
+const VOLCANO_TILE := Vector2i(13, 2)
+const LAVA_TILE := Vector2i(14, 2)
+const OASIS_TILE := Vector2i(12, 0)
+const HAMLET_SNOW_TILE := Vector2i(13, 0)
+const AMBIENT_SLEEPING_DRAGON_TILE := Vector2i(14, 0)
+const AMBIENT_HUNTING_LODGE_TILE := Vector2i(16, 0)
+const AMBIENT_HOMESTEAD_TILE := Vector2i(13, 1)
+const AMBIENT_MOONWELL_TILE := Vector2i(2, 6)
+const AMBIENT_FARM_TILE := Vector2i(15, 1)
+const FARM_CROPS_TILE := Vector2i(15, 0)
+const AMBIENT_FARM_VARIANT_TILE := Vector2i(15, 0)
+const AMBIENT_GREAT_TREE_TILE := Vector2i(14, 1)
+const AMBIENT_GREAT_TREE_ALT_TILE := Vector2i(14, 2)
+const LIZARDMEN_CITY_TILE := Vector2i(11, 2)
+const SAINT_SHRINE_TILE := Vector2i(11, 1)
+const MONASTERY_TILE := Vector2i(2, 2)
+const ORC_CAMP_TILE := Vector2i(11, 3)
+const GNOLL_CAMP_TILE := Vector2i(1, 5)
+const TROLL_CAMP_TILE := Vector2i(1, 5)
+const OGRE_CAMP_TILE := Vector2i(1, 5)
+const BANDIT_CAMP_TILE := Vector2i(1, 5)
+const TRAVELERS_CAMP_TILE := Vector2i(1, 5)
+const DUNGEON_TILE := Vector2i(7, 2)
+const CENTAUR_ENCAMPMENT_TILE := Vector2i(10, 2)
 const BIOME_WATER := "water"
 const BIOME_MOUNTAIN := "mountain"
 const BIOME_MARSH := "marsh"
@@ -393,12 +451,70 @@ func _configure_tileset() -> void:
 		SAND_TILE,
 		GRASS_TILE,
 		BADLANDS_TILE,
+		MINE_TILE,
 		MARSH_TILE,
 		SNOW_TILE,
 		TREE_TILE,
+		TREE_LONE_TILE,
+		TREE_SNOW_TILE,
 		JUNGLE_TREE_TILE,
+		CUT_TREES_TILE,
+		AMBIENT_LUMBER_MILL_TILE,
 		WATER_TILE,
-		MOUNTAIN_TILE
+		MOUNTAIN_TILE,
+		MOUNTAIN_TOP_A_TILE,
+		MOUNTAIN_TOP_B_TILE,
+		MOUNTAIN_BOTTOM_A_TILE,
+		MOUNTAIN_BOTTOM_B_TILE,
+		DAM_TILE,
+		MOUNTAIN_PEAK_TILE,
+		STONE_TILE,
+		DWARFHOLD_TILE,
+		ABANDONED_DWARFHOLD_TILE,
+		GREAT_DWARFHOLD_TILE,
+		DARK_DWARFHOLD_TILE,
+		HILLHOLD_TILE,
+		CAVE_TILE,
+		TOWER_TILE,
+		EVIL_WIZARDS_TOWER_TILE,
+		WOOD_ELF_GROVES_TILE,
+		WOOD_ELF_GROVES_LARGE_TILE,
+		WOOD_ELF_GROVES_GRAND_TILE,
+		HILLS_TILE,
+		HILLS_BADLANDS_TILE,
+		HILLS_VARIANT_A_TILE,
+		HILLS_VARIANT_B_TILE,
+		HILLS_SNOW_TILE,
+		TOWN_TILE,
+		PORT_TOWN_TILE,
+		CASTLE_TILE,
+		ROADSIDE_TAVERN_TILE,
+		HAMLET_TILE,
+		ACTIVE_VOLCANO_TILE,
+		VOLCANO_TILE,
+		LAVA_TILE,
+		OASIS_TILE,
+		HAMLET_SNOW_TILE,
+		AMBIENT_SLEEPING_DRAGON_TILE,
+		AMBIENT_HUNTING_LODGE_TILE,
+		AMBIENT_HOMESTEAD_TILE,
+		AMBIENT_MOONWELL_TILE,
+		AMBIENT_FARM_TILE,
+		FARM_CROPS_TILE,
+		AMBIENT_FARM_VARIANT_TILE,
+		AMBIENT_GREAT_TREE_TILE,
+		AMBIENT_GREAT_TREE_ALT_TILE,
+		LIZARDMEN_CITY_TILE,
+		SAINT_SHRINE_TILE,
+		MONASTERY_TILE,
+		ORC_CAMP_TILE,
+		GNOLL_CAMP_TILE,
+		TROLL_CAMP_TILE,
+		OGRE_CAMP_TILE,
+		BANDIT_CAMP_TILE,
+		TRAVELERS_CAMP_TILE,
+		DUNGEON_TILE,
+		CENTAUR_ENCAMPMENT_TILE
 	]:
 		overworld_atlas.create_tile(tile_coords)
 	_atlas_source_id = tile_set.add_source(overworld_atlas)
