@@ -7,7 +7,7 @@ extends Node2D
 @export var noise_frequency: float = 2.0
 @export var noise_octaves: int = 4
 @export var map_seed: int = 0
-@export var tile_size: int = 16
+@export var tile_size: int = 32
 
 const DEFAULT_TILE_COORDS := Vector2i.ZERO
 const GRASS_TEXTURE := "res://resources/images/overworld/land.png"
