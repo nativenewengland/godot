@@ -122,10 +122,18 @@ const TREE_BIOMES: Array[String] = [
 
 @onready var map_layer: TileMapLayer = $MapLayer
 @onready var regenerate_button: Button = get_node_or_null("MapUi/TopBar/RegenerateButton")
+@onready var tooltip_control: Control = get_node_or_null("MapUi/MapTooltip")
+@onready var tooltip_panel: Panel = get_node_or_null("MapUi/MapTooltip/Panel")
+@onready var tooltip_title: Label = get_node_or_null("MapUi/MapTooltip/Panel/TooltipLayout/TitleLabel")
+@onready var tooltip_biome: Label = get_node_or_null("MapUi/MapTooltip/Panel/TooltipLayout/BiomeLabel")
+@onready var tooltip_climate: Label = get_node_or_null("MapUi/MapTooltip/Panel/TooltipLayout/ClimateLabel")
+@onready var tooltip_resources: Label = get_node_or_null("MapUi/MapTooltip/Panel/TooltipLayout/ResourcesLabel")
 
 var _atlas_source_id := -1
 var _temperature_noise: FastNoiseLite
 var _rainfall_noise: FastNoiseLite
+var _tile_data: Dictionary = {}
+var _last_hovered_tile := Vector2i(-9999, -9999)
 
 func _ready() -> void:
 	if map_layer == null:
@@ -138,6 +146,10 @@ func _ready() -> void:
 		push_error("Overworld map is missing a RegenerateButton at MapUi/TopBar/RegenerateButton.")
 	else:
 		regenerate_button.pressed.connect(_on_regenerate_pressed)
+	_hide_tooltip()
+
+func _process(_delta: float) -> void:
+	_update_tooltip()
 
 func _unhandled_input(event: InputEvent) -> void:
 	var key_event := event as InputEventKey
@@ -163,6 +175,9 @@ func _generate_map() -> void:
 		push_error("Overworld map tileset is missing a valid atlas source.")
 		return
 	map_layer.clear()
+	_tile_data.clear()
+	_last_hovered_tile = Vector2i(-9999, -9999)
+	_hide_tooltip()
 
 	var height_map: Dictionary = {}
 	var temperature_map: Dictionary = {}
@@ -224,6 +239,14 @@ func _generate_map() -> void:
 			var coord := Vector2i(x, y)
 			var tile_coords := _biome_to_tile(biome_map.get(coord, BIOME_GRASSLAND))
 			map_layer.set_cell(coord, _atlas_source_id, tile_coords)
+			var biome := biome_map.get(coord, BIOME_GRASSLAND)
+			_tile_data[coord] = {
+				"biome_type": biome,
+				"temperature": temperature_map.get(coord, 0.0),
+				"moisture": moisture_map.get(coord, 0.0),
+				"resources": _resources_for_biome(biome),
+				"region_name": ""
+			}
 
 func _sample_height(noise: FastNoiseLite, x: int, y: int) -> float:
 	var nx := (float(x) / float(map_size.x)) * 2.0 - 1.0
@@ -441,8 +464,115 @@ func _biome_to_tile(biome: String) -> Vector2i:
 			return TREE_TILE
 		BIOME_JUNGLE:
 			return JUNGLE_TREE_TILE
+	_:
+		return GRASS_TILE
+
+func _resources_for_biome(biome: String) -> Array[String]:
+	match biome:
+		BIOME_WATER:
+			return ["fish", "salt"]
+		BIOME_MOUNTAIN:
+			return ["stone", "iron", "gems"]
+		BIOME_MARSH:
+			return ["reeds", "peat", "herbs"]
+		BIOME_TUNDRA:
+			return ["fur", "ice", "hardwood"]
+		BIOME_DESERT:
+			return ["spice", "glass", "salt"]
+		BIOME_BADLANDS:
+			return ["clay", "copper", "scrub"]
+		BIOME_FOREST:
+			return ["timber", "game", "berries"]
+		BIOME_JUNGLE:
+			return ["exotic wood", "fruit", "spices"]
 		_:
-			return GRASS_TILE
+			return ["grain", "livestock", "herbs"]
+
+func _update_tooltip() -> void:
+	if tooltip_control == null or tooltip_panel == null:
+		return
+	if map_layer == null:
+		_hide_tooltip()
+		return
+	var mouse_pos := get_viewport().get_mouse_position()
+	var local_mouse := map_layer.to_local(get_global_mouse_position())
+	var tile_coords := map_layer.local_to_map(local_mouse)
+	if not _tile_data.has(tile_coords):
+		_hide_tooltip()
+		return
+	if tile_coords != _last_hovered_tile:
+		_last_hovered_tile = tile_coords
+		_update_tooltip_content(_tile_data[tile_coords])
+	tooltip_control.visible = true
+	var tooltip_size := tooltip_panel.get_combined_minimum_size()
+	var viewport_rect := get_viewport().get_visible_rect()
+	var desired := mouse_pos + Vector2(18, 18)
+	var max_x := maxf(viewport_rect.position.x, viewport_rect.position.x + viewport_rect.size.x - tooltip_size.x)
+	var max_y := maxf(viewport_rect.position.y, viewport_rect.position.y + viewport_rect.size.y - tooltip_size.y)
+	tooltip_control.position = Vector2(
+		clampf(desired.x, viewport_rect.position.x, max_x),
+		clampf(desired.y, viewport_rect.position.y, max_y)
+	)
+
+func _update_tooltip_content(tile_info: Dictionary) -> void:
+	if tooltip_title == null or tooltip_biome == null or tooltip_climate == null or tooltip_resources == null:
+		return
+	var region_name := String(tile_info.get("region_name", "")).strip_edges()
+	var biome_type := String(tile_info.get("biome_type", BIOME_GRASSLAND))
+	if region_name.is_empty():
+		tooltip_title.text = "Unnamed %s" % _humanize_biome(biome_type)
+	else:
+		tooltip_title.text = region_name
+	tooltip_biome.text = "Biome: %s" % _humanize_biome(biome_type)
+	var temperature := float(tile_info.get("temperature", 0.0))
+	var moisture := float(tile_info.get("moisture", 0.0))
+	tooltip_climate.text = "Climate: %s" % _describe_climate(temperature, moisture)
+	var resources: Array = tile_info.get("resources", [])
+	tooltip_resources.text = "Resources: %s" % _format_resource_list(resources)
+
+func _describe_climate(temperature: float, moisture: float) -> String:
+	var temp_label := "Mild"
+	if temperature < 0.3:
+		temp_label = "Cold"
+	elif temperature < 0.55:
+		temp_label = "Cool"
+	elif temperature < 0.75:
+		temp_label = "Warm"
+	else:
+		temp_label = "Hot"
+	var moisture_label := "moderate rainfall"
+	if moisture < 0.3:
+		moisture_label = "low rainfall"
+	elif moisture < 0.6:
+		moisture_label = "moderate rainfall"
+	else:
+		moisture_label = "heavy rainfall"
+	return "%s climate with %s" % [temp_label, moisture_label]
+
+func _format_resource_list(resources: Array) -> String:
+	var items: Array[String] = []
+	for entry in resources:
+		items.append(String(entry))
+	if items.is_empty():
+		return "None"
+	if items.size() == 1:
+		return items[0]
+	if items.size() == 2:
+		return "%s and %s" % [items[0], items[1]]
+	var combined := ""
+	for index in range(items.size()):
+		if index == items.size() - 1:
+			combined += "and %s" % items[index]
+		else:
+			combined += "%s, " % items[index]
+	return combined
+
+func _humanize_biome(biome: String) -> String:
+	return biome.replace("_", " ").capitalize()
+
+func _hide_tooltip() -> void:
+	if tooltip_control != null:
+		tooltip_control.visible = false
 
 func _configure_tileset() -> void:
 	var tile_set := TileSet.new()
