@@ -22,6 +22,20 @@ extends Node2D
 @export_range(0.0, 1.0, 0.01) var hot_threshold: float = 0.7
 @export_range(0.0, 1.0, 0.01) var warm_threshold: float = 0.55
 
+const CONTINENT_INFLUENCES := [
+	{"center": Vector2(0.62, 0.16), "radius": 0.48, "strength": 0.42},
+	{"center": Vector2(0.58, 0.62), "radius": 0.55, "strength": 0.38},
+	{"center": Vector2(0.25, 0.55), "radius": 0.36, "strength": 0.25},
+	{"center": Vector2(0.78, 0.47), "radius": 0.32, "strength": 0.2},
+	{"center": Vector2(0.18, 0.3), "radius": 0.22, "strength": 0.16},
+	{"center": Vector2(0.82, 0.78), "radius": 0.24, "strength": 0.14}
+]
+const SEA_BASINS := [
+	{"center": Vector2(0.46, 0.42), "radius": 0.28, "strength": 0.28},
+	{"center": Vector2(0.38, 0.32), "radius": 0.18, "strength": 0.2},
+	{"center": Vector2(0.72, 0.33), "radius": 0.16, "strength": 0.16}
+]
+
 const ATLAS_TEXTURE := "res://resources/images/overworld/atlas/overworld.png"
 const SAND_TILE := Vector2i(0, 0)
 const GRASS_TILE := Vector2i(1, 0)
@@ -157,7 +171,30 @@ func _sample_height(noise: FastNoiseLite, x: int, y: int) -> float:
 	var falloff := pow(distance, falloff_power) * falloff_strength
 	var noise_value := noise.get_noise_2d(float(x), float(y))
 	var height := (noise_value + 1.0) * 0.5
-	return clampf(height - falloff, 0.0, 1.0)
+	var continent_bias := _sample_continent_bias(x, y)
+	return clampf(height + continent_bias - falloff, 0.0, 1.0)
+
+
+func _sample_continent_bias(x: int, y: int) -> float:
+	var denom_x := maxf(1.0, float(map_size.x - 1))
+	var denom_y := maxf(1.0, float(map_size.y - 1))
+	var uv := Vector2(float(x) / denom_x, float(y) / denom_y)
+	var influence := 0.0
+	for entry: Dictionary in CONTINENT_INFLUENCES:
+		var center: Vector2 = entry["center"]
+		var radius: float = entry["radius"]
+		var strength: float = entry["strength"]
+		var dist := uv.distance_to(center) / maxf(0.001, radius)
+		var falloff := clampf(1.0 - pow(dist, 2.0), 0.0, 1.0)
+		influence += falloff * strength
+	for basin: Dictionary in SEA_BASINS:
+		var center: Vector2 = basin["center"]
+		var radius: float = basin["radius"]
+		var strength: float = basin["strength"]
+		var dist := uv.distance_to(center) / maxf(0.001, radius)
+		var falloff := clampf(1.0 - pow(dist, 2.0), 0.0, 1.0)
+		influence -= falloff * strength
+	return influence
 
 
 func _to_normalized(noise_sample: float) -> float:
@@ -170,9 +207,10 @@ func _sample_temperature(x: int, y: int, elevation: float) -> float:
 	var base_variation := _to_normalized(_temperature_noise.get_noise_2d(float(x), float(y)))
 	var detail_variation := _to_normalized(_temperature_noise.get_noise_2d(float(x) * 2.1, float(y) * 2.1))
 	var layered_noise := base_variation * 0.7 + detail_variation * 0.3
+	var north_bias := pow(1.0 - (float(y) / maxf(1.0, float(map_size.y - 1))), 1.35) * 0.22
 	var above_sea := maxf(0.0, elevation - water_level)
 	var elevation_cooling := above_sea * 0.9
-	return clampf((layered_noise * 0.55 + (1.0 - latitudinal_cold) * 0.45) - elevation_cooling, 0.0, 1.0)
+	return clampf((layered_noise * 0.55 + (1.0 - latitudinal_cold) * 0.45) - elevation_cooling - north_bias, 0.0, 1.0)
 
 
 func _sample_rainfall(x: int, y: int, elevation: float) -> float:
