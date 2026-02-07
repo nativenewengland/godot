@@ -128,7 +128,7 @@ func _ready() -> void:
 	rebuild()
 
 func _setup_secondary_noise() -> void:
-	var curr_seed := Seeder.instance.current_seed
+	var curr_seed: int = Seeder.instance.current_seed
 
 	_height_noise = FastNoiseLite.new()
 	_height_noise.seed = curr_seed
@@ -204,7 +204,6 @@ func _get_rainfall(coord: Vector2i, elevation: float) -> float:
 	return clampf(humidity + maxf(0.0, mountain_ocurrence - elevation) * 0.2, 0.0, 1.0)
 
 func generate_gridmap(to_paint: Image) -> void:
-	var curr_seed := Seeder.instance.current_seed
 	var curr_size := to_paint.get_size()
 	grid_map.clear()
 	_biome_map.clear()
