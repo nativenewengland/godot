@@ -14,6 +14,7 @@ const GRASS_TEXTURE := "res://resources/images/overworld/land.png"
 const WATER_TEXTURE := "res://resources/images/overworld/water.png"
 
 @onready var map_layer: TileMapLayer = $MapLayer
+@onready var regenerate_button: Button = %RegenerateButton
 
 var _grass_source_id := -1
 var _water_source_id := -1
@@ -25,13 +26,22 @@ func _ready() -> void:
 	_apply_cached_world_settings()
 	_configure_tileset()
 	_generate_map()
+	if regenerate_button:
+		regenerate_button.pressed.connect(_on_regenerate_pressed)
 
 func _unhandled_input(event: InputEvent) -> void:
 	var key_event := event as InputEventKey
 	if key_event == null or not key_event.pressed:
 		return
 	if key_event.keycode == KEY_R:
-		_generate_map()
+		_regenerate_map()
+
+func _on_regenerate_pressed() -> void:
+	_regenerate_map()
+
+func _regenerate_map() -> void:
+	map_seed = 0
+	_generate_map()
 
 func _generate_map() -> void:
 	if map_layer == null:
