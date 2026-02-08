@@ -131,6 +131,7 @@ const TREE_BIOMES: Array[String] = [
 
 @onready var map_layer: TileMapLayer = $MapLayer
 @onready var map_overlays: Node2D = get_node_or_null("MapOverlays")
+@onready var elevation_overlay: Sprite2D = get_node_or_null("MapOverlays/ElevationOverlay")
 @onready var temperature_overlay: Sprite2D = get_node_or_null("MapOverlays/TemperatureOverlay")
 @onready var overworld_camera: Camera2D = get_node_or_null("OverworldCamera")
 @onready var globe_view: Node3D = get_node_or_null("GlobeView")
@@ -141,6 +142,7 @@ const TREE_BIOMES: Array[String] = [
 @onready var regenerate_button: Button = get_node_or_null("MapUi/TopBar/TopBarLayout/RegenerateButton")
 @onready var globe_view_button: Button = get_node_or_null("MapUi/TopBar/TopBarLayout/GlobeViewButton")
 @onready var temperature_map_button: Button = get_node_or_null("MapUi/TopBar/TopBarLayout/TemperatureMapButton")
+@onready var elevation_map_button: Button = get_node_or_null("MapUi/TopBar/TopBarLayout/ElevationMapButton")
 @onready var tooltip_control: Control = get_node_or_null("MapUi/MapTooltip")
 @onready var tooltip_panel: Panel = get_node_or_null("MapUi/MapTooltip/Panel")
 @onready var tooltip_title: Label = get_node_or_null("MapUi/MapTooltip/Panel/TooltipLayout/TitleLabel")
@@ -158,6 +160,7 @@ var _atlas_source_id := -1
 var _temperature_noise: FastNoiseLite
 var _rainfall_noise: FastNoiseLite
 var _tile_data: Dictionary = {}
+var _height_map: Dictionary = {}
 var _temperature_map: Dictionary = {}
 var _last_hovered_tile := Vector2i(-9999, -9999)
 var _world_settings: Dictionary = {}
@@ -166,6 +169,7 @@ var _map_layer_original_index := -1
 var _overlays_original_parent: Node = null
 var _overlays_original_index := -1
 var _is_globe_view := false
+var _elevation_overlay_enabled := false
 var _temperature_overlay_enabled := false
 
 func _ready() -> void:
@@ -185,6 +189,9 @@ func _ready() -> void:
 	if temperature_map_button != null:
 		temperature_map_button.toggled.connect(_on_temperature_map_toggled)
 		temperature_map_button.button_pressed = false
+	if elevation_map_button != null:
+		elevation_map_button.toggled.connect(_on_elevation_map_toggled)
+		elevation_map_button.button_pressed = false
 	_cache_map_layer_parent()
 	_cache_overlay_parent()
 	_configure_globe_viewport()
@@ -213,6 +220,10 @@ func _on_globe_view_toggled(is_pressed: bool) -> void:
 func _on_temperature_map_toggled(is_pressed: bool) -> void:
 	_temperature_overlay_enabled = is_pressed
 	_update_temperature_overlay_visibility()
+
+func _on_elevation_map_toggled(is_pressed: bool) -> void:
+	_elevation_overlay_enabled = is_pressed
+	_update_elevation_overlay_visibility()
 
 func _regenerate_map() -> void:
 	map_seed = 0
@@ -301,7 +312,9 @@ func _generate_map() -> void:
 				"region_name": ""
 			}
 	_place_settlements(biome_map, rng)
+	_height_map = height_map.duplicate()
 	_temperature_map = temperature_map.duplicate()
+	_update_elevation_overlay()
 	_update_temperature_overlay()
 	_configure_globe_viewport()
 	if _is_globe_view:
@@ -850,6 +863,7 @@ func _set_globe_view(enabled: bool) -> void:
 		_update_globe_texture()
 	else:
 		_restore_map_layer_parent()
+	_update_elevation_overlay_visibility()
 	_update_temperature_overlay_visibility()
 
 func _move_map_layer_to_viewport() -> void:
@@ -1043,6 +1057,54 @@ func _update_temperature_overlay_visibility() -> void:
 	if temperature_overlay == null:
 		return
 	temperature_overlay.visible = _temperature_overlay_enabled and not _is_globe_view
+
+func _update_elevation_overlay() -> void:
+	if elevation_overlay == null:
+		return
+	if _height_map.is_empty():
+		elevation_overlay.texture = null
+		return
+	var image := Image.create(map_size.x, map_size.y, false, Image.FORMAT_RGBA8)
+	for y in range(map_size.y):
+		for x in range(map_size.x):
+			var coord := Vector2i(x, y)
+			var height := float(_height_map.get(coord, 0.0))
+			image.set_pixel(x, y, _elevation_to_color(height))
+	var texture := ImageTexture.create_from_image(image)
+	elevation_overlay.texture = texture
+	elevation_overlay.centered = false
+	elevation_overlay.scale = Vector2(tile_size, tile_size)
+	elevation_overlay.position = Vector2.ZERO
+	_update_elevation_overlay_visibility()
+
+func _elevation_to_color(height: float) -> Color:
+	var alpha := 0.45
+	var deep_water := Color(0.0, 0.2, 0.55, alpha)
+	var shallow_water := Color(0.1, 0.5, 0.85, alpha)
+	var lowland := Color(0.2, 0.6, 0.35, alpha)
+	var highland := Color(0.6, 0.5, 0.25, alpha)
+	var snow := Color(0.92, 0.92, 0.96, alpha)
+	if height < water_level:
+		var water_ratio := clampf(height / maxf(water_level, 0.001), 0.0, 1.0)
+		return deep_water.lerp(shallow_water, water_ratio)
+	if height < mountain_level:
+		var land_ratio := clampf(
+			(height - water_level) / maxf(mountain_level - water_level, 0.001),
+			0.0,
+			1.0
+		)
+		return lowland.lerp(highland, land_ratio)
+	var mountain_ratio := clampf(
+		(height - mountain_level) / maxf(1.0 - mountain_level, 0.001),
+		0.0,
+		1.0
+	)
+	return highland.lerp(snow, mountain_ratio)
+
+func _update_elevation_overlay_visibility() -> void:
+	if elevation_overlay == null:
+		return
+	elevation_overlay.visible = _elevation_overlay_enabled and not _is_globe_view
 
 func _apply_cached_world_settings() -> void:
 	var game_session := get_node_or_null("/root/GameSession")

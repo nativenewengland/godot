@@ -27,6 +27,11 @@ script = ExtResource("1_1r0ns")
 
 [node name="MapOverlays" type="Node2D" parent="."]
 
+[node name="ElevationOverlay" type="Sprite2D" parent="MapOverlays"]
+visible = false
+z_index = 4
+centered = false
+
 [node name="TemperatureOverlay" type="Sprite2D" parent="MapOverlays"]
 visible = false
 z_index = 5
@@ -85,6 +90,11 @@ text = "Globe View"
 layout_mode = 2
 toggle_mode = true
 text = "Temperature Map"
+
+[node name="ElevationMapButton" type="Button" parent="MapUi/TopBar/TopBarLayout"]
+layout_mode = 2
+toggle_mode = true
+text = "Elevation Map"
 
 [node name="MapTooltip" type="Control" parent="MapUi"]
 visible = false
