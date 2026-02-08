@@ -20,6 +20,25 @@ sky_material = SubResource("PanoramaSkyMaterial_t31gj")
 background_mode = 2
 sky = SubResource("Sky_vav31")
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6v0i6"]
+bg_color = Color(0.09, 0.1, 0.13, 0.9)
+border_width_bottom = 1
+border_width_left = 1
+border_width_right = 1
+border_width_top = 1
+border_color = Color(0.5, 0.52, 0.58, 0.6)
+corner_radius_bottom_left = 6
+corner_radius_bottom_right = 6
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0c4c3"]
+bg_color = Color(0.85, 0.7, 0.3, 0.9)
+corner_radius_bottom_left = 6
+corner_radius_bottom_right = 6
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+
 [node name="Overworld" type="Node2D"]
 script = ExtResource("1_1r0ns")
 
@@ -199,6 +218,43 @@ offset_bottom = 0.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="LoadingLabel" type="Label" parent="MapUi/LoadingScreen/LoadingContainer"]
-text = "Generating world map..."
-theme_override_font_sizes/font_size = 26
+[node name="LoadingPanel" type="PanelContainer" parent="MapUi/LoadingScreen/LoadingContainer"]
+custom_minimum_size = Vector2(680, 320)
+
+[node name="LoadingMargin" type="MarginContainer" parent="MapUi/LoadingScreen/LoadingContainer/LoadingPanel"]
+theme_override_constants/margin_left = 36
+theme_override_constants/margin_top = 32
+theme_override_constants/margin_right = 36
+theme_override_constants/margin_bottom = 32
+
+[node name="LoadingVBox" type="VBoxContainer" parent="MapUi/LoadingScreen/LoadingContainer/LoadingPanel/LoadingMargin"]
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="LoadingEyebrow" type="Label" parent="MapUi/LoadingScreen/LoadingContainer/LoadingPanel/LoadingMargin/LoadingVBox"]
+theme_override_font_sizes/font_size = 12
+text = "PREPARING EXPEDITION"
+horizontal_alignment = 1
+
+[node name="LoadingTitle" type="Label" parent="MapUi/LoadingScreen/LoadingContainer/LoadingPanel/LoadingMargin/LoadingVBox"]
+theme_override_font_sizes/font_size = 32
+text = "Forging Your World"
+horizontal_alignment = 1
+
+[node name="LoadingSubtitle" type="Label" parent="MapUi/LoadingScreen/LoadingContainer/LoadingPanel/LoadingMargin/LoadingVBox"]
+theme_override_font_sizes/font_size = 16
+text = "Surveying continental plates..."
+horizontal_alignment = 1
+
+[node name="LoadingBar" type="ProgressBar" parent="MapUi/LoadingScreen/LoadingContainer/LoadingPanel/LoadingMargin/LoadingVBox"]
+custom_minimum_size = Vector2(520, 12)
+value = 10.0
+show_percentage = false
+theme_override_constants/outline_size = 0
+theme_override_styles/background = SubResource("StyleBoxFlat_6v0i6")
+theme_override_styles/fill = SubResource("StyleBoxFlat_0c4c3")
+
+[node name="LoadingFooter" type="Label" parent="MapUi/LoadingScreen/LoadingContainer/LoadingPanel/LoadingMargin/LoadingVBox"]
+theme_override_font_sizes/font_size = 12
+text = "Please wait while the realm is generated."
+horizontal_alignment = 1
