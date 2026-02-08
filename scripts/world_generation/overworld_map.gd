@@ -260,6 +260,7 @@ func _generate_map() -> void:
 	var temperature_map: Dictionary = {}
 	var moisture_map: Dictionary = {}
 	var vegetation_map: Dictionary = {}
+	var landmass_map: Dictionary = {}
 	var biome_map: Dictionary = {}
 
 	var rng := RandomNumberGenerator.new()
@@ -326,9 +327,15 @@ func _generate_map() -> void:
 
 	_smooth_height_map(height_map, 1, 0.35)
 
+	var landmass_denom_x := maxf(1.0, float(map_size.x - 1))
+	var landmass_denom_y := maxf(1.0, float(map_size.y - 1))
 	for y in range(map_size.y):
 		for x in range(map_size.x):
 			var coord := Vector2i(x, y)
+			var nx := float(x) / landmass_denom_x
+			var ny := float(y) / landmass_denom_y
+			var mask_value := _sample_landmass_mask(nx, ny)
+			landmass_map[coord] = mask_value >= 0.5
 			var height: float = height_map[coord]
 			var temperature := _sample_temperature(x, y, height)
 			var moisture := _sample_moisture(x, y, height)
@@ -340,6 +347,9 @@ func _generate_map() -> void:
 	for y in range(map_size.y):
 		for x in range(map_size.x):
 			var coord := Vector2i(x, y)
+			if not landmass_map.get(coord, true):
+				biome_map[coord] = BIOME_WATER
+				continue
 			var height: float = height_map[coord]
 			var temperature: float = temperature_map[coord]
 			var moisture: float = moisture_map[coord]
