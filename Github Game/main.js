@@ -23148,6 +23148,12 @@ function createWorld(seedString) {
           ridgeField[idx] = 0;
           continue;
         }
+        const tile = tiles[y][x];
+        if (!tile || !isLandBaseTile(tile.base)) {
+          mountainHeightField[idx] = 0;
+          ridgeField[idx] = 0;
+          continue;
+        }
 
         const heightValue = elevationField[idx];
         const normalizedHeight = clamp((heightValue - mountainBaseThreshold) / mountainRange, 0, 1);
@@ -23271,6 +23277,11 @@ function createWorld(seedString) {
             ridgeBuffer[idx] = 0;
             continue;
           }
+          const tile = tiles[y][x];
+          if (!tile || !isLandBaseTile(tile.base)) {
+            ridgeBuffer[idx] = 0;
+            continue;
+          }
           const dirIndex = ridgeDirectionIndex[idx];
           if (dirIndex < 0) {
             ridgeBuffer[idx] = ridgeWorking[idx];
@@ -23292,6 +23303,10 @@ function createWorld(seedString) {
             if (waterMask[nIdx]) {
               continue;
             }
+            const neighborTile = tiles[ny][nx];
+            if (!neighborTile || !isLandBaseTile(neighborTile.base)) {
+              continue;
+            }
             const neighborWeight = 0.8 + strength * 0.6;
             weightedSum += ridgeWorking[nIdx] * neighborWeight;
             weight += neighborWeight;
@@ -23308,6 +23323,11 @@ function createWorld(seedString) {
 
     for (let idx = 0; idx < mountainScores.length; idx += 1) {
       if (waterMask[idx]) {
+        mountainScores[idx] = 0;
+        continue;
+      }
+      const tile = tiles[Math.floor(idx / width)][idx % width];
+      if (!tile || !isLandBaseTile(tile.base)) {
         mountainScores[idx] = 0;
         continue;
       }
@@ -23358,6 +23378,10 @@ function createWorld(seedString) {
         if (waterMask[idx]) {
           continue;
         }
+        const tile = tiles[y][x];
+        if (!tile || !isLandBaseTile(tile.base)) {
+          continue;
+        }
         const score = mountainScores[idx];
         if (score >= mountainSeedThreshold && !isTooCoastal(x, y)) {
           mountainMask[idx] = 1;
@@ -23370,6 +23394,10 @@ function createWorld(seedString) {
       const fallbackCandidates = [];
       for (let idx = 0; idx < mountainScores.length; idx += 1) {
         if (waterMask[idx]) {
+          continue;
+        }
+        const tile = tiles[Math.floor(idx / width)][idx % width];
+        if (!tile || !isLandBaseTile(tile.base)) {
           continue;
         }
         const score = mountainScores[idx];
@@ -23404,6 +23432,10 @@ function createWorld(seedString) {
         }
         const nIdx = ny * width + nx;
         if (waterMask[nIdx]) {
+          break;
+        }
+        const neighborTile = tiles[ny][nx];
+        if (!neighborTile || !isLandBaseTile(neighborTile.base)) {
           break;
         }
         if (mountainScores[nIdx] < mountainCandidateThreshold * 0.85) {
@@ -23455,14 +23487,18 @@ function createWorld(seedString) {
     for (let pass = 0; pass < 2; pass += 1) {
       for (let y = 0; y < height; y += 1) {
         for (let x = 0; x < width; x += 1) {
-          const idx = y * width + x;
-          if (waterMask[idx] || mountainMask[idx]) {
-            continue;
-          }
-          const score = mountainScores[idx];
-          if (score <= 0 || isTooCoastal(x, y)) {
-            continue;
-          }
+        const idx = y * width + x;
+        if (waterMask[idx] || mountainMask[idx]) {
+          continue;
+        }
+        const tile = tiles[y][x];
+        if (!tile || !isLandBaseTile(tile.base)) {
+          continue;
+        }
+        const score = mountainScores[idx];
+        if (score <= 0 || isTooCoastal(x, y)) {
+          continue;
+        }
           let mountainNeighbors = 0;
           for (let i = 0; i < neighborOffsets8.length; i += 1) {
             const nx = x + neighborOffsets8[i][0];
@@ -23523,6 +23559,10 @@ function createWorld(seedString) {
       for (let x = 0; x < width; x += 1) {
         const idx = y * width + x;
         if (waterMask[idx] || mountainMask[idx]) {
+          continue;
+        }
+        const tile = tiles[y][x];
+        if (!tile || !isLandBaseTile(tile.base)) {
           continue;
         }
         const score = mountainScores[idx];
@@ -23586,7 +23626,8 @@ function createWorld(seedString) {
           continue;
         }
         const tile = tiles[y][x];
-        if (!tile) {
+        if (!tile || !isLandBaseTile(tile.base)) {
+          mountainMask[idx] = 0;
           continue;
         }
         const normalizedHeight = mountainHeightField ? mountainHeightField[idx] : 0;
@@ -30909,4 +30950,3 @@ function startApplicationWhenReady() {
 }
 
 startApplicationWhenReady();
-
