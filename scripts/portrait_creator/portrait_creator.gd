@@ -256,6 +256,11 @@ var _available_beards: Array[CompressedTexture2D]
 func _enter_tree() -> void:
 	instance = self
 
+func _exit_tree() -> void:
+	instance = null
+	_images.clear()
+	_available_beards.clear()
+
 func _ready() -> void:
 	skin_color.value_changed.connect(_on_color_changed.bind(Images.PORTRAIT))
 	hair_color.value_changed.connect(_on_color_changed.bind(Images.HAIR))
@@ -278,7 +283,8 @@ func _on_name_changed(_new_text: String) -> void:
 
 	var dir := DirAccess.open(beard_dir)
 	for curr_file in dir.get_files():
-		if !curr_file.ends_with(".png"): return
+		if !curr_file.ends_with(".png"):
+			continue
 		_available_beards.append(load(beard_dir + curr_file))
 
 func _on_resend_images() -> void:
