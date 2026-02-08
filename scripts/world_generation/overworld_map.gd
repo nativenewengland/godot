@@ -133,6 +133,12 @@ const TREE_BIOMES: Array[String] = [
 	BIOME_JUNGLE,
 	BIOME_TUNDRA
 ]
+const TREE_BASE_BIOMES: Array[String] = [
+	BIOME_GRASSLAND,
+	BIOME_TUNDRA,
+	BIOME_DESERT,
+	BIOME_BADLANDS
+]
 
 @onready var map_layer: TileMapLayer = $MapLayer
 @onready var map_overlays: Node2D = get_node_or_null("MapOverlays")
@@ -339,8 +345,9 @@ func _generate_map() -> void:
 			var moisture: float = moisture_map[coord]
 			biome_map[coord] = _assign_base_biome(coord, height, temperature, moisture, height_map)
 
-	_apply_tree_overlays(biome_map, temperature_map, moisture_map, vegetation_map)
 	_smooth_biomes(biome_map, 2)
+	_apply_highland_overlays(biome_map, height_map)
+	_apply_tree_overlays(biome_map, temperature_map, moisture_map, vegetation_map)
 
 	for y in range(map_size.y):
 		for x in range(map_size.x):
@@ -545,26 +552,18 @@ func _assign_base_biome(
 ) -> String:
 	if height < water_level:
 		return BIOME_WATER
-	if height > mountain_level:
-		return BIOME_MOUNTAIN
 	if temperature < tundra_threshold:
 		return BIOME_TUNDRA
-	if height > hill_level:
-		return BIOME_HILLS
 	if _is_marsh(coord, height, moisture, height_map):
 		return BIOME_MARSH
 	if temperature >= hot_threshold && moisture <= desert_threshold:
 		return BIOME_DESERT
 	if temperature >= warm_threshold && moisture <= badlands_threshold:
 		return BIOME_BADLANDS
-	if moisture >= jungle_threshold:
-		return _resolve_jungle_overlay(temperature, moisture)
-	if moisture >= forest_threshold:
-		return BIOME_FOREST
 	return BIOME_GRASSLAND
 
 
-func _resolve_jungle_overlay(temperature: float, moisture: float) -> String:
+func _tree_overlay_biome(temperature: float, moisture: float) -> String:
 	if moisture >= jungle_threshold && temperature >= hot_threshold:
 		return BIOME_JUNGLE
 	if temperature < tundra_threshold:
@@ -572,10 +571,15 @@ func _resolve_jungle_overlay(temperature: float, moisture: float) -> String:
 	return BIOME_FOREST
 
 
-func _tree_overlay_biome(temperature: float) -> String:
-	if temperature < tundra_threshold:
-		return BIOME_TUNDRA
-	return BIOME_FOREST
+func _apply_highland_overlays(biome_map: Dictionary, height_map: Dictionary) -> void:
+	for coord: Vector2i in biome_map.keys():
+		if biome_map[coord] == BIOME_WATER:
+			continue
+		var height: float = height_map.get(coord, 0.0)
+		if height > mountain_level:
+			biome_map[coord] = BIOME_MOUNTAIN
+		elif height > hill_level:
+			biome_map[coord] = BIOME_HILLS
 
 
 func _apply_tree_overlays(
@@ -586,7 +590,7 @@ func _apply_tree_overlays(
 ) -> void:
 	var next_map := biome_map.duplicate()
 	for coord: Vector2i in biome_map.keys():
-		if biome_map[coord] != BIOME_GRASSLAND:
+		if not TREE_BASE_BIOMES.has(biome_map[coord]):
 			continue
 		var moisture: float = moisture_map.get(coord, 0.0)
 		if moisture < forest_threshold:
@@ -596,7 +600,7 @@ func _apply_tree_overlays(
 			continue
 		if _has_tree_neighbor(coord, biome_map):
 			var temperature: float = temperature_map.get(coord, 0.0)
-			next_map[coord] = _tree_overlay_biome(temperature)
+			next_map[coord] = _tree_overlay_biome(temperature, moisture)
 	biome_map.clear()
 	for coord: Vector2i in next_map.keys():
 		biome_map[coord] = next_map[coord]
