@@ -166,6 +166,7 @@ const TREE_BASE_BIOMES: Array[String] = [
 @onready var tooltip_minor_population_value: Label = get_node_or_null(
 	"MapUi/MapTooltip/Panel/TooltipLayout/TooltipGrid/MinorPopulationValueLabel"
 )
+@onready var loading_screen: Control = get_node_or_null("MapUi/LoadingScreen")
 
 var _atlas_source_id := -1
 var _temperature_noise: FastNoiseLite
@@ -189,9 +190,12 @@ func _ready() -> void:
 	if map_layer == null:
 		push_error("Overworld map is missing a TileMapLayer named MapLayer.")
 		return
+	_show_loading_screen()
+	await get_tree().process_frame
 	_apply_cached_world_settings()
 	_configure_tileset()
 	_generate_map()
+	_hide_loading_screen()
 	if regenerate_button == null:
 		push_error("Overworld map is missing a RegenerateButton at MapUi/TopBar/TopBarLayout/RegenerateButton.")
 	else:
@@ -210,6 +214,14 @@ func _ready() -> void:
 	_configure_globe_viewport()
 	_set_globe_view(false)
 	_hide_tooltip()
+
+func _show_loading_screen() -> void:
+	if loading_screen != null:
+		loading_screen.visible = true
+
+func _hide_loading_screen() -> void:
+	if loading_screen != null:
+		loading_screen.visible = false
 
 func _process(delta: float) -> void:
 	if _is_globe_view:
