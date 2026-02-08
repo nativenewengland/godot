@@ -25338,6 +25338,34 @@ function createWorld(seedString) {
     }
   }
 
+  if (hillOverlayPresenceKeySet.size > 0 || hasMountainTile) {
+    for (let y = 0; y < height; y += 1) {
+      for (let x = 0; x < width; x += 1) {
+        const tile = tiles[y][x];
+        if (!tile) {
+          continue;
+        }
+        const baseKey = typeof tile.base === 'string' ? tile.base : null;
+        const baseIsValid = baseKey && tileLookup.has(baseKey);
+        if (baseIsValid && isLandBaseTile(baseKey)) {
+          continue;
+        }
+        if (tile.overlay && (isMountainOverlay(tile.overlay) || isHillOverlay(tile.overlay))) {
+          tile.overlay = null;
+        }
+        if (tile.hillOverlay && (isMountainOverlay(tile.hillOverlay) || isHillOverlay(tile.hillOverlay))) {
+          tile.hillOverlay = null;
+        }
+        if (Number.isFinite(tile.mountainRuggedness)) {
+          tile.mountainRuggedness = 0;
+        }
+        if (mountainMask) {
+          mountainMask[y * width + x] = 0;
+        }
+      }
+    }
+  }
+
   const caveKey = tileLookup.has('CAVE') ? 'CAVE' : null;
   if (caveKey) {
     const caveCandidates = [];
