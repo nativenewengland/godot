@@ -6,6 +6,7 @@ extends Node2D
 @export var falloff_power: float = 2.4
 @export var noise_frequency: float = 2.0
 @export var noise_octaves: int = 4
+@export var hill_level: float = 0.62
 @export var mountain_level: float = 0.72
 @export var landmass_mask_strength: float = 0.55
 @export var landmass_mask_power: float = 0.82
@@ -100,6 +101,7 @@ const DUNGEON_TILE := Vector2i(7, 2)
 const CENTAUR_ENCAMPMENT_TILE := Vector2i(10, 2)
 const BIOME_WATER := "water"
 const BIOME_MOUNTAIN := "mountain"
+const BIOME_HILLS := "hills"
 const BIOME_MARSH := "marsh"
 const BIOME_TUNDRA := "tundra"
 const BIOME_DESERT := "desert"
@@ -159,6 +161,7 @@ const TREE_BIOMES: Array[String] = [
 var _atlas_source_id := -1
 var _temperature_noise: FastNoiseLite
 var _rainfall_noise: FastNoiseLite
+var _vegetation_noise: FastNoiseLite
 var _tile_data: Dictionary = {}
 var _height_map: Dictionary = {}
 var _temperature_map: Dictionary = {}
@@ -246,6 +249,7 @@ func _generate_map() -> void:
 	var height_map: Dictionary = {}
 	var temperature_map: Dictionary = {}
 	var moisture_map: Dictionary = {}
+	var vegetation_map: Dictionary = {}
 	var biome_map: Dictionary = {}
 
 	var rng := RandomNumberGenerator.new()
@@ -255,13 +259,32 @@ func _generate_map() -> void:
 	else:
 		rng.seed = map_seed
 
-	var noise := FastNoiseLite.new()
-	noise.seed = map_seed
-	noise.frequency = noise_frequency / float(map_size.x)
-	noise.fractal_octaves = noise_octaves
-	noise.fractal_lacunarity = 2.1
-	noise.fractal_gain = 0.5
-	noise.noise_type = FastNoiseLite.TYPE_SIMPLEX
+	var continent_noise := FastNoiseLite.new()
+	continent_noise.seed = map_seed
+	continent_noise.frequency = (noise_frequency * 0.35) / float(map_size.x)
+	continent_noise.fractal_type = FastNoiseLite.FRACTAL_FBM
+	continent_noise.fractal_octaves = maxi(4, noise_octaves)
+	continent_noise.fractal_lacunarity = 2.1
+	continent_noise.fractal_gain = 0.52
+	continent_noise.noise_type = FastNoiseLite.TYPE_SIMPLEX
+
+	var detail_noise := FastNoiseLite.new()
+	detail_noise.seed = map_seed + 37
+	detail_noise.frequency = (noise_frequency * 2.2) / float(map_size.x)
+	detail_noise.fractal_type = FastNoiseLite.FRACTAL_FBM
+	detail_noise.fractal_octaves = 4
+	detail_noise.fractal_lacunarity = 2.3
+	detail_noise.fractal_gain = 0.55
+	detail_noise.noise_type = FastNoiseLite.TYPE_SIMPLEX
+
+	var ridge_noise := FastNoiseLite.new()
+	ridge_noise.seed = map_seed + 83
+	ridge_noise.frequency = (noise_frequency * 1.1) / float(map_size.x)
+	ridge_noise.fractal_type = FastNoiseLite.FRACTAL_FBM
+	ridge_noise.fractal_octaves = 3
+	ridge_noise.fractal_lacunarity = 2.0
+	ridge_noise.fractal_gain = 0.6
+	ridge_noise.noise_type = FastNoiseLite.TYPE_SIMPLEX
 
 	_temperature_noise = FastNoiseLite.new()
 	_temperature_noise.seed = map_seed + 101
@@ -277,15 +300,31 @@ func _generate_map() -> void:
 	_rainfall_noise.fractal_type = FastNoiseLite.FRACTAL_FBM
 	_rainfall_noise.fractal_octaves = 4
 
+	_vegetation_noise = FastNoiseLite.new()
+	_vegetation_noise.seed = map_seed + 317
+	_vegetation_noise.noise_type = FastNoiseLite.TYPE_SIMPLEX
+	_vegetation_noise.frequency = (noise_frequency * 2.8) / float(map_size.x)
+	_vegetation_noise.fractal_type = FastNoiseLite.FRACTAL_FBM
+	_vegetation_noise.fractal_octaves = 3
+
 	for y in range(map_size.y):
 		for x in range(map_size.x):
-			var height := _sample_height(noise, x, y)
-			var temperature := _sample_temperature(x, y, height)
-			var moisture := _sample_moisture(x, y, height)
+			var height := _sample_height(continent_noise, detail_noise, ridge_noise, x, y)
 			var coord := Vector2i(x, y)
 			height_map[coord] = height
+
+	_smooth_height_map(height_map, 1, 0.35)
+
+	for y in range(map_size.y):
+		for x in range(map_size.x):
+			var coord := Vector2i(x, y)
+			var height: float = height_map[coord]
+			var temperature := _sample_temperature(x, y, height)
+			var moisture := _sample_moisture(x, y, height)
+			var vegetation := _sample_vegetation(x, y, height, moisture, temperature)
 			temperature_map[coord] = temperature
 			moisture_map[coord] = moisture
+			vegetation_map[coord] = vegetation
 
 	for y in range(map_size.y):
 		for x in range(map_size.x):
@@ -295,7 +334,7 @@ func _generate_map() -> void:
 			var moisture: float = moisture_map[coord]
 			biome_map[coord] = _assign_base_biome(coord, height, temperature, moisture, height_map)
 
-	_apply_tree_overlays(biome_map, temperature_map, moisture_map)
+	_apply_tree_overlays(biome_map, temperature_map, moisture_map, vegetation_map)
 	_smooth_biomes(biome_map, 2)
 
 	for y in range(map_size.y):
@@ -320,15 +359,28 @@ func _generate_map() -> void:
 	if _is_globe_view:
 		_update_globe_texture()
 
-func _sample_height(noise: FastNoiseLite, x: int, y: int) -> float:
+func _sample_height(
+	continent_noise: FastNoiseLite,
+	detail_noise: FastNoiseLite,
+	ridge_noise: FastNoiseLite,
+	x: int,
+	y: int
+) -> float:
 	var nx := (float(x) / float(map_size.x)) * 2.0 - 1.0
 	var ny := (float(y) / float(map_size.y)) * 2.0 - 1.0
 	var distance := Vector2(nx, ny).length()
 	var falloff := pow(distance, falloff_power) * falloff_strength
-	var noise_value := noise.get_noise_2d(float(x), float(y))
-	var height := (noise_value + 1.0) * 0.5
+	var continent := _to_normalized(continent_noise.get_noise_2d(float(x), float(y)))
+	var detail := _to_normalized(detail_noise.get_noise_2d(float(x), float(y)))
+	var ridges := 1.0 - absf(ridge_noise.get_noise_2d(float(x), float(y)))
+	var height := continent * 0.72 + detail * 0.18 + ridges * 0.1
+	var archipelago := (_to_normalized(detail_noise.get_noise_2d(float(x) * 2.6, float(y) * 2.6)) - 0.5) * 0.12
+	height += archipelago
 	var continent_bias := _sample_continent_bias(x, y)
-	return clampf(height + continent_bias - falloff, 0.0, 1.0)
+	height += continent_bias - falloff
+	var coast_mask := 1.0 - clampf(absf(height - water_level) / 0.15, 0.0, 1.0)
+	var coast_jag := detail_noise.get_noise_2d(float(x) * 5.1, float(y) * 5.1) * 0.06 * coast_mask
+	return clampf(height + coast_jag, 0.0, 1.0)
 
 
 func _sample_continent_bias(x: int, y: int) -> float:
@@ -338,6 +390,39 @@ func _sample_continent_bias(x: int, y: int) -> float:
 	var ny := float(y) / denom_y
 	var mask_value := _sample_landmass_mask(nx, ny)
 	return (mask_value - 0.5) * landmass_mask_strength
+
+
+func _smooth_height_map(height_map: Dictionary, passes: int, strength: float) -> void:
+	for _pass_index in range(passes):
+		var next_map := height_map.duplicate()
+		for coord: Vector2i in height_map.keys():
+			var current: float = height_map.get(coord, 0.0)
+			var is_land := current >= water_level
+			var accum := current
+			var count := 1
+			for offset: Vector2i in [
+				Vector2i.LEFT,
+				Vector2i.RIGHT,
+				Vector2i.UP,
+				Vector2i.DOWN,
+				Vector2i(-1, -1),
+				Vector2i(1, -1),
+				Vector2i(-1, 1),
+				Vector2i(1, 1)
+			]:
+				var neighbor := coord + offset
+				var neighbor_height: float = height_map.get(neighbor, current)
+				if is_land and neighbor_height < water_level:
+					continue
+				if not is_land and neighbor_height >= water_level:
+					continue
+				accum += neighbor_height
+				count += 1
+			var average := accum / float(count)
+			next_map[coord] = lerpf(current, average, strength)
+		height_map.clear()
+		for coord: Vector2i in next_map.keys():
+			height_map[coord] = next_map[coord]
 
 
 func _sample_landmass_mask(nx: float, ny: float) -> float:
@@ -416,6 +501,15 @@ func _sample_moisture(x: int, y: int, elevation: float) -> float:
 	return clampf(rainfall * 0.55 + drainage * 0.3 + noise_variation * 0.15, 0.0, 1.0)
 
 
+func _sample_vegetation(x: int, y: int, elevation: float, moisture: float, temperature: float) -> float:
+	if _vegetation_noise == null:
+		return clampf(moisture, 0.0, 1.0)
+	var noise_value := _to_normalized(_vegetation_noise.get_noise_2d(float(x), float(y)))
+	var climate := clampf(moisture * 0.65 + temperature * 0.35, 0.0, 1.0)
+	var elevation_limit := clampf(1.0 - maxf(0.0, elevation - hill_level) * 1.8, 0.0, 1.0)
+	return clampf(noise_value * 0.55 + climate * 0.45, 0.0, 1.0) * elevation_limit
+
+
 func _assign_base_biome(
 	coord: Vector2i,
 	height: float,
@@ -427,10 +521,12 @@ func _assign_base_biome(
 		return BIOME_WATER
 	if height > mountain_level:
 		return BIOME_MOUNTAIN
-	if _is_marsh(coord, height, moisture, height_map):
-		return BIOME_MARSH
 	if temperature < tundra_threshold:
 		return BIOME_TUNDRA
+	if height > hill_level:
+		return BIOME_HILLS
+	if _is_marsh(coord, height, moisture, height_map):
+		return BIOME_MARSH
 	if temperature >= hot_threshold && moisture <= desert_threshold:
 		return BIOME_DESERT
 	if temperature >= warm_threshold && moisture <= badlands_threshold:
@@ -459,7 +555,8 @@ func _tree_overlay_biome(temperature: float) -> String:
 func _apply_tree_overlays(
 	biome_map: Dictionary,
 	temperature_map: Dictionary,
-	moisture_map: Dictionary
+	moisture_map: Dictionary,
+	vegetation_map: Dictionary
 ) -> void:
 	var next_map := biome_map.duplicate()
 	for coord: Vector2i in biome_map.keys():
@@ -467,6 +564,9 @@ func _apply_tree_overlays(
 			continue
 		var moisture: float = moisture_map.get(coord, 0.0)
 		if moisture < forest_threshold:
+			continue
+		var vegetation: float = vegetation_map.get(coord, 0.0)
+		if vegetation < 0.52:
 			continue
 		if _has_tree_neighbor(coord, biome_map):
 			var temperature: float = temperature_map.get(coord, 0.0)
@@ -558,6 +658,8 @@ func _biome_to_tile(biome: String) -> Vector2i:
 			return WATER_TILE
 		BIOME_MOUNTAIN:
 			return MOUNTAIN_TILE
+		BIOME_HILLS:
+			return HILLS_TILE
 		BIOME_MARSH:
 			return MARSH_TILE
 		BIOME_TUNDRA:
@@ -652,6 +754,8 @@ func _settlement_biome_label(biome: String) -> String:
 	match biome:
 		BIOME_MOUNTAIN:
 			return "mountain"
+		BIOME_HILLS:
+			return "grass"
 		BIOME_TUNDRA:
 			return "snow"
 		BIOME_FOREST, BIOME_JUNGLE:
@@ -687,6 +791,8 @@ func _resources_for_biome(biome: String) -> Array[String]:
 			return ["fish", "salt"]
 		BIOME_MOUNTAIN:
 			return ["stone", "iron", "gems"]
+		BIOME_HILLS:
+			return ["stone", "game", "herbs"]
 		BIOME_MARSH:
 			return ["reeds", "peat", "herbs"]
 		BIOME_TUNDRA:
