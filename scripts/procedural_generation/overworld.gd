@@ -169,8 +169,9 @@ func _to_normalized(noise_sample: float) -> float:
 	return clampf((noise_sample + 1.0) * 0.5, 0.0, 1.0)
 
 func _get_elevation(coord: Vector2i, curr_size: Vector2i) -> float:
-	var centered := (Vector2(coord) / Vector2(curr_size) - Vector2(0.5, 0.5)) * 2.0
-	var radial_falloff := clampf(centered.length(), 0.0, 1.0)
+	var size_vec := Vector2(curr_size)
+	var min_edge := minf(minf(float(coord.x), float(curr_size.x - 1 - coord.x)), minf(float(coord.y), float(curr_size.y - 1 - coord.y)))
+	var edge_distance := clampf(min_edge / (minf(size_vec.x, size_vec.y) * 0.5), 0.0, 1.0)
 	var warp_strength := maxf(1.0, float(curr_size.x)) * 0.015
 	var warp := Vector2(
 		_temperature_noise.get_noise_2dv(Vector2(coord) * 0.8),
@@ -178,14 +179,16 @@ func _get_elevation(coord: Vector2i, curr_size: Vector2i) -> float:
 	) * warp_strength
 	var warped_coord := Vector2(coord) + warp
 	var continent := _to_normalized(_height_noise.get_noise_2dv(warped_coord * 0.45))
+	var cluster := _to_normalized(_height_noise.get_noise_2dv(warped_coord * 0.18))
 	var detail := _to_normalized(_height_noise.get_noise_2dv(warped_coord * 1.6))
 	var ridges := 1.0 - absf(_height_noise.get_noise_2dv(warped_coord * 2.4))
 	var micro_detail := _height_noise.get_noise_2dv(warped_coord * 4.8) * 0.12
 	var breakup := _height_noise.get_noise_2dv(warped_coord * 0.28) * 0.08
 	var tectonic_uplift := lerpf(continent, detail, 0.35)
+	tectonic_uplift = lerpf(tectonic_uplift, cluster, 0.25)
 	tectonic_uplift = lerpf(tectonic_uplift, maxf(tectonic_uplift, ridges), mountain_linearity * 0.6)
 	var coast_variation := _height_noise.get_noise_2dv(warped_coord * 3.2) * coast_width
-	var edge_falloff := pow(radial_falloff, 2.6) * 0.12
+	var edge_falloff := pow(1.0 - edge_distance, 2.4) * 0.14
 	return clampf(tectonic_uplift + coast_variation + micro_detail + breakup - edge_falloff, 0.0, 1.0)
 
 func _get_farcical_continent_value(coord: Vector2i, curr_size: Vector2i) -> float:
