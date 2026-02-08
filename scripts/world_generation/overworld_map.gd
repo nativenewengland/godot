@@ -1071,7 +1071,6 @@ func _rotate_globe(delta: float) -> void:
 
 func _configure_tileset() -> void:
 	var tile_set := TileSet.new()
-	tile_set.tile_size = Vector2i(tile_size, tile_size)
 	var overworld_atlas := TileSetAtlasSource.new()
 	var atlas_texture := load(ATLAS_TEXTURE) as Texture2D
 	if atlas_texture == null:
@@ -1081,18 +1080,7 @@ func _configure_tileset() -> void:
 			map_layer.tile_set = tile_set
 		return
 	var texture_size := atlas_texture.get_size()
-	var max_columns := int(texture_size.x / tile_size)
-	var max_rows := int(texture_size.y / tile_size)
-	if max_columns <= 0 or max_rows <= 0:
-		push_error("Overworld atlas texture has no valid tile regions: %s" % ATLAS_TEXTURE)
-		_atlas_source_id = -1
-		if map_layer != null:
-			map_layer.tile_set = tile_set
-		return
-	overworld_atlas.texture = atlas_texture
-	overworld_atlas.texture_region_size = Vector2i(tile_size, tile_size)
-	var seen_tiles: Dictionary = {}
-	for tile_coords: Vector2i in [
+	var tile_coords_list := [
 		SAND_TILE,
 		GRASS_TILE,
 		BADLANDS_TILE,
@@ -1160,7 +1148,49 @@ func _configure_tileset() -> void:
 		TRAVELERS_CAMP_TILE,
 		DUNGEON_TILE,
 		CENTAUR_ENCAMPMENT_TILE
-	]:
+	]
+	var max_tile := Vector2i(0, 0)
+	for tile_coords: Vector2i in tile_coords_list:
+		max_tile.x = max(max_tile.x, tile_coords.x)
+		max_tile.y = max(max_tile.y, tile_coords.y)
+	var required_columns := max_tile.x + 1
+	var required_rows := max_tile.y + 1
+	var atlas_tile_size := tile_size
+	if required_columns > 0 and required_rows > 0:
+		if int(texture_size.x) % required_columns == 0 and int(texture_size.y) % required_rows == 0:
+			var derived_tile_size_x := int(texture_size.x / required_columns)
+			var derived_tile_size_y := int(texture_size.y / required_rows)
+			if derived_tile_size_x == derived_tile_size_y and derived_tile_size_x > 0:
+				if derived_tile_size_x != tile_size:
+					push_warning(
+						"Overworld atlas tile size (%s) differs from configured tile_size (%s); using atlas-derived size." %
+						[derived_tile_size_x, tile_size]
+					)
+					tile_size = derived_tile_size_x
+				atlas_tile_size = derived_tile_size_x
+			else:
+				push_warning(
+					"Overworld atlas texture size (%s) does not map cleanly to a square tile grid (%s x %s)." %
+					[texture_size, required_columns, required_rows]
+				)
+	var max_columns := int(texture_size.x / atlas_tile_size)
+	var max_rows := int(texture_size.y / atlas_tile_size)
+	if max_columns <= 0 or max_rows <= 0:
+		push_error("Overworld atlas texture has no valid tile regions: %s" % ATLAS_TEXTURE)
+		_atlas_source_id = -1
+		if map_layer != null:
+			map_layer.tile_set = tile_set
+		return
+	if max_columns < required_columns or max_rows < required_rows:
+		push_error(
+			"Overworld atlas texture is too small for required tiles (%s x %s needed, got %s x %s)." %
+			[required_columns, required_rows, max_columns, max_rows]
+		)
+	tile_set.tile_size = Vector2i(atlas_tile_size, atlas_tile_size)
+	overworld_atlas.texture = atlas_texture
+	overworld_atlas.texture_region_size = Vector2i(atlas_tile_size, atlas_tile_size)
+	var seen_tiles: Dictionary = {}
+	for tile_coords: Vector2i in tile_coords_list:
 		if seen_tiles.has(tile_coords):
 			continue
 		seen_tiles[tile_coords] = true
