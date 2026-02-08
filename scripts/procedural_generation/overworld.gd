@@ -190,16 +190,7 @@ func _get_elevation(coord: Vector2i, curr_size: Vector2i) -> float:
 	var coast_variation := _height_noise.get_noise_2dv(warped_coord * 3.2) * coast_width
 	var macro_fractal := _height_noise.get_noise_2dv(warped_coord * 0.9) * 0.09
 	var fine_fractal := _height_noise.get_noise_2dv(warped_coord * 6.2) * 0.05
-	var spike_seed := _height_noise.get_noise_2dv(warped_coord * 0.22)
-	var spike_mask := clampf((spike_seed - 0.35) * 2.6, 0.0, 1.0)
-	var spike_detail := _height_noise.get_noise_2dv(warped_coord * 3.6) * 0.18
-	var spike_uplift := spike_mask * (0.24 + spike_detail)
-	return clampf(
-		tectonic_uplift + coast_variation + micro_detail + breakup
-		+ macro_fractal + fine_fractal + spike_uplift,
-		0.0,
-		1.0
-	)
+	return clampf(tectonic_uplift + coast_variation + micro_detail + breakup + macro_fractal + fine_fractal, 0.0, 1.0)
 
 func _get_farcical_continent_value(coord: Vector2i, curr_size: Vector2i) -> float:
 	var base := _get_elevation(coord, curr_size)
