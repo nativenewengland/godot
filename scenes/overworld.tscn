@@ -174,3 +174,31 @@ size_flags_horizontal = 3
 horizontal_alignment = 2
 text = "Trolls (7%) and Dwarves (6%)"
 autowrap_mode = 3
+
+[node name="LoadingScreen" type="Control" parent="MapUi"]
+visible = false
+anchors_preset = 15
+offset_right = 0.0
+offset_bottom = 0.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Dimmer" type="ColorRect" parent="MapUi/LoadingScreen"]
+anchors_preset = 15
+offset_right = 0.0
+offset_bottom = 0.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.6)
+
+[node name="LoadingContainer" type="CenterContainer" parent="MapUi/LoadingScreen"]
+anchors_preset = 15
+offset_right = 0.0
+offset_bottom = 0.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="LoadingLabel" type="Label" parent="MapUi/LoadingScreen/LoadingContainer"]
+text = "Generating world map..."
+theme_override_font_sizes/font_size = 26
