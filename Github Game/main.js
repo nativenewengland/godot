@@ -19271,17 +19271,48 @@ function createTwinContinentsMask() {
 function createInlandSeaMask() {
   const size = 512;
   return createProceduralMask(size, size, (nx, ny) => {
-    const dx = nx - 0.5;
-    const dy = ny - 0.53;
-    const distance = Math.sqrt(dx * dx + dy * dy);
-    let ring = clamp((distance - 0.18) * 3.25, 0, 1);
-    ring = Math.pow(ring, 0.82);
-    const coastline = clamp(1 - distance * 1.05, 0, 1) * 0.4;
-    let value = ring + coastline;
-    value += (valueNoise(nx * 9.5 + 0.2, ny * 9.5 + 0.4, 0x6c8e9cf) - 0.5) * 0.18;
-    value += (valueNoise(nx * 26.5 + 8.1, ny * 26.5 + 2.3, 0x51a7f5d) - 0.5) * 0.08;
-    value -= 0.05;
-    return value;
+    const ellipseFalloff = (cx, cy, rx, ry, power = 1.2) => {
+      const dx = (nx - cx) / rx;
+      const dy = (ny - cy) / ry;
+      const distance = dx * dx + dy * dy;
+      const falloff = clamp(1 - distance, 0, 1);
+      return Math.pow(falloff, power);
+    };
+
+    const mainBasin = ellipseFalloff(0.55, 0.55, 0.36, 0.18, 1.1);
+    const westernBasin = ellipseFalloff(0.32, 0.54, 0.17, 0.14, 1.1);
+    const easternBasin = ellipseFalloff(0.76, 0.54, 0.18, 0.14, 1.15);
+    const aegeanBasin = ellipseFalloff(0.8, 0.61, 0.12, 0.13, 1.2);
+    const adriaticBasin = ellipseFalloff(0.6, 0.4, 0.1, 0.2, 1.35);
+    const levantBasin = ellipseFalloff(0.83, 0.63, 0.12, 0.12, 1.25);
+
+    let seaValue = Math.max(
+      mainBasin,
+      westernBasin,
+      easternBasin,
+      aegeanBasin,
+      adriaticBasin,
+      levantBasin
+    );
+
+    const saharaRidge = ellipseFalloff(0.55, 0.73, 0.5, 0.16, 1.6);
+    const anatoliaRidge = ellipseFalloff(0.77, 0.42, 0.26, 0.14, 1.4);
+    const italianRidge = ellipseFalloff(0.56, 0.45, 0.12, 0.22, 1.3);
+    seaValue -= (saharaRidge + anatoliaRidge + italianRidge) * 0.25;
+
+    const coastlineNoise =
+      (valueNoise(nx * 8.5 + 2.1, ny * 8.5 + 3.4, 0x6c8e9cf) - 0.5) * 0.18;
+    const detailNoise =
+      (valueNoise(nx * 24.5 + 8.7, ny * 24.5 + 1.9, 0x51a7f5d) - 0.5) * 0.08;
+    seaValue = clamp(seaValue + coastlineNoise + detailNoise, 0, 1);
+
+    const edgeDistance = Math.min(nx, 1 - nx, ny, 1 - ny);
+    const edgeLand = clamp(1 - edgeDistance / 0.12, 0, 1);
+
+    let landValue = 1 - seaValue;
+    landValue = Math.max(landValue, edgeLand);
+    landValue = clamp(landValue + 0.05, 0, 1);
+    return landValue;
   });
 }
 
@@ -30878,5 +30909,4 @@ function startApplicationWhenReady() {
 }
 
 startApplicationWhenReady();
-
 
