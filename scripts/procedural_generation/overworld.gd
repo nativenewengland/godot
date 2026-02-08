@@ -188,8 +188,9 @@ func _get_elevation(coord: Vector2i, curr_size: Vector2i) -> float:
 	tectonic_uplift = lerpf(tectonic_uplift, cluster, 0.25)
 	tectonic_uplift = lerpf(tectonic_uplift, maxf(tectonic_uplift, ridges), mountain_linearity * 0.6)
 	var coast_variation := _height_noise.get_noise_2dv(warped_coord * 3.2) * coast_width
-	var edge_falloff := pow(1.0 - edge_distance, 2.4) * 0.14
-	return clampf(tectonic_uplift + coast_variation + micro_detail + breakup - edge_falloff, 0.0, 1.0)
+	var macro_fractal := _height_noise.get_noise_2dv(warped_coord * 0.9) * 0.09
+	var fine_fractal := _height_noise.get_noise_2dv(warped_coord * 6.2) * 0.05
+	return clampf(tectonic_uplift + coast_variation + micro_detail + breakup + macro_fractal + fine_fractal, 0.0, 1.0)
 
 func _get_farcical_continent_value(coord: Vector2i, curr_size: Vector2i) -> float:
 	var base := _get_elevation(coord, curr_size)
