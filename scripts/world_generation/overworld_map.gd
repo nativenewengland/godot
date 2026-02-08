@@ -8,6 +8,9 @@ extends Node2D
 @export var noise_octaves: int = 4
 @export var hill_level: float = 0.62
 @export var mountain_level: float = 0.72
+@export var landmass_center_count: int = 4
+@export var landmass_center_margin: float = 0.12
+@export var landmass_falloff_scale: float = 1.35
 @export var landmass_mask_strength: float = 0.55
 @export var landmass_mask_power: float = 0.82
 @export var temperature_frequency: float = 1.2
@@ -167,6 +170,7 @@ var _height_map: Dictionary = {}
 var _temperature_map: Dictionary = {}
 var _last_hovered_tile := Vector2i(-9999, -9999)
 var _world_settings: Dictionary = {}
+var _landmass_centers: Array[Vector2] = []
 var _map_layer_original_parent: Node = null
 var _map_layer_original_index := -1
 var _overlays_original_parent: Node = null
@@ -258,6 +262,7 @@ func _generate_map() -> void:
 		map_seed = rng.randi()
 	else:
 		rng.seed = map_seed
+	_configure_landmass_centers(rng)
 
 	var continent_noise := FastNoiseLite.new()
 	continent_noise.seed = map_seed
@@ -368,8 +373,9 @@ func _sample_height(
 ) -> float:
 	var nx := (float(x) / float(map_size.x)) * 2.0 - 1.0
 	var ny := (float(y) / float(map_size.y)) * 2.0 - 1.0
-	var distance := Vector2(nx, ny).length()
-	var falloff := pow(distance, falloff_power) * falloff_strength
+	var distance := _distance_to_nearest_landmass_center(nx, ny)
+	var scaled_distance := clampf(distance / maxf(0.01, landmass_falloff_scale), 0.0, 1.0)
+	var falloff := pow(scaled_distance, falloff_power) * falloff_strength
 	var continent := _to_normalized(continent_noise.get_noise_2d(float(x), float(y)))
 	var detail := _to_normalized(detail_noise.get_noise_2d(float(x), float(y)))
 	var ridges := 1.0 - absf(ridge_noise.get_noise_2d(float(x), float(y)))
@@ -390,6 +396,26 @@ func _sample_continent_bias(x: int, y: int) -> float:
 	var ny := float(y) / denom_y
 	var mask_value := _sample_landmass_mask(nx, ny)
 	return (mask_value - 0.5) * landmass_mask_strength
+
+
+func _configure_landmass_centers(rng: RandomNumberGenerator) -> void:
+	_landmass_centers.clear()
+	var count := maxi(1, landmass_center_count)
+	var margin := clampf(landmass_center_margin, 0.0, 0.45)
+	for _i in range(count):
+		var cx := rng.randf_range(-1.0 + margin, 1.0 - margin)
+		var cy := rng.randf_range(-1.0 + margin, 1.0 - margin)
+		_landmass_centers.append(Vector2(cx, cy))
+
+
+func _distance_to_nearest_landmass_center(nx: float, ny: float) -> float:
+	if _landmass_centers.is_empty():
+		return Vector2(nx, ny).length()
+	var position := Vector2(nx, ny)
+	var min_distance := INF
+	for center: Vector2 in _landmass_centers:
+		min_distance = minf(min_distance, position.distance_to(center))
+	return min_distance
 
 
 func _smooth_height_map(height_map: Dictionary, passes: int, strength: float) -> void:
