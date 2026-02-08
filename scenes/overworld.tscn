@@ -108,10 +108,10 @@ clip_contents = true
 
 [node name="TooltipLayout" type="VBoxContainer" parent="MapUi/MapTooltip/Panel"]
 anchors_preset = 15
-offset_left = 12.0
-offset_top = 10.0
-offset_right = -12.0
-offset_bottom = -10.0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 0.0
+offset_bottom = 0.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 10
