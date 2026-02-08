@@ -130,6 +130,8 @@ const TREE_BIOMES: Array[String] = [
 ]
 
 @onready var map_layer: TileMapLayer = $MapLayer
+@onready var map_overlays: Node2D = get_node_or_null("MapOverlays")
+@onready var temperature_overlay: Sprite2D = get_node_or_null("MapOverlays/TemperatureOverlay")
 @onready var overworld_camera: Camera2D = get_node_or_null("OverworldCamera")
 @onready var globe_view: Node3D = get_node_or_null("GlobeView")
 @onready var globe_camera: Camera3D = get_node_or_null("GlobeView/GlobeCamera")
@@ -138,6 +140,7 @@ const TREE_BIOMES: Array[String] = [
 @onready var map_viewport_root: Node2D = get_node_or_null("MapViewport/MapViewportRoot")
 @onready var regenerate_button: Button = get_node_or_null("MapUi/TopBar/TopBarLayout/RegenerateButton")
 @onready var globe_view_button: Button = get_node_or_null("MapUi/TopBar/TopBarLayout/GlobeViewButton")
+@onready var temperature_map_button: Button = get_node_or_null("MapUi/TopBar/TopBarLayout/TemperatureMapButton")
 @onready var tooltip_control: Control = get_node_or_null("MapUi/MapTooltip")
 @onready var tooltip_panel: Panel = get_node_or_null("MapUi/MapTooltip/Panel")
 @onready var tooltip_title: Label = get_node_or_null("MapUi/MapTooltip/Panel/TooltipLayout/TitleLabel")
@@ -155,11 +158,15 @@ var _atlas_source_id := -1
 var _temperature_noise: FastNoiseLite
 var _rainfall_noise: FastNoiseLite
 var _tile_data: Dictionary = {}
+var _temperature_map: Dictionary = {}
 var _last_hovered_tile := Vector2i(-9999, -9999)
 var _world_settings: Dictionary = {}
 var _map_layer_original_parent: Node = null
 var _map_layer_original_index := -1
+var _overlays_original_parent: Node = null
+var _overlays_original_index := -1
 var _is_globe_view := false
+var _temperature_overlay_enabled := false
 
 func _ready() -> void:
 	if map_layer == null:
@@ -175,7 +182,11 @@ func _ready() -> void:
 	if globe_view_button != null:
 		globe_view_button.toggled.connect(_on_globe_view_toggled)
 		globe_view_button.button_pressed = false
+	if temperature_map_button != null:
+		temperature_map_button.toggled.connect(_on_temperature_map_toggled)
+		temperature_map_button.button_pressed = false
 	_cache_map_layer_parent()
+	_cache_overlay_parent()
 	_configure_globe_viewport()
 	_set_globe_view(false)
 	_hide_tooltip()
@@ -198,6 +209,10 @@ func _on_regenerate_pressed() -> void:
 
 func _on_globe_view_toggled(is_pressed: bool) -> void:
 	_set_globe_view(is_pressed)
+
+func _on_temperature_map_toggled(is_pressed: bool) -> void:
+	_temperature_overlay_enabled = is_pressed
+	_update_temperature_overlay_visibility()
 
 func _regenerate_map() -> void:
 	map_seed = 0
@@ -286,6 +301,8 @@ func _generate_map() -> void:
 				"region_name": ""
 			}
 	_place_settlements(biome_map, rng)
+	_temperature_map = temperature_map.duplicate()
+	_update_temperature_overlay()
 	_configure_globe_viewport()
 	if _is_globe_view:
 		_update_globe_texture()
@@ -801,6 +818,13 @@ func _cache_map_layer_parent() -> void:
 	if _map_layer_original_parent != null:
 		_map_layer_original_index = map_layer.get_index()
 
+func _cache_overlay_parent() -> void:
+	if map_overlays == null:
+		return
+	_overlays_original_parent = map_overlays.get_parent()
+	if _overlays_original_parent != null:
+		_overlays_original_index = map_overlays.get_index()
+
 func _configure_globe_viewport() -> void:
 	if map_viewport == null:
 		return
@@ -826,6 +850,7 @@ func _set_globe_view(enabled: bool) -> void:
 		_update_globe_texture()
 	else:
 		_restore_map_layer_parent()
+	_update_temperature_overlay_visibility()
 
 func _move_map_layer_to_viewport() -> void:
 	if map_layer == null or map_viewport_root == null:
@@ -835,6 +860,11 @@ func _move_map_layer_to_viewport() -> void:
 	map_layer.get_parent().remove_child(map_layer)
 	map_viewport_root.add_child(map_layer)
 	map_layer.position = Vector2.ZERO
+	if map_overlays != null:
+		if map_overlays.get_parent() != null:
+			map_overlays.get_parent().remove_child(map_overlays)
+		map_viewport_root.add_child(map_overlays)
+		map_overlays.position = Vector2.ZERO
 
 func _restore_map_layer_parent() -> void:
 	if map_layer == null or _map_layer_original_parent == null:
@@ -848,6 +878,18 @@ func _restore_map_layer_parent() -> void:
 	else:
 		_map_layer_original_parent.add_child(map_layer)
 	map_layer.position = Vector2.ZERO
+	if map_overlays == null or _overlays_original_parent == null:
+		return
+	if map_overlays.get_parent() == _overlays_original_parent:
+		return
+	if map_overlays.get_parent() != null:
+		map_overlays.get_parent().remove_child(map_overlays)
+	if _overlays_original_index >= 0:
+		_overlays_original_parent.add_child(map_overlays)
+		_overlays_original_parent.move_child(map_overlays, _overlays_original_index)
+	else:
+		_overlays_original_parent.add_child(map_overlays)
+	map_overlays.position = Vector2.ZERO
 
 func _update_globe_texture() -> void:
 	if globe_mesh == null or map_viewport == null:
@@ -972,6 +1014,35 @@ func _configure_tileset() -> void:
 	_atlas_source_id = tile_set.add_source(overworld_atlas)
 	map_layer.tile_set = tile_set
 	map_layer.position = Vector2.ZERO
+
+func _update_temperature_overlay() -> void:
+	if temperature_overlay == null:
+		return
+	if _temperature_map.is_empty():
+		temperature_overlay.texture = null
+		return
+	var image := Image.create(map_size.x, map_size.y, false, Image.FORMAT_RGBA8)
+	for y in range(map_size.y):
+		for x in range(map_size.x):
+			var coord := Vector2i(x, y)
+			var temperature := float(_temperature_map.get(coord, 0.0))
+			image.set_pixel(x, y, _temperature_to_color(temperature))
+	var texture := ImageTexture.create_from_image(image)
+	temperature_overlay.texture = texture
+	temperature_overlay.centered = false
+	temperature_overlay.scale = Vector2(tile_size, tile_size)
+	temperature_overlay.position = Vector2.ZERO
+	_update_temperature_overlay_visibility()
+
+func _temperature_to_color(temperature: float) -> Color:
+	var cold := Color(0.2, 0.45, 1.0, 0.45)
+	var hot := Color(1.0, 0.25, 0.1, 0.45)
+	return cold.lerp(hot, clampf(temperature, 0.0, 1.0))
+
+func _update_temperature_overlay_visibility() -> void:
+	if temperature_overlay == null:
+		return
+	temperature_overlay.visible = _temperature_overlay_enabled and not _is_globe_view
 
 func _apply_cached_world_settings() -> void:
 	var game_session := get_node_or_null("/root/GameSession")
