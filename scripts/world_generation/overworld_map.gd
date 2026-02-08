@@ -411,10 +411,10 @@ func _configure_landmass_centers(rng: RandomNumberGenerator) -> void:
 func _distance_to_nearest_landmass_center(nx: float, ny: float) -> float:
 	if _landmass_centers.is_empty():
 		return Vector2(nx, ny).length()
-	var position := Vector2(nx, ny)
+	var sample_pos := Vector2(nx, ny)
 	var min_distance := INF
 	for center: Vector2 in _landmass_centers:
-		min_distance = minf(min_distance, position.distance_to(center))
+		min_distance = minf(min_distance, sample_pos.distance_to(center))
 	return min_distance
 
 
