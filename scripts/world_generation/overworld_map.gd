@@ -560,7 +560,7 @@ func _assign_base_biome(
 	if moisture >= jungle_threshold:
 		return _resolve_jungle_overlay(temperature, moisture)
 	if moisture >= forest_threshold:
-		return BIOME_GRASSLAND
+		return BIOME_FOREST
 	return BIOME_GRASSLAND
 
 
