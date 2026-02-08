@@ -275,20 +275,20 @@ func _generate_map() -> void:
 
 	var detail_noise := FastNoiseLite.new()
 	detail_noise.seed = map_seed + 37
-	detail_noise.frequency = (noise_frequency * 2.2) / float(map_size.x)
+	detail_noise.frequency = (noise_frequency * 3.1) / float(map_size.x)
 	detail_noise.fractal_type = FastNoiseLite.FRACTAL_FBM
-	detail_noise.fractal_octaves = 4
-	detail_noise.fractal_lacunarity = 2.3
-	detail_noise.fractal_gain = 0.55
+	detail_noise.fractal_octaves = 6
+	detail_noise.fractal_lacunarity = 2.4
+	detail_noise.fractal_gain = 0.6
 	detail_noise.noise_type = FastNoiseLite.TYPE_SIMPLEX
 
 	var ridge_noise := FastNoiseLite.new()
 	ridge_noise.seed = map_seed + 83
-	ridge_noise.frequency = (noise_frequency * 1.1) / float(map_size.x)
+	ridge_noise.frequency = (noise_frequency * 1.4) / float(map_size.x)
 	ridge_noise.fractal_type = FastNoiseLite.FRACTAL_FBM
-	ridge_noise.fractal_octaves = 3
-	ridge_noise.fractal_lacunarity = 2.0
-	ridge_noise.fractal_gain = 0.6
+	ridge_noise.fractal_octaves = 4
+	ridge_noise.fractal_lacunarity = 2.15
+	ridge_noise.fractal_gain = 0.62
 	ridge_noise.noise_type = FastNoiseLite.TYPE_SIMPLEX
 
 	_temperature_noise = FastNoiseLite.new()
@@ -318,7 +318,7 @@ func _generate_map() -> void:
 			var coord := Vector2i(x, y)
 			height_map[coord] = height
 
-	_smooth_height_map(height_map, 1, 0.35)
+	_smooth_height_map(height_map, 1, 0.2)
 
 	for y in range(map_size.y):
 		for x in range(map_size.x):
@@ -386,7 +386,8 @@ func _sample_height(
 	height += continent_bias - falloff
 	var coast_mask := 1.0 - clampf(absf(height - water_level) / 0.15, 0.0, 1.0)
 	var coast_jag := detail_noise.get_noise_2d(float(x) * 5.1, float(y) * 5.1) * 0.06 * coast_mask
-	return clampf(height + coast_jag, 0.0, 1.0)
+	var micro_jag := detail_noise.get_noise_2d(float(x) * 8.4, float(y) * 8.4) * 0.04
+	return clampf(height + coast_jag + micro_jag, 0.0, 1.0)
 
 
 func _sample_continent_bias(x: int, y: int) -> float:
