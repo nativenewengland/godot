@@ -1061,14 +1061,13 @@ func _generate_map() -> void:
 	_apply_base_tiles(base_biome_map)
 	await _yield_generation_wave()
 	_apply_tree_tiles(tree_map, base_biome_map)
-	var region_name_map := _build_biome_region_names(biome_map, name_rng)
 	_apply_overlays_and_metadata(
 		base_biome_map,
 		biome_map,
 		highland_map,
 		temperature_map,
 		moisture_map,
-		region_name_map
+		name_rng
 	)
 	await _yield_generation_wave()
 	_place_icebergs(base_biome_map, temperature_map, height_map, rng)
@@ -1101,8 +1100,9 @@ func _apply_overlays_and_metadata(
 	highland_map: Dictionary,
 	temperature_map: Dictionary,
 	moisture_map: Dictionary,
-	region_name_map: Dictionary
+	name_rng: RandomNumberGenerator
 ) -> void:
+	var context_size := maxi(map_size.x, map_size.y)
 	for y in range(map_size.y):
 		for x in range(map_size.x):
 			var coord := Vector2i(x, y)
@@ -1115,7 +1115,7 @@ func _apply_overlays_and_metadata(
 				else:
 					highland_layer.erase_cell(coord)
 			var biome := biome_map.get(coord, base_biome) as String
-			var region_name := String(region_name_map.get(coord, ""))
+			var region_name := _generate_biome_region_name(biome, coord, name_rng, context_size)
 			_tile_data[coord] = {
 				"biome_type": biome,
 				"temperature": temperature_map.get(coord, 0.0),
@@ -1840,54 +1840,9 @@ func _format_resource_list(resources: Array[String]) -> String:
 			combined += "%s, " % items[index]
 	return combined
 
-func _build_biome_region_names(
-	biome_map: Dictionary,
-	rng: RandomNumberGenerator
-) -> Dictionary:
-	var region_names: Dictionary = {}
-	var visited: Dictionary = {}
-	var context_size := maxi(map_size.x, map_size.y)
-	var offsets := [
-		Vector2i.LEFT,
-		Vector2i.RIGHT,
-		Vector2i.UP,
-		Vector2i.DOWN,
-		Vector2i(-1, -1),
-		Vector2i(1, -1),
-		Vector2i(-1, 1),
-		Vector2i(1, 1)
-	]
-	for coord: Vector2i in biome_map.keys():
-		if visited.has(coord):
-			continue
-		var biome := biome_map.get(coord, BIOME_GRASSLAND) as String
-		var queue: Array[Vector2i] = [coord]
-		visited[coord] = true
-		var region_coords: Array[Vector2i] = []
-		var touches_edge := false
-		while not queue.is_empty():
-			var current := queue.pop_back()
-			region_coords.append(current)
-			if current.x == 0 or current.y == 0 or current.x == map_size.x - 1 or current.y == map_size.y - 1:
-				touches_edge = true
-			for offset: Vector2i in offsets:
-				var neighbor := current + offset
-				if neighbor.x < 0 or neighbor.y < 0 or neighbor.x >= map_size.x or neighbor.y >= map_size.y:
-					continue
-				if visited.has(neighbor):
-					continue
-				if String(biome_map.get(neighbor, "")) != biome:
-					continue
-				visited[neighbor] = true
-				queue.append(neighbor)
-		var region_name := _generate_region_name_for_biome(biome, touches_edge, rng, context_size)
-		for region_coord: Vector2i in region_coords:
-			region_names[region_coord] = region_name
-	return region_names
-
-func _generate_region_name_for_biome(
+func _generate_biome_region_name(
 	biome: String,
-	water_touches_edge: bool,
+	coord: Vector2i,
 	rng: RandomNumberGenerator,
 	context_size: int
 ) -> String:
@@ -1909,11 +1864,17 @@ func _generate_region_name_for_biome(
 		BIOME_BADLANDS:
 			return _generate_badlands_name(rng)
 		BIOME_WATER:
-			if not water_touches_edge:
+			var water_type := _water_body_type(coord)
+			if water_type == "lake":
 				return _generate_lake_name(rng)
 			return _generate_ocean_name(rng, context_size)
 		_:
 			return ""
+
+func _water_body_type(coord: Vector2i) -> String:
+	if coord.x == 0 or coord.y == 0 or coord.x == map_size.x - 1 or coord.y == map_size.y - 1:
+		return "ocean"
+	return "lake"
 
 func _generate_forest_name(rng: RandomNumberGenerator) -> String:
 	var prefix := _pick_random_entry(FOREST_NAME_PREFIXES, rng, "Verdant")
