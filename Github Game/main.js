@@ -7489,6 +7489,7 @@ function applyCulturalInfluence({
     { key: 'locathah', label: 'Locathah', biomes: ['ocean', 'lake', 'marsh'] },
     { key: 'firbolg', label: 'Firbolg', biomes: ['forest', 'grassland'] },
     { key: 'aarakocra', label: 'Aarakocra', biomes: ['mountain', 'grassland'] },
+    { key: 'dwarves', label: 'Dwarves', biomes: ['mountain'] },
     { key: 'braxat', label: 'Braxat', biomes: ['desert', 'badlands', 'jungle'] },
     { key: 'hadozee', label: 'Hadozee', biomes: ['ocean', 'jungle'] },
     { key: 'quillboar', label: 'Quillboar', biomes: ['badlands', 'desert', 'grassland'] }
@@ -7832,16 +7833,19 @@ function applyCulturalInfluence({
           const cultureRoll = hashCoords(x, y, mountainCultureSeed);
           let key = 'gnomes';
           let label = 'Gnomes';
-          if (cultureRoll < 0.22) {
+          if (cultureRoll < 0.2) {
             key = 'gnomes';
             label = 'Gnomes';
-          } else if (cultureRoll < 0.47) {
+          } else if (cultureRoll < 0.4) {
+            key = 'dwarves';
+            label = 'Dwarves';
+          } else if (cultureRoll < 0.58) {
             key = 'ogres';
             label = 'Ogres';
-          } else if (cultureRoll < 0.72) {
+          } else if (cultureRoll < 0.76) {
             key = 'trolls';
             label = 'Trolls';
-          } else if (cultureRoll < 0.88) {
+          } else if (cultureRoll < 0.9) {
             key = 'harpies';
             label = 'Harpies';
           } else {
