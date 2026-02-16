@@ -79,7 +79,13 @@ func set_world_bounds(bounds: Rect2) -> void:
 	_world_bounds = bounds
 	_has_world_bounds = true
 	_update_camera_limits()
+	_center_on_world_bounds()
 	_clamp_to_world_bounds()
+
+func _center_on_world_bounds() -> void:
+	if not _has_world_bounds:
+		return
+	global_position = _world_bounds.position + (_world_bounds.size * 0.5)
 
 func _update_camera_limits() -> void:
 	if not _has_world_bounds:
