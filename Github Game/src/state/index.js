@@ -44,11 +44,10 @@ function buildMapEditorStructureSuggestionKeys(structureHighlightGroups = {}, st
     if (!group || !Array.isArray(group.keys)) {
       return;
     }
-    group.keys.forEach((key) => {
-      if (typeof key === 'string' && key.trim()) {
-        suggestions.add(key.trim().toUpperCase());
-      }
-    });
+    const primaryKey = group.keys.find((key) => typeof key === 'string' && key.trim());
+    if (primaryKey) {
+      suggestions.add(primaryKey.trim().toUpperCase());
+    }
   });
   const ordered = Array.from(suggestions);
   ordered.sort();
@@ -515,4 +514,3 @@ export function createStateModule(options = {}) {
     ensureStructureHighlightState
   };
 }
-
