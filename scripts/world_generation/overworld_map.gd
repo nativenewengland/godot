@@ -1088,6 +1088,7 @@ func _ready() -> void:
 	if political_boundaries_button != null:
 		political_boundaries_button.toggled.connect(_on_political_boundaries_toggled)
 		political_boundaries_button.button_pressed = false
+		political_boundaries_button.tooltip_text = "Toggle states overlay"
 	if routes_map_button != null:
 		routes_map_button.toggled.connect(_on_routes_map_toggled)
 		routes_map_button.button_pressed = false

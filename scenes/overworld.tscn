@@ -222,7 +222,7 @@ text = "Culture Map"
 [node name="PoliticalBoundariesButton" type="Button" parent="MapUi/TopBar/TopBarLayout"]
 layout_mode = 2
 toggle_mode = true
-text = "Political Boundaries"
+text = "States"
 
 [node name="RoutesMapButton" type="Button" parent="MapUi/TopBar/TopBarLayout"]
 layout_mode = 2
