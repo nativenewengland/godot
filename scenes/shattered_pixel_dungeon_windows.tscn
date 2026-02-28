@@ -1,6 +1,33 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=10 format=3]
 
 [ext_resource type="Script" path="res://scripts/shattered_pixel_dungeon_windows.gd" id="1_4es6m"]
+[ext_resource type="Texture2D" path="res://resources/images/shattered_ui/status_pane.png" id="2_status"]
+[ext_resource type="Texture2D" path="res://resources/images/shattered_ui/toolbar.png" id="3_toolbar"]
+[ext_resource type="Texture2D" path="res://resources/images/shattered_ui/chrome.png" id="4_chrome"]
+[ext_resource type="Texture2D" path="res://resources/images/shattered_ui/icons.png" id="5_icons"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_search"]
+atlas = ExtResource("5_icons")
+region = Rect2(0, 16, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wait"]
+atlas = ExtResource("5_icons")
+region = Rect2(16, 16, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_zap"]
+atlas = ExtResource("5_icons")
+region = Rect2(32, 16, 16, 16)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_window"]
+texture = ExtResource("4_chrome")
+texture_margin_left = 8.0
+texture_margin_top = 8.0
+texture_margin_right = 8.0
+texture_margin_bottom = 8.0
+expand_margin_left = 8.0
+expand_margin_top = 8.0
+expand_margin_right = 8.0
+expand_margin_bottom = 8.0
 
 [node name="ShatteredPixelDungeonWindows" type="Control"]
 layout_mode = 3
@@ -11,200 +38,207 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_4es6m")
 
-[node name="Background" type="ColorRect" parent="."]
+[node name="DungeonBackdrop" type="ColorRect" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.0745098, 0.0784314, 0.121569, 1)
+color = Color(0.0627451, 0.0666667, 0.0901961, 1)
 
-[node name="MainMargin" type="MarginContainer" parent="."]
+[node name="StatusPane" type="TextureRect" parent="."]
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 264.0
+offset_bottom = 264.0
+scale = Vector2(2, 2)
+texture = ExtResource("2_status")
+stretch_mode = 1
+
+[node name="Toolbar" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_left = 0.5
+anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = 24.0
-offset_top = 24.0
-offset_right = -24.0
-offset_bottom = -24.0
+offset_left = -384.0
+offset_top = -104.0
+offset_right = 384.0
+offset_bottom = -8.0
+grow_horizontal = 2
+grow_vertical = 0
+texture = ExtResource("3_toolbar")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="ActionButtons" type="HBoxContainer" parent="Toolbar"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -160.0
+offset_top = -18.0
+offset_right = 160.0
+offset_bottom = 18.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_constants/separation = 40
 
-[node name="MainLayout" type="HBoxContainer" parent="MainMargin"]
+[node name="SearchButton" type="Button" parent="Toolbar/ActionButtons"]
+custom_minimum_size = Vector2(72, 36)
 layout_mode = 2
-theme_override_constants/separation = 16
-
-[node name="LeftColumn" type="VBoxContainer" parent="MainMargin/MainLayout"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/separation = 16
-
-[node name="HeroWindow" type="PanelContainer" parent="MainMargin/MainLayout/LeftColumn"]
-custom_minimum_size = Vector2(0, 176)
-layout_mode = 2
-size_flags_vertical = 3
-
-[node name="HeroContent" type="MarginContainer" parent="MainMargin/MainLayout/LeftColumn/HeroWindow"]
-layout_mode = 2
-theme_override_constants/margin_left = 12
-theme_override_constants/margin_top = 12
-theme_override_constants/margin_right = 12
-theme_override_constants/margin_bottom = 12
-
-[node name="HeroVBox" type="VBoxContainer" parent="MainMargin/MainLayout/LeftColumn/HeroWindow/HeroContent"]
-layout_mode = 2
-theme_override_constants/separation = 8
-
-[node name="HeroTitle" type="Label" parent="MainMargin/MainLayout/LeftColumn/HeroWindow/HeroContent/HeroVBox"]
-layout_mode = 2
-text = "HUNTRESS — LEVEL 12"
-
-[node name="HeroStats" type="Label" parent="MainMargin/MainLayout/LeftColumn/HeroWindow/HeroContent/HeroVBox"]
-layout_mode = 2
-text = "HP 42/46  |  STR 15  |  EXP 63%"
-
-[node name="HealthBar" type="ProgressBar" parent="MainMargin/MainLayout/LeftColumn/HeroWindow/HeroContent/HeroVBox"]
-layout_mode = 2
-value = 91.0
-show_percentage = false
-
-[node name="ShieldBar" type="ProgressBar" parent="MainMargin/MainLayout/LeftColumn/HeroWindow/HeroContent/HeroVBox"]
-layout_mode = 2
-value = 40.0
-show_percentage = false
-
-[node name="JournalWindow" type="PanelContainer" parent="MainMargin/MainLayout/LeftColumn"]
-layout_mode = 2
-size_flags_vertical = 3
-
-[node name="JournalContent" type="MarginContainer" parent="MainMargin/MainLayout/LeftColumn/JournalWindow"]
-layout_mode = 2
-theme_override_constants/margin_left = 12
-theme_override_constants/margin_top = 12
-theme_override_constants/margin_right = 12
-theme_override_constants/margin_bottom = 12
-
-[node name="JournalTabs" type="TabContainer" parent="MainMargin/MainLayout/LeftColumn/JournalWindow/JournalContent"]
-layout_mode = 2
-current_tab = 0
-
-[node name="QuestTab" type="VBoxContainer" parent="MainMargin/MainLayout/LeftColumn/JournalWindow/JournalContent/JournalTabs"]
-layout_mode = 2
-
-[node name="QuestBody" type="RichTextLabel" parent="MainMargin/MainLayout/LeftColumn/JournalWindow/JournalContent/JournalTabs/QuestTab"]
-layout_mode = 2
-bbcode_enabled = true
-fit_content = true
-text = "[b]Current objective:[/b]\nRecover the Dried Rose from floor 14.\n\n[b]Notes:[/b]\n• The old wandmaker hinted at hidden doors.\n• Traps near chasms are likely active."
-
-[node name="LoreTab" type="VBoxContainer" parent="MainMargin/MainLayout/LeftColumn/JournalWindow/JournalContent/JournalTabs"]
-layout_mode = 2
-
-[node name="LoreBody" type="RichTextLabel" parent="MainMargin/MainLayout/LeftColumn/JournalWindow/JournalContent/JournalTabs/LoreTab"]
-layout_mode = 2
-bbcode_enabled = true
-fit_content = true
-text = "[b]Dungeon Chronicle[/b]\nThe stone here was raised before the city above had a name.\n\nGlyphs on the walls mention a sleeping king and a crown of ash."
-
-[node name="RightColumn" type="VBoxContainer" parent="MainMargin/MainLayout"]
-custom_minimum_size = Vector2(360, 0)
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/separation = 16
-
-[node name="InventoryWindow" type="PanelContainer" parent="MainMargin/MainLayout/RightColumn"]
-layout_mode = 2
-size_flags_vertical = 3
-
-[node name="InventoryContent" type="MarginContainer" parent="MainMargin/MainLayout/RightColumn/InventoryWindow"]
-layout_mode = 2
-theme_override_constants/margin_left = 12
-theme_override_constants/margin_top = 12
-theme_override_constants/margin_right = 12
-theme_override_constants/margin_bottom = 12
-
-[node name="InventoryVBox" type="VBoxContainer" parent="MainMargin/MainLayout/RightColumn/InventoryWindow/InventoryContent"]
-layout_mode = 2
-theme_override_constants/separation = 10
-
-[node name="InventoryTitle" type="Label" parent="MainMargin/MainLayout/RightColumn/InventoryWindow/InventoryContent/InventoryVBox"]
-layout_mode = 2
-text = "BACKPACK"
-
-[node name="InventoryGrid" type="GridContainer" parent="MainMargin/MainLayout/RightColumn/InventoryWindow/InventoryContent/InventoryVBox"]
-layout_mode = 2
-columns = 3
-
-[node name="Slot1" type="Button" parent="MainMargin/MainLayout/RightColumn/InventoryWindow/InventoryContent/InventoryVBox/InventoryGrid"]
-layout_mode = 2
-text = "Potion"
-
-[node name="Slot2" type="Button" parent="MainMargin/MainLayout/RightColumn/InventoryWindow/InventoryContent/InventoryVBox/InventoryGrid"]
-layout_mode = 2
-text = "Scroll"
-
-[node name="Slot3" type="Button" parent="MainMargin/MainLayout/RightColumn/InventoryWindow/InventoryContent/InventoryVBox/InventoryGrid"]
-layout_mode = 2
-text = "Seed"
-
-[node name="Slot4" type="Button" parent="MainMargin/MainLayout/RightColumn/InventoryWindow/InventoryContent/InventoryVBox/InventoryGrid"]
-layout_mode = 2
-text = "Dart"
-
-[node name="Slot5" type="Button" parent="MainMargin/MainLayout/RightColumn/InventoryWindow/InventoryContent/InventoryVBox/InventoryGrid"]
-layout_mode = 2
-text = "Food"
-
-[node name="Slot6" type="Button" parent="MainMargin/MainLayout/RightColumn/InventoryWindow/InventoryContent/InventoryVBox/InventoryGrid"]
-layout_mode = 2
-text = "Bomb"
-
-[node name="ActionWindow" type="PanelContainer" parent="MainMargin/MainLayout/RightColumn"]
-custom_minimum_size = Vector2(0, 180)
-layout_mode = 2
-
-[node name="ActionContent" type="MarginContainer" parent="MainMargin/MainLayout/RightColumn/ActionWindow"]
-layout_mode = 2
-theme_override_constants/margin_left = 12
-theme_override_constants/margin_top = 12
-theme_override_constants/margin_right = 12
-theme_override_constants/margin_bottom = 12
-
-[node name="ActionVBox" type="VBoxContainer" parent="MainMargin/MainLayout/RightColumn/ActionWindow/ActionContent"]
-layout_mode = 2
-theme_override_constants/separation = 8
-
-[node name="ActionTitle" type="Label" parent="MainMargin/MainLayout/RightColumn/ActionWindow/ActionContent/ActionVBox"]
-layout_mode = 2
-text = "ACTIONS"
-
-[node name="ActionButtons" type="HBoxContainer" parent="MainMargin/MainLayout/RightColumn/ActionWindow/ActionContent/ActionVBox"]
-layout_mode = 2
-theme_override_constants/separation = 8
-
-[node name="SearchButton" type="Button" parent="MainMargin/MainLayout/RightColumn/ActionWindow/ActionContent/ActionVBox/ActionButtons"]
-layout_mode = 2
-size_flags_horizontal = 3
+icon = SubResource("AtlasTexture_search")
 text = "Search"
 
-[node name="WaitButton" type="Button" parent="MainMargin/MainLayout/RightColumn/ActionWindow/ActionContent/ActionVBox/ActionButtons"]
+[node name="WaitButton" type="Button" parent="Toolbar/ActionButtons"]
+custom_minimum_size = Vector2(72, 36)
 layout_mode = 2
-size_flags_horizontal = 3
+icon = SubResource("AtlasTexture_wait")
 text = "Wait"
 
-[node name="ZapButton" type="Button" parent="MainMargin/MainLayout/RightColumn/ActionWindow/ActionContent/ActionVBox/ActionButtons"]
+[node name="ZapButton" type="Button" parent="Toolbar/ActionButtons"]
+custom_minimum_size = Vector2(72, 36)
 layout_mode = 2
-size_flags_horizontal = 3
+icon = SubResource("AtlasTexture_zap")
 text = "Zap"
 
-[node name="MessageLog" type="RichTextLabel" parent="MainMargin/MainLayout/RightColumn/ActionWindow/ActionContent/ActionVBox"]
-layout_mode = 2
-size_flags_vertical = 3
-bbcode_enabled = true
-text = "[color=#9cb0c5]You enter floor 12 of the dungeon.[/color]"
+[node name="HeroWindow" type="PanelContainer" parent="."]
+layout_mode = 1
+offset_left = 288.0
+offset_top = 22.0
+offset_right = 728.0
+offset_bottom = 196.0
+theme_override_styles/panel = SubResource("StyleBoxTexture_window")
 
-[connection signal="pressed" from="MainMargin/MainLayout/RightColumn/ActionWindow/ActionContent/ActionVBox/ActionButtons/SearchButton" to="." method="_on_search_button_pressed"]
-[connection signal="pressed" from="MainMargin/MainLayout/RightColumn/ActionWindow/ActionContent/ActionVBox/ActionButtons/WaitButton" to="." method="_on_wait_button_pressed"]
-[connection signal="pressed" from="MainMargin/MainLayout/RightColumn/ActionWindow/ActionContent/ActionVBox/ActionButtons/ZapButton" to="." method="_on_zap_button_pressed"]
+[node name="HeroMargin" type="MarginContainer" parent="HeroWindow"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="HeroStats" type="RichTextLabel" parent="HeroWindow/HeroMargin"]
+layout_mode = 2
+bbcode_enabled = true
+fit_content = true
+text = "[b]Huntress Lv. 12[/b]\nHP 42/46   STR 15\nDepth 12   Gold 314"
+
+[node name="InventoryWindow" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -300.0
+offset_top = -460.0
+offset_right = -22.0
+offset_bottom = -118.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxTexture_window")
+
+[node name="InventoryMargin" type="MarginContainer" parent="InventoryWindow"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="InventoryGrid" type="GridContainer" parent="InventoryWindow/InventoryMargin"]
+layout_mode = 2
+columns = 4
+theme_override_constants/h_separation = 6
+theme_override_constants/v_separation = 6
+
+[node name="Item1" type="Button" parent="InventoryWindow/InventoryMargin/InventoryGrid"]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+text = "1"
+
+[node name="Item2" type="Button" parent="InventoryWindow/InventoryMargin/InventoryGrid"]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+text = "2"
+
+[node name="Item3" type="Button" parent="InventoryWindow/InventoryMargin/InventoryGrid"]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+text = "3"
+
+[node name="Item4" type="Button" parent="InventoryWindow/InventoryMargin/InventoryGrid"]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+text = "4"
+
+[node name="Item5" type="Button" parent="InventoryWindow/InventoryMargin/InventoryGrid"]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+text = "5"
+
+[node name="Item6" type="Button" parent="InventoryWindow/InventoryMargin/InventoryGrid"]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+text = "6"
+
+[node name="Item7" type="Button" parent="InventoryWindow/InventoryMargin/InventoryGrid"]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+text = "7"
+
+[node name="Item8" type="Button" parent="InventoryWindow/InventoryMargin/InventoryGrid"]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+text = "8"
+
+[node name="JournalWindow" type="PanelContainer" parent="."]
+layout_mode = 1
+offset_left = 288.0
+offset_top = 214.0
+offset_right = 728.0
+offset_bottom = 500.0
+theme_override_styles/panel = SubResource("StyleBoxTexture_window")
+
+[node name="JournalMargin" type="MarginContainer" parent="JournalWindow"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="JournalText" type="RichTextLabel" parent="JournalWindow/JournalMargin"]
+layout_mode = 2
+bbcode_enabled = true
+text = "[b]Journal[/b]\n- Recover the Dried Rose from depth 14.\n- Search walls near chasms for hidden doors."
+
+[node name="MessageWindow" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 14
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = -240.0
+offset_right = -16.0
+offset_bottom = -112.0
+grow_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxTexture_window")
+
+[node name="MessageMargin" type="MarginContainer" parent="MessageWindow"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="MessageLog" type="RichTextLabel" parent="MessageWindow/MessageMargin"]
+layout_mode = 2
+bbcode_enabled = true
+text = "[color=#b8c7df]You descend to depth 12.[/color]"
+
+[connection signal="pressed" from="Toolbar/ActionButtons/SearchButton" to="." method="_on_search_button_pressed"]
+[connection signal="pressed" from="Toolbar/ActionButtons/WaitButton" to="." method="_on_wait_button_pressed"]
+[connection signal="pressed" from="Toolbar/ActionButtons/ZapButton" to="." method="_on_zap_button_pressed"]
