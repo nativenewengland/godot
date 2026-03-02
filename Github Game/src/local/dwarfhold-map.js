@@ -75,6 +75,8 @@ const interiorTileSprites = {
     shrine: [{ sheet: 'dwarfholdObjects', row: 3, col: 1, size: 16, scale: 0.88 }],
     throne: [{ sheet: 'dwarfholdObjects', row: 1, col: 13, size: 16, scale: 0.94 }],
     stairs: [{ sheet: 'dwarfholdObjects', row: 3, col: 4, size: 16, scale: 0.9 }],
+    stairsUp: [{ sheet: 'dwarfholdObjects', row: 4, col: 5, size: 16, scale: 0.9 }],
+    stairsDown: [{ sheet: 'dwarfholdObjects', row: 4, col: 15, size: 16, scale: 0.9 }],
     storage: [{ sheet: 'dwarfholdObjects', row: 3, col: 5, size: 16, scale: 0.9 }]
   }
 };
@@ -95,6 +97,8 @@ const tileVariantPools = {
   shrine: { base: interiorTileSprites.polishedFloor, overlays: interiorTileSprites.overlays.shrine },
   throne: { base: interiorTileSprites.polishedFloor, overlays: interiorTileSprites.overlays.throne },
   stairs: { base: interiorTileSprites.carvedFloor, overlays: interiorTileSprites.overlays.stairs },
+  stairsUp: { base: interiorTileSprites.carvedFloor, overlays: interiorTileSprites.overlays.stairsUp },
+  stairsDown: { base: interiorTileSprites.carvedFloor, overlays: interiorTileSprites.overlays.stairsDown },
   storage: { base: interiorTileSprites.workFloor, overlays: interiorTileSprites.overlays.storage }
 };
 
@@ -196,6 +200,18 @@ const baseLegend = {
     label: 'Deep stairs',
     description: 'Spiral descent toward mines and lower districts.',
     borderColor: '#7c3aed'
+  },
+  stairsUp: {
+    color: '#8b5cf6',
+    label: 'Stairway up',
+    description: 'Climb toward the upper halls of the hold.',
+    borderColor: '#6d28d9'
+  },
+  stairsDown: {
+    color: '#7c3aed',
+    label: 'Stairway down',
+    description: 'Descend into deeper levels of the hold.',
+    borderColor: '#581c87'
   },
   storage: {
     color: '#d8b4fe',
@@ -1973,6 +1989,51 @@ function resolveFactionLabel(raw) {
   return null;
 }
 
+function isFloorForStairLink(type) {
+  return (
+    type === 'floor' ||
+    type === 'corridor' ||
+    type === 'hall' ||
+    type === 'plaza' ||
+    type === 'forge' ||
+    type === 'market' ||
+    type === 'dormitory' ||
+    type === 'brewery' ||
+    type === 'garden' ||
+    type === 'shrine' ||
+    type === 'throne' ||
+    type === 'storage' ||
+    type === 'stairs' ||
+    type === 'stairsUp' ||
+    type === 'stairsDown'
+  );
+}
+
+function buildSingleDwarfholdLevel({ seedValue, randomFn, scaleFactor }) {
+  const baseWidth = randomInt(randomFn, 28, 54);
+  const baseHeight = randomInt(randomFn, 22, 42);
+  const mapWidth = ensureOdd(Math.round(baseWidth * scaleFactor), 19, 151);
+  const mapHeight = ensureOdd(Math.round(baseHeight * scaleFactor * 0.92), 19, 151);
+  const usedTypes = new Set();
+  const tiles = createEmptyGrid(mapWidth, mapHeight, usedTypes);
+  const features = [];
+  const featureSet = new Set();
+  const markers = [];
+  const roadNetwork = growRoadNetwork({
+    tiles,
+    usedTypes,
+    randomFn,
+    width: mapWidth,
+    height: mapHeight,
+    scaleFactor,
+    features,
+    featureSet,
+    markers
+  });
+  applyVoidMask(tiles, randomFn);
+  return { seedValue, randomFn, mapWidth, mapHeight, usedTypes, tiles, features, featureSet, markers, roadNetwork };
+}
+
 export function generateDwarfholdMap(options = {}) {
   const structureKey = typeof options.structureKey === 'string' ? options.structureKey : 'DWARFHOLD';
   const structureName =
@@ -1997,34 +2058,67 @@ export function generateDwarfholdMap(options = {}) {
       : 1;
   const scaleFactor = clamp(typeScale * (0.9 + populationScale * 0.45), 0.85, 2.35);
 
-  const baseWidth = randomInt(randomFn, 28, 54);
-  const baseHeight = randomInt(randomFn, 22, 42);
-  const mapWidth = ensureOdd(Math.round(baseWidth * scaleFactor), 19, 151);
-  const mapHeight = ensureOdd(Math.round(baseHeight * scaleFactor * 0.92), 19, 151);
+  const levelCount = 3;
+  const levels = [];
+  for (let levelIndex = 0; levelIndex < levelCount; levelIndex += 1) {
+    const levelSeed = hashString(`${seedValue}:level:${levelIndex}`);
+    const levelRng = createRng(levelSeed);
+    levels.push(
+      buildSingleDwarfholdLevel({
+        seedValue: levelSeed,
+        randomFn: levelRng,
+        scaleFactor
+      })
+    );
+  }
 
-  const usedTypes = new Set();
-  const tiles = createEmptyGrid(mapWidth, mapHeight, usedTypes);
-  const features = [];
-  const featureSet = new Set();
-  const markers = [];
+  for (let levelIndex = 0; levelIndex < levels.length - 1; levelIndex += 1) {
+    const upper = levels[levelIndex];
+    const lower = levels[levelIndex + 1];
+    const width = Math.min(upper.mapWidth, lower.mapWidth);
+    const height = Math.min(upper.mapHeight, lower.mapHeight);
+    const candidates = [];
+    for (let y = 1; y < height - 1; y += 1) {
+      for (let x = 1; x < width - 1; x += 1) {
+        const upperType = upper.tiles?.[y]?.[x]?.type;
+        const lowerType = lower.tiles?.[y]?.[x]?.type;
+        if (isFloorForStairLink(upperType) && isFloorForStairLink(lowerType)) {
+          candidates.push({ x, y });
+        }
+      }
+    }
+    if (candidates.length === 0) {
+      continue;
+    }
+    const stairCell = candidates[Math.floor(upper.randomFn() * candidates.length)];
+    setCell(upper.tiles, stairCell.x, stairCell.y, 'stairsDown', upper.usedTypes);
+    setCell(lower.tiles, stairCell.x, stairCell.y, 'stairsUp', lower.usedTypes);
+    upper.features.push(`Stairway down — linked to level ${levelIndex + 2}.`);
+    lower.features.push(`Stairway up — linked to level ${levelIndex + 1}.`);
+    upper.markers.push({
+      x: stairCell.x,
+      y: stairCell.y,
+      color: '#7c3aed',
+      stroke: '#2e1065',
+      radius: 0.36,
+      shadowColor: 'rgba(124, 58, 237, 0.45)'
+    });
+    lower.markers.push({
+      x: stairCell.x,
+      y: stairCell.y,
+      color: '#8b5cf6',
+      stroke: '#4c1d95',
+      radius: 0.36,
+      shadowColor: 'rgba(139, 92, 246, 0.45)'
+    });
+  }
 
-  const roadNetwork = growRoadNetwork({
-    tiles,
-    usedTypes,
-    randomFn,
-    width: mapWidth,
-    height: mapHeight,
-    scaleFactor,
-    features,
-    featureSet,
-    markers
-  });
+  levels.forEach((level) => assignTileSpritesToGrid(level.tiles, level.seedValue));
+
+  const activeLevel = levels[0];
+  const { mapWidth, mapHeight, usedTypes, tiles, features, featureSet, markers, roadNetwork } = activeLevel;
 
   const npcs = [];
-
-  applyVoidMask(tiles, randomFn);
-
-  assignTileSpritesToGrid(tiles, seedValue);
 
   const structureLabel = structureTypeLabels[structureKey] || 'Dwarven Hold';
   const levelName = pick(levelNames, randomFn) || 'Upper Halls';
@@ -2076,6 +2170,14 @@ export function generateDwarfholdMap(options = {}) {
     description,
     features,
     markers,
-    npcs
+    npcs,
+    levels: levels.map((level, index) => ({
+      index,
+      width: level.mapWidth,
+      height: level.mapHeight,
+      tiles: level.tiles,
+      features: level.features,
+      markers: level.markers
+    }))
   };
 }
