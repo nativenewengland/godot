@@ -2277,7 +2277,9 @@ func _update_hover_tooltip(mouse_position: Vector2) -> void:
 	if hovered_layer.get_cell_source_id(hovered_cell) < 0:
 		_hide_hover_tooltip()
 		return
+	var tooltip_position := _clamp_tooltip_position(mouse_position + Vector2(16, 16))
 	if tile_hover_tooltip.visible and hovered_cell == _hover_tooltip_cell and hovered_layer == _hover_tooltip_layer:
+		tile_hover_tooltip.position = tooltip_position
 		return
 
 	var atlas_coords := hovered_layer.get_cell_atlas_coords(hovered_cell)
@@ -2291,9 +2293,9 @@ func _update_hover_tooltip(mouse_position: Vector2) -> void:
 		if not flavor.is_empty():
 			tooltip_lines.append(flavor)
 	tile_hover_label.text = "\n".join(tooltip_lines)
-	tile_hover_tooltip.visible = true
 	tile_hover_tooltip.reset_size()
-	tile_hover_tooltip.position = _clamp_tooltip_position(_screen_position_from_cell(hovered_cell) + Vector2(14, 14))
+	tile_hover_tooltip.position = _clamp_tooltip_position(mouse_position + Vector2(16, 16))
+	tile_hover_tooltip.visible = true
 	_hover_tooltip_cell = hovered_cell
 	_hover_tooltip_layer = hovered_layer
 
