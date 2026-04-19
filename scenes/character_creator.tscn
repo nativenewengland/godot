@@ -528,15 +528,13 @@ stretch_mode = 5
 
 [node name="DwarfBodySprite2" type="TextureRect" parent="PanelContainer/VBoxContainer/MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer2/MarginContainer/VBoxContainer2/TextureRect" unique_id=201968757]
 layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -148.75
-offset_top = -188.5
-offset_right = 148.75
-offset_bottom = 188.5
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = -8.0
 grow_horizontal = 2
 grow_vertical = 2
 texture = ExtResource("15_y6x2m")
@@ -1209,11 +1207,18 @@ autowrap_mode = 3
 
 [node name="Button" type="Button" parent="." unique_id=5505332]
 self_modulate = Color(0.85, 0.85, 0.85, 1)
-layout_mode = 0
-offset_left = 720.0
-offset_top = 582.0
-offset_right = 870.0
-offset_bottom = 673.0
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -201.0
+offset_top = 250.0
+offset_right = -51.0
+offset_bottom = 341.0
+grow_horizontal = 2
+grow_vertical = 2
 mouse_default_cursor_shape = 2
 theme_override_styles/normal = SubResource("StyleBoxFlat_n1i1y")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_nj4er")
@@ -1224,11 +1229,18 @@ icon = ExtResource("16_dk5wx")
 flat = true
 
 [node name="Button2" type="Button" parent="." unique_id=289871190]
-layout_mode = 0
-offset_left = 898.0
-offset_top = 579.0
-offset_right = 941.0
-offset_bottom = 670.0
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -21.0
+offset_top = 250.0
+offset_right = 22.0
+offset_bottom = 341.0
+grow_horizontal = 2
+grow_vertical = 2
 icon = ExtResource("17_s8202")
 flat = true
 
@@ -1271,11 +1283,18 @@ stretch_mode = 5
 
 [node name="Button3" type="Button" parent="." unique_id=1042695860]
 self_modulate = Color(0.85, 0.85, 0.85, 1)
-layout_mode = 0
-offset_left = 955.0
-offset_top = 579.0
-offset_right = 1105.0
-offset_bottom = 670.0
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 52.0
+offset_top = 250.0
+offset_right = 202.0
+offset_bottom = 341.0
+grow_horizontal = 2
+grow_vertical = 2
 mouse_default_cursor_shape = 2
 theme_override_styles/normal = SubResource("StyleBoxFlat_n1i1y")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_nj4er")
