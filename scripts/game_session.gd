@@ -2,7 +2,11 @@ extends Node
 
 const WorldSettings = preload("res://scripts/world_generation/world_settings.gd")
 
+const SAVE_FILE_PATH := "user://save_game.json"
+const SAVE_FORMAT_VERSION := 1
+
 var world_settings: Dictionary = {}
+var player_character: Dictionary = {}
 
 func set_world_settings(settings: Dictionary) -> void:
 	world_settings = WorldSettings.merge_with_defaults(settings)
@@ -12,3 +16,84 @@ func get_world_settings() -> Dictionary:
 
 func get_world_settings_with_defaults(settings: Dictionary) -> Dictionary:
 	return WorldSettings.merge_with_defaults(settings)
+
+func set_player_character(character: Dictionary) -> void:
+	player_character = character.duplicate(true)
+
+func get_player_character() -> Dictionary:
+	return player_character.duplicate(true)
+
+func has_player_character() -> bool:
+	return not player_character.is_empty()
+
+func has_save_file(path: String = SAVE_FILE_PATH) -> bool:
+	return FileAccess.file_exists(path)
+
+func save_to_file(path: String = SAVE_FILE_PATH) -> Error:
+	var payload := {
+		"version": SAVE_FORMAT_VERSION,
+		"world_settings": _encode_for_json(world_settings),
+		"player_character": _encode_for_json(player_character)
+	}
+	var file := FileAccess.open(path, FileAccess.WRITE)
+	if file == null:
+		return FileAccess.get_open_error()
+	file.store_string(JSON.stringify(payload, "\t"))
+	file.close()
+	return OK
+
+func load_from_file(path: String = SAVE_FILE_PATH) -> bool:
+	if not FileAccess.file_exists(path):
+		return false
+	var file := FileAccess.open(path, FileAccess.READ)
+	if file == null:
+		return false
+	var text := file.get_as_text()
+	file.close()
+	var parsed: Variant = JSON.parse_string(text)
+	if not (parsed is Dictionary):
+		return false
+	var payload := parsed as Dictionary
+	var loaded_settings: Dictionary = _decode_from_json(payload.get("world_settings", {})) as Dictionary
+	var loaded_character: Dictionary = _decode_from_json(payload.get("player_character", {})) as Dictionary
+	world_settings = WorldSettings.merge_with_defaults(loaded_settings)
+	player_character = loaded_character
+	return true
+
+static func _encode_for_json(value: Variant) -> Variant:
+	if value is Dictionary:
+		var encoded: Dictionary = {}
+		for key: Variant in (value as Dictionary).keys():
+			encoded[str(key)] = _encode_for_json((value as Dictionary)[key])
+		return encoded
+	if value is Array:
+		var encoded_array: Array = []
+		for item: Variant in value as Array:
+			encoded_array.append(_encode_for_json(item))
+		return encoded_array
+	if value is Vector2i:
+		var vec: Vector2i = value
+		return {"__type": "Vector2i", "x": vec.x, "y": vec.y}
+	if value is Vector2:
+		var vec2: Vector2 = value
+		return {"__type": "Vector2", "x": vec2.x, "y": vec2.y}
+	return value
+
+static func _decode_from_json(value: Variant) -> Variant:
+	if value is Dictionary:
+		var dict := value as Dictionary
+		var type_tag := str(dict.get("__type", ""))
+		if type_tag == "Vector2i":
+			return Vector2i(int(dict.get("x", 0)), int(dict.get("y", 0)))
+		if type_tag == "Vector2":
+			return Vector2(float(dict.get("x", 0.0)), float(dict.get("y", 0.0)))
+		var decoded: Dictionary = {}
+		for key: Variant in dict.keys():
+			decoded[key] = _decode_from_json(dict[key])
+		return decoded
+	if value is Array:
+		var decoded_array: Array = []
+		for item: Variant in value as Array:
+			decoded_array.append(_decode_from_json(item))
+		return decoded_array
+	return value
