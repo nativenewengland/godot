@@ -990,7 +990,34 @@ func _on_return_button_pressed() -> void:
 	get_tree().change_scene_to_file("res://scenes/mainmenu.tscn")
 
 func _on_create_button_pressed() -> void:
+	_persist_character_to_session()
 	get_tree().change_scene_to_file("res://scenes/world_generation_display.tscn")
+
+func _persist_character_to_session() -> void:
+	var game_session := get_node_or_null("/root/GameSession")
+	if game_session == null or not game_session.has_method("set_player_character"):
+		return
+	game_session.call("set_player_character", _build_character_dict())
+
+func _build_character_dict() -> Dictionary:
+	var profession_text := ""
+	if profession_choice and profession_choice.selected >= 0:
+		profession_text = profession_choice.get_item_text(profession_choice.selected)
+	var clan_text := ""
+	if clan_name and clan_name.selected >= 0:
+		clan_text = clan_name.get_item_text(clan_name.selected)
+	return {
+		"name": character_name.text if character_name else "",
+		"gender": "female" if _is_female else "male",
+		"profession": profession_text,
+		"clan": clan_text,
+		"skin_color": skin_color.value if skin_color else 0.0,
+		"eye_color": eye_color.value if eye_color else 0.0,
+		"hair_color": hair_color.value if hair_color else 0.0,
+		"hair_style": int(hair_style.value) if hair_style else 0,
+		"beard_color": beard_color.value if beard_color else 0.0,
+		"beard_style": int(beard_style.value) if beard_style else 0
+	}
 
 func _on_randomize_button_pressed() -> void:
 	_play_randomize_sound()

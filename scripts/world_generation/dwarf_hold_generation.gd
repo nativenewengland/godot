@@ -54,6 +54,12 @@ const COLLISION_LAYER_WORLD := 1
 @onready var chest_popup_take_all_button: Button = %ChestPopupTakeAllButton
 @onready var chest_popup_close_button: Button = %ChestPopupCloseButton
 @onready var chest_popup_close_footer_button: Button = %ChestPopupCloseFooterButton
+@onready var back_button: Button = %BackButton
+@onready var save_game_button: Button = %SaveGameButton
+@onready var save_status_label: Label = %SaveStatusLabel
+@onready var player_character_label: Label = %PlayerCharacterLabel
+
+const OVERWORLD_SCENE_PATH := "res://scenes/overworld.tscn"
 
 var _rng := RandomNumberGenerator.new()
 var _is_panning := false
@@ -544,6 +550,8 @@ func _ready() -> void:
 	chest_popup_take_all_button.pressed.connect(_on_loot_chest_button_pressed)
 	chest_popup_close_button.pressed.connect(_on_chest_popup_close_button_pressed)
 	chest_popup_close_footer_button.pressed.connect(_on_chest_popup_close_button_pressed)
+	back_button.pressed.connect(_on_back_button_pressed)
+	save_game_button.pressed.connect(_on_save_game_button_pressed)
 	_initialize_chest_popup_grids()
 	seed_input.text_submitted.connect(func(_text: String) -> void:
 		_generate_city()
@@ -552,6 +560,7 @@ func _ready() -> void:
 	_lighting_enabled = lighting_toggle.button_pressed
 	_apply_lighting_state()
 	_clear_chest_selection()
+	_update_player_character_label()
 	_generate_city()
 
 func _process(delta: float) -> void:
@@ -560,6 +569,10 @@ func _process(delta: float) -> void:
 	_update_npc_movement(delta)
 
 func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("ui_cancel") and not _is_text_input_focused():
+		_on_back_button_pressed()
+		get_viewport().set_input_as_handled()
+		return
 	if _player_sprite == null or not _player_control_enabled:
 		return
 	if _is_text_input_focused():
@@ -567,6 +580,50 @@ func _unhandled_input(event: InputEvent) -> void:
 	var move_direction := DwarfHoldUiInputHandler.move_direction_from_event(event)
 	if move_direction != Vector2i.ZERO:
 		_handle_player_move_input(move_direction)
+
+func _on_back_button_pressed() -> void:
+	get_tree().change_scene_to_file(OVERWORLD_SCENE_PATH)
+
+func _on_save_game_button_pressed() -> void:
+	var game_session := get_node_or_null("/root/GameSession")
+	if game_session == null or not game_session.has_method("save_to_file"):
+		_set_save_status("Save unavailable", Color(0.95, 0.45, 0.45, 1.0))
+		return
+	var result: int = int(game_session.call("save_to_file"))
+	if result == OK:
+		_set_save_status("Game saved", Color(0.6, 0.9, 0.6, 1.0))
+	else:
+		_set_save_status("Save failed (%d)" % result, Color(0.95, 0.45, 0.45, 1.0))
+
+func _set_save_status(text: String, color: Color) -> void:
+	if save_status_label == null:
+		return
+	save_status_label.text = text
+	save_status_label.modulate = color
+
+func _update_player_character_label() -> void:
+	if player_character_label == null:
+		return
+	var game_session := get_node_or_null("/root/GameSession")
+	if game_session == null or not game_session.has_method("get_player_character"):
+		player_character_label.text = ""
+		return
+	var character: Dictionary = game_session.call("get_player_character")
+	if character.is_empty():
+		player_character_label.text = ""
+		return
+	var display_name := str(character.get("name", "")).strip_edges()
+	var clan := str(character.get("clan", "")).strip_edges()
+	var profession := str(character.get("profession", "")).strip_edges()
+	var parts := PackedStringArray()
+	if not display_name.is_empty():
+		parts.append(display_name)
+	if not clan.is_empty():
+		parts.append("of %s" % clan)
+	var header := " ".join(parts) if not parts.is_empty() else "Unnamed Dwarf"
+	if not profession.is_empty():
+		header += " — %s" % profession
+	player_character_label.text = header
 
 func _handle_player_move_input(direction: Vector2i) -> void:
 	_request_player_move_to_cell(_player_cell + direction)
