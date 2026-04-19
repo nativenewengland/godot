@@ -657,6 +657,7 @@ func _ready() -> void:
 	await get_tree().process_frame
 	_apply_cached_world_settings()
 	_configure_tileset()
+	_configure_overworld_camera_bounds()
 	await _generate_map()
 	_hide_loading_screen()
 	if regenerate_button == null:
