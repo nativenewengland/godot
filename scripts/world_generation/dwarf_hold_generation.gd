@@ -1997,7 +1997,7 @@ func _spawn_tavern_characters(grid: Dictionary) -> void:
 	_refresh_lighting(grid)
 
 func _count_generated_beds() -> int:
-	var bed_coords := TileAtlasDefs.INTERIOR_ATLAS_COORDS.get("bed", Vector2i(-1, -1)) as Vector2i
+	var bed_coords := TILE_ATLAS_DEFS.INTERIOR_ATLAS_COORDS.get("bed", Vector2i(-1, -1)) as Vector2i
 	if bed_coords.x < 0 or bed_coords.y < 0:
 		return 0
 	var bed_count := 0
