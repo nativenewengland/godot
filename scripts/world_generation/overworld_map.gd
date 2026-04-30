@@ -5155,8 +5155,6 @@ func _apply_cached_world_settings() -> void:
 		return
 	if game_session.has_method("get_world_settings"):
 		var settings: Dictionary = game_session.call("get_world_settings")
-		if game_session.has_method("get_world_settings_with_defaults"):
-			settings = game_session.call("get_world_settings_with_defaults", settings)
 		_world_settings = settings.duplicate(true)
 		if settings.has("map_dimensions"):
 			map_size = settings["map_dimensions"]

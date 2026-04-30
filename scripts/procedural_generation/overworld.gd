@@ -122,9 +122,6 @@ func _apply_cached_world_settings() -> void:
 	var game_session := get_node_or_null("/root/GameSession") as GameSession
 	if game_session == null:
 		return
-	if game_session.has_method("get_world_settings_with_defaults"):
-		apply_world_settings(game_session.call("get_world_settings_with_defaults", game_session.get_world_settings()))
-		return
 	apply_world_settings(game_session.get_world_settings())
 
 func _ready() -> void:
