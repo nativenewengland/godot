@@ -14,8 +14,6 @@ func set_world_settings(settings: Dictionary) -> void:
 func get_world_settings() -> Dictionary:
 	return WorldSettings.merge_with_defaults(world_settings)
 
-func get_world_settings_with_defaults(settings: Dictionary) -> Dictionary:
-	return WorldSettings.merge_with_defaults(settings)
 
 func set_player_character(character: Dictionary) -> void:
 	player_character = character.duplicate(true)
