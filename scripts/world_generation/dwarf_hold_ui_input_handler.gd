@@ -46,10 +46,14 @@ static func handle_city_panel_event(
 				apply_zoom.call(0.1, mouse_button.position)
 			elif mouse_button.button_index == MOUSE_BUTTON_WHEEL_DOWN:
 				apply_zoom.call(-0.1, mouse_button.position)
-	if event is InputEventMouseMotion and currently_panning:
+	if event is InputEventMouseMotion:
 		var motion := event as InputEventMouseMotion
-		pan_by.call(motion.relative)
-		update_city_layer_transform.call()
+		if currently_panning and motion.button_mask == 0:
+			currently_panning = false
+			set_is_panning.call(false)
+		if currently_panning:
+			pan_by.call(motion.relative)
+			update_city_layer_transform.call()
 	if event is InputEventMouse:
 		update_hover_tooltip.call((event as InputEventMouse).position)
 	return currently_panning
