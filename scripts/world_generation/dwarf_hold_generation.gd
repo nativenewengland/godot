@@ -1979,7 +1979,7 @@ func _spawn_tavern_characters(grid: Dictionary) -> void:
 	_player_pending_chest_interaction = Vector2i(2147483647, 2147483647)
 	_walkable_cells = _collect_walkable_cells(grid)
 	var tavern_bed_count := _count_generated_beds()
-	var result := DwarfHoldTavernService.spawn_tavern_characters(
+	var result: Dictionary = DwarfHoldTavernService.spawn_tavern_characters(
 		actor_layer, city_layer, _npc_states, _rng, _walkable_cells,
 		_tavern_character_texture, _pending_player_spawn_cell,
 		Callable(self, "_is_walkable_cell"),
@@ -1997,7 +1997,7 @@ func _spawn_tavern_characters(grid: Dictionary) -> void:
 	_refresh_lighting(grid)
 
 func _count_generated_beds() -> int:
-	var bed_coords := TILE_ATLAS_DEFS.INTERIOR_ATLAS_COORDS.get("bed", Vector2i(-1, -1)) as Vector2i
+	var bed_coords := TILE_ATLAS_DEFS.DWARFHOLD_TILE_ATLAS.get("bed", Vector2i(-1, -1)) as Vector2i
 	if bed_coords.x < 0 or bed_coords.y < 0:
 		return 0
 	var bed_count := 0
