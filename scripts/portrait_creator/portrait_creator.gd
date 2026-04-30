@@ -568,7 +568,7 @@ const BACKGROUND_ZOOM_SPEED := 0.0034
 const BACKGROUND_ZOOM_AMOUNT := 0.08
 const BEARD_STYLE_ENABLED_MODULATE := Color(1, 1, 1, 1)
 const BEARD_STYLE_DISABLED_MODULATE := Color(0.55, 0.55, 0.55, 1)
-const ROLLING_DICE_SOUND := preload("res://Github Game/sound/sounds/rolling-dice.mp3")
+const ROLLING_DICE_SOUND := preload("res://resources/sounds/rolling-dice.mp3")
 
 var _hovered_attribute_icon: Control
 var _randomize_sound_player: AudioStreamPlayer
