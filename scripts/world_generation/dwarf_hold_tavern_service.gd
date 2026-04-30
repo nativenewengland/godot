@@ -43,14 +43,16 @@ static func spawn_tavern_characters(
 	actor_sprite_to_cell.call(player_sprite, player_cell)
 	actor_layer.add_child(player_sprite)
 
+	var occupied_cells: Dictionary = {player_cell: true}
 	for i in tavern_npc_count:
 		var spawn_cell := walkable_cells[rng.randi_range(0, walkable_cells.size() - 1)]
-		for _attempt in 12:
-			if bool(is_walkable_cell.call(spawn_cell)):
+		for _attempt in 24:
+			if bool(is_walkable_cell.call(spawn_cell)) and not occupied_cells.has(spawn_cell):
 				break
 			spawn_cell = walkable_cells[rng.randi_range(0, walkable_cells.size() - 1)]
-		if not bool(is_walkable_cell.call(spawn_cell)):
+		if not bool(is_walkable_cell.call(spawn_cell)) or occupied_cells.has(spawn_cell):
 			continue
+		occupied_cells[spawn_cell] = true
 		var npc_sprite := create_tavern_character_sprite(placeholder_actor_texture, (i + 1) % TAVERN_CHARACTER_SLOT_COUNT, tile_size)
 		actor_sprite_to_cell.call(npc_sprite, spawn_cell)
 		actor_layer.add_child(npc_sprite)
