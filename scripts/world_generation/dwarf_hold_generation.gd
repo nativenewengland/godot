@@ -2337,4 +2337,3 @@ func _clamp_tooltip_position(desired_position: Vector2) -> Vector2:
 		clampf(desired_position.x, 0.0, maxf(panel_size.x - tooltip_size.x, 0.0)),
 		clampf(desired_position.y, 0.0, maxf(panel_size.y - tooltip_size.y, 0.0))
 	)
-
