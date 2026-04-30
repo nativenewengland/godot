@@ -54,6 +54,13 @@ func load_from_file(path: String = SAVE_FILE_PATH) -> bool:
 	if not (parsed is Dictionary):
 		return false
 	var payload := parsed as Dictionary
+	var version: Variant = payload.get("version", null)
+	match version:
+		SAVE_FORMAT_VERSION:
+			pass
+		_:
+			# Save schema mismatch (or missing version). Migration handling can be added here.
+			return false
 	var loaded_settings: Dictionary = _decode_from_json(payload.get("world_settings", {})) as Dictionary
 	var loaded_character: Dictionary = _decode_from_json(payload.get("player_character", {})) as Dictionary
 	world_settings = WorldSettings.merge_with_defaults(loaded_settings)
