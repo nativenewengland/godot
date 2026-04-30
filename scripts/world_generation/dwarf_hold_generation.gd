@@ -1978,6 +1978,7 @@ func _spawn_tavern_characters(grid: Dictionary) -> void:
 	_player_is_moving = false
 	_player_pending_chest_interaction = Vector2i(2147483647, 2147483647)
 	_walkable_cells = _collect_walkable_cells(grid)
+	var tavern_bed_count := _count_generated_beds()
 	var result := DwarfHoldTavernService.spawn_tavern_characters(
 		actor_layer, city_layer, _npc_states, _rng, _walkable_cells,
 		_tavern_character_texture, _pending_player_spawn_cell,
@@ -1985,7 +1986,7 @@ func _spawn_tavern_characters(grid: Dictionary) -> void:
 		Callable(self, "_cell_center_position"),
 		Callable(self, "_create_player_character_sprite"),
 		Callable(self, "_actor_sprite_to_cell"),
-		tavern_npc_count, tavern_npc_speed_range,
+		tavern_bed_count, tavern_npc_speed_range,
 		_placeholder_actor_texture, tile_size
 	)
 	_player_sprite = result.get("player_sprite")
@@ -1994,6 +1995,16 @@ func _spawn_tavern_characters(grid: Dictionary) -> void:
 	if _player_sprite != null:
 		_center_view_on_cell(_player_cell)
 	_refresh_lighting(grid)
+
+func _count_generated_beds() -> int:
+	var bed_coords := TileAtlasDefs.INTERIOR_ATLAS_COORDS.get("bed", Vector2i(-1, -1)) as Vector2i
+	if bed_coords.x < 0 or bed_coords.y < 0:
+		return 0
+	var bed_count := 0
+	for cell: Vector2i in decor_layer.get_used_cells():
+		if decor_layer.get_cell_atlas_coords(cell) == bed_coords:
+			bed_count += 1
+	return bed_count
 
 func _collect_walkable_cells(grid: Dictionary) -> Array[Vector2i]:
 	return DwarfHoldLayoutService.collect_walkable_cells(grid, [CELL_HALL, CELL_HOUSE, CELL_BUILDING, CELL_PLAZA])
