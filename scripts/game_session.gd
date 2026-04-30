@@ -59,8 +59,42 @@ func load_from_file(path: String = SAVE_FILE_PATH) -> bool:
 		_:
 			# Save schema mismatch (or missing version). Migration handling can be added here.
 			return false
-	var loaded_settings: Dictionary = _decode_from_json(payload.get("world_settings", {})) as Dictionary
-	var loaded_character: Dictionary = _decode_from_json(payload.get("player_character", {})) as Dictionary
+	var raw_world_settings: Variant = payload.get("world_settings", {})
+	if not (raw_world_settings is Dictionary):
+		push_warning("Failed to load save: world_settings must be a Dictionary.")
+		return false
+
+	var raw_player_character: Variant = payload.get("player_character", {})
+	if not (raw_player_character is Dictionary):
+		push_warning("Failed to load save: player_character must be a Dictionary.")
+		return false
+
+	var loaded_settings_variant: Variant = _decode_from_json(raw_world_settings)
+	if not (loaded_settings_variant is Dictionary):
+		push_warning("Failed to load save: decoded world_settings must be a Dictionary.")
+		return false
+	var loaded_settings: Dictionary = loaded_settings_variant as Dictionary
+
+	var loaded_character_variant: Variant = _decode_from_json(raw_player_character)
+	if not (loaded_character_variant is Dictionary):
+		push_warning("Failed to load save: decoded player_character must be a Dictionary.")
+		return false
+	var loaded_character: Dictionary = loaded_character_variant as Dictionary
+
+	if loaded_settings.has("map_size") and not (loaded_settings["map_size"] is String):
+		push_warning("Failed to load save: world_settings.map_size must be a String when present.")
+		return false
+
+	if loaded_settings.has("map_size_key"):
+		var map_size_key: Variant = loaded_settings["map_size_key"]
+		if not (map_size_key is String) or not WorldSettings.MAP_SIZE_DEFINITIONS.has(String(map_size_key).to_lower()):
+			push_warning("Failed to load save: world_settings.map_size_key is invalid.")
+			return false
+
+	if loaded_settings.has("map_dimensions") and not (loaded_settings["map_dimensions"] is Vector2i):
+		push_warning("Failed to load save: world_settings.map_dimensions must be Vector2i when present.")
+		return false
+
 	world_settings = WorldSettings.merge_with_defaults(loaded_settings)
 	player_character = loaded_character
 	return true
