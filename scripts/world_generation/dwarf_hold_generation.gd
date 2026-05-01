@@ -2026,7 +2026,7 @@ func _update_city_layer_transform() -> void:
 		placeholder_prop_layer.scale = city_layer.scale
 		placeholder_prop_layer.position = city_layer.position
 	if tile_hover_tooltip.visible:
-		tile_hover_tooltip.position = _clamp_tooltip_position(tile_hover_tooltip.position)
+		tile_hover_tooltip.global_position = _clamp_tooltip_global_position(tile_hover_tooltip.global_position)
 	lighting_layer.scale = city_layer.scale
 	lighting_layer.position = city_layer.position
 	_update_zone_overlay()
@@ -2365,9 +2365,9 @@ func _update_hover_tooltip(mouse_position: Vector2) -> void:
 	if hovered_layer.get_cell_source_id(hovered_cell) < 0:
 		_hide_hover_tooltip()
 		return
-	var tooltip_position := _clamp_tooltip_position(mouse_position + Vector2(16, 16))
+	var tooltip_position := _tooltip_global_position_from_mouse(mouse_position)
 	if tile_hover_tooltip.visible and hovered_cell == _hover_tooltip_cell and hovered_layer == _hover_tooltip_layer:
-		tile_hover_tooltip.position = tooltip_position
+		tile_hover_tooltip.global_position = tooltip_position
 		return
 
 	var placeholder_prop_key := String(_placeholder_props_by_cell.get(hovered_cell, ""))
@@ -2390,7 +2390,7 @@ func _update_hover_tooltip(mouse_position: Vector2) -> void:
 		hover_tooltip_text = hover_tooltip_text.substr(0, 317) + "..."
 	tile_hover_label.text = hover_tooltip_text
 	tile_hover_tooltip.reset_size()
-	tile_hover_tooltip.position = _clamp_tooltip_position(mouse_position + Vector2(16, 16))
+	tile_hover_tooltip.global_position = _tooltip_global_position_from_mouse(mouse_position)
 	tile_hover_tooltip.visible = true
 	_hover_tooltip_cell = hovered_cell
 	_hover_tooltip_layer = hovered_layer
@@ -2415,10 +2415,16 @@ func _display_name_for_building_type(building_type: String) -> String:
 func _building_subtype_summary_text() -> String:
 	return DwarfHoldTileService.building_subtype_summary_text(_latest_civic_buildings_by_id)
 
-func _clamp_tooltip_position(desired_position: Vector2) -> Vector2:
+func _tooltip_global_position_from_mouse(mouse_position: Vector2) -> Vector2:
+	var desired_global := city_panel.global_position + mouse_position + Vector2(16, 16)
+	return _clamp_tooltip_global_position(desired_global)
+
+func _clamp_tooltip_global_position(desired_global_position: Vector2) -> Vector2:
 	var tooltip_size := tile_hover_tooltip.size
-	var panel_size := city_panel.size
+	var viewport_rect := get_viewport_rect()
+	var max_x := maxf(viewport_rect.size.x - tooltip_size.x, 0.0)
+	var max_y := maxf(viewport_rect.size.y - tooltip_size.y, 0.0)
 	return Vector2(
-		clampf(desired_position.x, 0.0, maxf(panel_size.x - tooltip_size.x, 0.0)),
-		clampf(desired_position.y, 0.0, maxf(panel_size.y - tooltip_size.y, 0.0))
+		clampf(desired_global_position.x, 0.0, max_x),
+		clampf(desired_global_position.y, 0.0, max_y)
 	)
