@@ -4916,7 +4916,7 @@ func _rebuild_labels_overlay() -> void:
 		label.size = candidate_rect.size
 		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-		label.clip_text = true
+		label.clip_text = false
 		label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		label.add_theme_font_size_override("font_size", font_size)
 		label.add_theme_color_override("font_color", labels_overlay_primary_color if int(entry.get("priority", 0)) >= 2 else labels_overlay_secondary_color)
