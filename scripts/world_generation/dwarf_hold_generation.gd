@@ -629,6 +629,8 @@ func _toggle_pause_menu(next_state: Variant = null) -> void:
 	if next_state is bool:
 		open_menu = bool(next_state)
 	pause_menu.visible = open_menu
+	if open_menu and pause_save_button != null:
+		pause_save_button.grab_focus()
 
 func _is_pause_menu_open() -> bool:
 	return pause_menu != null and pause_menu.visible
