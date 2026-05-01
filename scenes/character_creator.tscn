@@ -1158,6 +1158,7 @@ color = Color(0.02, 0.03, 0.08, 0.6)
 
 [node name="AttributeTooltipPanel" type="PanelContainer" parent="." unique_id=2001887123]
 visible = false
+custom_minimum_size = Vector2(360, 140)
 z_index = 50
 layout_mode = 0
 anchor_left = 0.5
