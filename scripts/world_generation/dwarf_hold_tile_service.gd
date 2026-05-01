@@ -6,6 +6,10 @@ const CELL_HALL := 1
 const CELL_HOUSE := 2
 const CELL_BUILDING := 3
 const CELL_PLAZA := 4
+const PLACEHOLDER_PROPS := [
+	"chair", "long_table", "bookshelf", "cabinet", "bar_counter", "crate_stack",
+	"weapon_rack", "forge_furnace", "tool_rack", "rug", "candelabra", "strongbox"
+]
 
 static func place_tile(target_layer: TileMapLayer, cell: Vector2i, tile_key: String, tile_atlas: Dictionary) -> void:
 	var atlas_coords: Vector2i = tile_atlas.get(tile_key, Vector2i(-1, -1))
@@ -96,6 +100,8 @@ static func pick_decor_tile(grid: Dictionary, x: int, y: int, cell: int, base_ti
 		return house_tile
 
 	if _is_corridor_cell(cell):
+		if rng.randf() < 0.01:
+			return String(PLACEHOLDER_PROPS[rng.randi_range(0, PLACEHOLDER_PROPS.size() - 1)])
 		if rng.randf() < 0.015:
 			if not is_adjacent_to_business(grid, x, y):
 				return ""
@@ -110,6 +116,8 @@ static func pick_decor_tile(grid: Dictionary, x: int, y: int, cell: int, base_ti
 		if rng.randf() > 0.09:
 			return ""
 		if cell == CELL_HOUSE:
+			if rng.randf() < 0.22:
+				return String(PLACEHOLDER_PROPS[rng.randi_range(0, PLACEHOLDER_PROPS.size() - 1)])
 			var house_random_tile: String = String(["bed", "chest", "wardrobe", "stool", "mug"][rng.randi_range(0, 4)])
 			if is_furniture_tile(house_random_tile) and base_tile != "floor":
 				return ""
@@ -117,6 +125,8 @@ static func pick_decor_tile(grid: Dictionary, x: int, y: int, cell: int, base_ti
 				return ""
 			return house_random_tile
 		if cell == CELL_BUILDING:
+			if rng.randf() < 0.35:
+				return String(PLACEHOLDER_PROPS[rng.randi_range(0, PLACEHOLDER_PROPS.size() - 1)])
 			var building_tile := pick_civic_building_decor_tile(Vector2i(x, y), civic_building_type_map, civic_building_types, rng)
 			if is_furniture_tile(building_tile) and base_tile != "floor":
 				return ""
@@ -128,6 +138,23 @@ static func pick_decor_tile(grid: Dictionary, x: int, y: int, cell: int, base_ti
 			return ""
 		return default_tile
 	return ""
+
+static func placeholder_prop_color(prop_key: String) -> Color:
+	var palette := {
+		"chair": Color(0.77, 0.62, 0.36, 0.85),
+		"long_table": Color(0.71, 0.53, 0.30, 0.85),
+		"bookshelf": Color(0.58, 0.43, 0.27, 0.85),
+		"cabinet": Color(0.49, 0.35, 0.22, 0.85),
+		"bar_counter": Color(0.52, 0.31, 0.17, 0.85),
+		"crate_stack": Color(0.67, 0.46, 0.20, 0.85),
+		"weapon_rack": Color(0.52, 0.52, 0.56, 0.85),
+		"forge_furnace": Color(0.86, 0.39, 0.24, 0.85),
+		"tool_rack": Color(0.58, 0.56, 0.52, 0.85),
+		"rug": Color(0.44, 0.20, 0.18, 0.85),
+		"candelabra": Color(0.89, 0.75, 0.30, 0.85),
+		"strongbox": Color(0.42, 0.30, 0.18, 0.85)
+	}
+	return palette.get(prop_key, Color(0.7, 0.2, 0.9, 0.85))
 
 static func is_adjacent_to_business(grid: Dictionary, x: int, y: int) -> bool:
 	for direction: Vector2i in [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.UP, Vector2i.DOWN]:

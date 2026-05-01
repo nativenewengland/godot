@@ -42,6 +42,7 @@ const COLLISION_LAYER_WORLD := 1
 @onready var global_darkness: CanvasModulate = %GlobalDarkness
 @onready var fog_of_war: Sprite2D = %FogOfWar
 @onready var actor_layer: Node2D = %ActorLayer
+@onready var placeholder_prop_layer: Node2D = %PlaceholderPropLayer
 @onready var zone_overlay: Control = %ZoneOverlay
 @onready var zone_legend: RichTextLabel = %ZoneLegend
 @onready var tile_hover_tooltip: PanelContainer = %TileHoverTooltip
@@ -1680,6 +1681,9 @@ func _render_city(grid: Dictionary, stair_cells: Dictionary = {}) -> void:
 		return
 	city_layer.clear()
 	decor_layer.clear()
+	if placeholder_prop_layer != null:
+		for child in placeholder_prop_layer.get_children():
+			child.queue_free()
 	var bounds := _find_bounds(grid).grow(1)
 	var house_decor_overrides := _build_house_decor_layouts(grid)
 	for y in range(bounds.position.y, bounds.end.y):
@@ -1692,9 +1696,12 @@ func _render_city(grid: Dictionary, stair_cells: Dictionary = {}) -> void:
 			_place_tile(city_layer, render_cell, base_tile)
 			var decor_tile := _pick_decor_tile(grid, x, y, cell, base_tile, house_decor_overrides)
 			if not decor_tile.is_empty():
-				_place_tile(decor_layer, render_cell, decor_tile)
-				if decor_tile == "chest":
-					_ensure_chest_inventory(render_cell)
+				if TILE_ATLAS.has(decor_tile):
+					_place_tile(decor_layer, render_cell, decor_tile)
+					if decor_tile == "chest":
+						_ensure_chest_inventory(render_cell)
+				else:
+					_place_placeholder_prop(render_cell, decor_tile)
 	for stair_key: String in ["up", "down"]:
 		if not stair_cells.has(stair_key):
 			continue
@@ -2275,6 +2282,22 @@ func _cell_center_position(cell: Vector2i) -> Vector2:
 
 func _place_tile(target_layer: TileMapLayer, cell: Vector2i, tile_key: String) -> void:
 	DwarfHoldTileService.place_tile(target_layer, cell, tile_key, TILE_ATLAS)
+
+func _place_placeholder_prop(cell: Vector2i, prop_key: String) -> void:
+	if placeholder_prop_layer == null:
+		return
+	var marker := Polygon2D.new()
+	var marker_size := Vector2(tile_size) * 0.72
+	var half := marker_size * 0.5
+	marker.polygon = PackedVector2Array([
+		Vector2(-half.x, -half.y),
+		Vector2(half.x, -half.y),
+		Vector2(half.x, half.y),
+		Vector2(-half.x, half.y)
+	])
+	marker.position = _cell_center_position(cell)
+	marker.color = DwarfHoldTileService.placeholder_prop_color(prop_key)
+	placeholder_prop_layer.add_child(marker)
 
 func _pick_base_tile(grid: Dictionary, x: int, y: int, cell: int) -> String:
 	return DwarfHoldTileService.pick_base_tile(grid, x, y, cell, _door_cells, TILE_ATLAS)
