@@ -58,6 +58,10 @@ const COLLISION_LAYER_WORLD := 1
 @onready var save_game_button: Button = %SaveGameButton
 @onready var save_status_label: Label = %SaveStatusLabel
 @onready var player_character_label: Label = %PlayerCharacterLabel
+@onready var pause_menu: PanelContainer = %PauseMenu
+@onready var pause_resume_button: Button = %PauseResumeButton
+@onready var pause_save_button: Button = %PauseSaveButton
+@onready var pause_back_button: Button = %PauseBackButton
 
 const OVERWORLD_SCENE_PATH := "res://scenes/overworld.tscn"
 
@@ -552,6 +556,9 @@ func _ready() -> void:
 	chest_popup_close_footer_button.pressed.connect(_on_chest_popup_close_button_pressed)
 	back_button.pressed.connect(_on_back_button_pressed)
 	save_game_button.pressed.connect(_on_save_game_button_pressed)
+	pause_resume_button.pressed.connect(_on_pause_resume_button_pressed)
+	pause_save_button.pressed.connect(_on_pause_save_button_pressed)
+	pause_back_button.pressed.connect(_on_pause_back_button_pressed)
 	_initialize_chest_popup_grids()
 	seed_input.text_submitted.connect(func(_text: String) -> void:
 		_generate_city()
@@ -564,14 +571,18 @@ func _ready() -> void:
 	_generate_city()
 
 func _process(delta: float) -> void:
+	if _is_pause_menu_open():
+		return
 	_update_player_turn_movement(delta)
 	_update_player_hold_movement(delta)
 	_update_npc_movement(delta)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel") and not _is_text_input_focused():
-		_on_back_button_pressed()
+		_toggle_pause_menu()
 		get_viewport().set_input_as_handled()
+		return
+	if _is_pause_menu_open():
 		return
 	if _player_sprite == null or not _player_control_enabled:
 		return
@@ -583,6 +594,16 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _on_back_button_pressed() -> void:
 	get_tree().change_scene_to_file(OVERWORLD_SCENE_PATH)
+
+func _on_pause_resume_button_pressed() -> void:
+	_toggle_pause_menu(false)
+
+func _on_pause_save_button_pressed() -> void:
+	_on_save_game_button_pressed()
+
+func _on_pause_back_button_pressed() -> void:
+	_toggle_pause_menu(false)
+	_on_back_button_pressed()
 
 func _on_save_game_button_pressed() -> void:
 	var game_session := get_node_or_null("/root/GameSession")
@@ -600,6 +621,17 @@ func _set_save_status(text: String, color: Color) -> void:
 		return
 	save_status_label.text = text
 	save_status_label.modulate = color
+
+func _toggle_pause_menu(next_state: Variant = null) -> void:
+	if pause_menu == null:
+		return
+	var open_menu := not pause_menu.visible
+	if next_state is bool:
+		open_menu = bool(next_state)
+	pause_menu.visible = open_menu
+
+func _is_pause_menu_open() -> bool:
+	return pause_menu != null and pause_menu.visible
 
 func _update_player_character_label() -> void:
 	if player_character_label == null:
