@@ -721,6 +721,9 @@ func _position_attribute_tooltip() -> void:
 	if viewport == null:
 		return
 	var tooltip_size := attribute_tooltip_panel.get_combined_minimum_size()
+	var minimum_size := attribute_tooltip_panel.custom_minimum_size
+	tooltip_size.x = maxf(tooltip_size.x, minimum_size.x)
+	tooltip_size.y = maxf(tooltip_size.y, minimum_size.y)
 	attribute_tooltip_panel.size = tooltip_size
 	var viewport_size := viewport.get_visible_rect().size
 	var target_pos := (viewport_size - tooltip_size) * 0.5
