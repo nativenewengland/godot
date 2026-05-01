@@ -117,6 +117,7 @@ var _player_move_target_position := Vector2.ZERO
 var _player_pending_chest_interaction := Vector2i(2147483647, 2147483647)
 var _hover_tooltip_cell := Vector2i(2147483647, 2147483647)
 var _hover_tooltip_layer: TileMapLayer
+var _placeholder_props_by_cell: Dictionary = {}
 var _last_move_direction := Vector2i.ZERO
 var _move_repeat_timer := 0.0
 var _npc_states: Array[Dictionary] = []
@@ -1684,6 +1685,7 @@ func _render_city(grid: Dictionary, stair_cells: Dictionary = {}) -> void:
 	if placeholder_prop_layer != null:
 		for child in placeholder_prop_layer.get_children():
 			child.queue_free()
+	_placeholder_props_by_cell.clear()
 	var bounds := _find_bounds(grid).grow(1)
 	var house_decor_overrides := _build_house_decor_layouts(grid)
 	for y in range(bounds.position.y, bounds.end.y):
@@ -2301,6 +2303,7 @@ func _place_placeholder_prop(cell: Vector2i, prop_key: String) -> void:
 	marker.position = _cell_center_position(cell)
 	marker.color = DwarfHoldTileService.placeholder_prop_color(prop_key)
 	placeholder_prop_layer.add_child(marker)
+	_placeholder_props_by_cell[cell] = prop_key
 
 func _pick_base_tile(grid: Dictionary, x: int, y: int, cell: int) -> String:
 	return DwarfHoldTileService.pick_base_tile(grid, x, y, cell, _door_cells, TILE_ATLAS)
@@ -2367,8 +2370,13 @@ func _update_hover_tooltip(mouse_position: Vector2) -> void:
 		tile_hover_tooltip.position = tooltip_position
 		return
 
-	var atlas_coords := hovered_layer.get_cell_atlas_coords(hovered_cell)
-	var tile_name := _tile_name_from_atlas(atlas_coords)
+	var placeholder_prop_key := String(_placeholder_props_by_cell.get(hovered_cell, ""))
+	var tile_name := ""
+	if not placeholder_prop_key.is_empty():
+		tile_name = DwarfHoldTileService.placeholder_prop_display_name(placeholder_prop_key)
+	else:
+		var atlas_coords := hovered_layer.get_cell_atlas_coords(hovered_cell)
+		tile_name = _tile_name_from_atlas(atlas_coords)
 	var zone_name := _zone_name_for_cell(hovered_cell)
 	var tooltip_lines: PackedStringArray = ["Tile: %s" % tile_name, "Zone: %s" % zone_name]
 	var subtype := _building_type_for_cell_or_empty(hovered_cell)

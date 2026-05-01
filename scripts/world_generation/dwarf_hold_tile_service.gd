@@ -156,6 +156,9 @@ static func placeholder_prop_color(prop_key: String) -> Color:
 	}
 	return palette.get(prop_key, Color(0.7, 0.2, 0.9, 0.85))
 
+static func placeholder_prop_display_name(prop_key: String) -> String:
+	return prop_key.replace("_", " ").capitalize()
+
 static func is_adjacent_to_business(grid: Dictionary, x: int, y: int) -> bool:
 	for direction: Vector2i in [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.UP, Vector2i.DOWN]:
 		var neighbor := Vector2i(x, y) + direction
