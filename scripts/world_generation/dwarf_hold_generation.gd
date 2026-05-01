@@ -2020,6 +2020,9 @@ func _update_city_layer_transform() -> void:
 	decor_layer.position = city_layer.position
 	actor_layer.scale = city_layer.scale
 	actor_layer.position = city_layer.position
+	if placeholder_prop_layer != null:
+		placeholder_prop_layer.scale = city_layer.scale
+		placeholder_prop_layer.position = city_layer.position
 	if tile_hover_tooltip.visible:
 		tile_hover_tooltip.position = _clamp_tooltip_position(tile_hover_tooltip.position)
 	lighting_layer.scale = city_layer.scale
@@ -2286,16 +2289,17 @@ func _place_tile(target_layer: TileMapLayer, cell: Vector2i, tile_key: String) -
 func _place_placeholder_prop(cell: Vector2i, prop_key: String) -> void:
 	if placeholder_prop_layer == null:
 		return
-	var marker := ColorRect.new()
-	marker.size = Vector2(tile_size) * 0.72
-	marker.position = Vector2(cell * tile_size) + (Vector2(tile_size) - marker.size) * 0.5
+	var marker := Polygon2D.new()
+	var marker_size := Vector2(tile_size) * 0.72
+	var half := marker_size * 0.5
+	marker.polygon = PackedVector2Array([
+		Vector2(-half.x, -half.y),
+		Vector2(half.x, -half.y),
+		Vector2(half.x, half.y),
+		Vector2(-half.x, half.y)
+	])
+	marker.position = _cell_center_position(cell)
 	marker.color = DwarfHoldTileService.placeholder_prop_color(prop_key)
-	marker.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var label := Label.new()
-	label.text = DwarfHoldTileService.placeholder_prop_label(prop_key)
-	label.add_theme_font_size_override("font_size", 9)
-	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	marker.add_child(label)
 	placeholder_prop_layer.add_child(marker)
 
 func _pick_base_tile(grid: Dictionary, x: int, y: int, cell: int) -> String:
