@@ -283,7 +283,7 @@ static func place_house_decor_template(component: Array[Vector2i], overrides: Di
 		max_y = maxi(max_y, cell.y)
 
 	var top_left_chest := Vector2i(min_x + 1, min_y + 1)
-	var top_left_bed := Vector2i(min_x + 2, min_y + 1)
+	var top_left_bed := find_wall_adjacent_cell(component, occupied, overrides, Vector2i(min_x + 2, min_y + 1))
 	var top_right_wardrobe := find_wall_adjacent_cell(component, occupied, overrides, Vector2i(max_x - 1, min_y + 1))
 	var center_table := Vector2i((min_x + max_x) / 2, (min_y + max_y) / 2)
 	var stool_a := center_table + Vector2i(-1, 0)
@@ -295,18 +295,24 @@ static func place_house_decor_template(component: Array[Vector2i], overrides: Di
 	try_assign_house_decor(overrides, occupied, center_table, "table")
 	try_assign_house_decor(overrides, occupied, stool_a, "stool")
 	try_assign_house_decor(overrides, occupied, stool_b, "stool")
-	ensure_house_has_bed(component, overrides)
+	ensure_house_has_bed(component, occupied, overrides)
 
-static func ensure_house_has_bed(component: Array[Vector2i], overrides: Dictionary) -> void:
+static func ensure_house_has_bed(component: Array[Vector2i], occupied: Dictionary, overrides: Dictionary) -> void:
 	for cell: Vector2i in component:
 		if overrides.get(cell, "") == "bed":
 			return
 
-	var fallback_bed_cell := component[0]
-	for cell: Vector2i in component:
-		if not overrides.has(cell):
-			fallback_bed_cell = cell
-			break
+	var fallback_bed_cell := find_wall_adjacent_cell(component, occupied, overrides, component[0])
+	if overrides.has(fallback_bed_cell):
+		for cell: Vector2i in component:
+			if not overrides.has(cell) and is_component_wall_adjacent(cell, occupied):
+				fallback_bed_cell = cell
+				break
+	if overrides.has(fallback_bed_cell):
+		for cell: Vector2i in component:
+			if not overrides.has(cell):
+				fallback_bed_cell = cell
+				break
 	overrides[fallback_bed_cell] = "bed"
 
 static func try_assign_house_decor(overrides: Dictionary, occupied: Dictionary, cell: Vector2i, tile_key: String) -> void:
