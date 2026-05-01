@@ -1875,7 +1875,8 @@ func _ensure_chest_inventory(cell: Vector2i) -> void:
 	DwarfHoldChestService.ensure_chest_inventory(_chest_inventories, cell, _rng, CHEST_LOOT_TABLE)
 
 func _cell_from_mouse_position(mouse_position: Vector2) -> Vector2i:
-	var local_position := city_layer.to_local(mouse_position)
+	var mouse_global := city_panel.to_global(mouse_position)
+	var local_position := city_layer.to_local(mouse_global)
 	return city_layer.local_to_map(local_position)
 
 func _is_chest_cell(cell: Vector2i) -> bool:
