@@ -2385,7 +2385,10 @@ func _update_hover_tooltip(mouse_position: Vector2) -> void:
 		var flavor := String(BUILDING_SUBTYPE_FLAVOR.get(subtype, ""))
 		if not flavor.is_empty():
 			tooltip_lines.append(flavor)
-	tile_hover_label.text = "\n".join(tooltip_lines)
+	var tooltip_text := "\n".join(tooltip_lines)
+	if tooltip_text.length() > 320:
+		tooltip_text = tooltip_text.substr(0, 317) + "..."
+	tile_hover_label.text = tooltip_text
 	tile_hover_tooltip.reset_size()
 	tile_hover_tooltip.position = _clamp_tooltip_position(mouse_position + Vector2(16, 16))
 	tile_hover_tooltip.visible = true
