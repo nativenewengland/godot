@@ -98,6 +98,10 @@ centered = false
 unique_name_in_owner = true
 position = Vector2(16, 16)
 
+[node name="PlaceholderPropLayer" type="Node2D" parent="Margin/Layout/CityPanel" unique_id=949494949]
+unique_name_in_owner = true
+position = Vector2(16, 16)
+
 [node name="ZoneOverlay" type="Control" parent="Margin/Layout/CityPanel" unique_id=816640221]
 unique_name_in_owner = true
 layout_mode = 2
