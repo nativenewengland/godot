@@ -2389,14 +2389,17 @@ func _update_hover_tooltip(mouse_position: Vector2) -> void:
 	if hover_tooltip_text.length() > 320:
 		hover_tooltip_text = hover_tooltip_text.substr(0, 317) + "..."
 	tile_hover_label.text = hover_tooltip_text
+	tile_hover_label.reset_size()
+	tile_hover_tooltip.custom_minimum_size = tile_hover_tooltip.get_combined_minimum_size()
 	tile_hover_tooltip.reset_size()
-	tile_hover_tooltip.global_position = _tooltip_global_position_from_mouse(mouse_position)
 	tile_hover_tooltip.visible = true
+	tile_hover_tooltip.global_position = _tooltip_global_position_from_mouse(mouse_position)
 	_hover_tooltip_cell = hovered_cell
 	_hover_tooltip_layer = hovered_layer
 
 func _hide_hover_tooltip() -> void:
 	tile_hover_tooltip.visible = false
+	tile_hover_tooltip.custom_minimum_size = Vector2.ZERO
 	_hover_tooltip_cell = Vector2i(2147483647, 2147483647)
 	_hover_tooltip_layer = null
 
