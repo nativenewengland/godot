@@ -59,11 +59,15 @@ const COLLISION_LAYER_WORLD := 1
 @onready var save_status_label: Label = %SaveStatusLabel
 @onready var player_character_label: Label = %PlayerCharacterLabel
 @onready var pause_menu: PanelContainer = %PauseMenu
-@onready var pause_resume_button: Button = %PauseResumeButton
 @onready var pause_save_button: Button = %PauseSaveButton
-@onready var pause_back_button: Button = %PauseBackButton
+@onready var pause_save_quit_button: Button = %PauseSaveQuitButton
+@onready var pause_return_main_menu_button: Button = %PauseReturnMainMenuButton
+@onready var pause_options_button: Button = %PauseOptionsButton
+@onready var pause_exit_game_button: Button = %PauseExitGameButton
 
 const OVERWORLD_SCENE_PATH := "res://scenes/overworld.tscn"
+const MAIN_MENU_SCENE_PATH := "res://scenes/mainmenu.tscn"
+const OPTIONS_MENU_SCENE_PATH := "res://scenes/options_menu.tscn"
 
 var _rng := RandomNumberGenerator.new()
 var _is_panning := false
@@ -556,9 +560,11 @@ func _ready() -> void:
 	chest_popup_close_footer_button.pressed.connect(_on_chest_popup_close_button_pressed)
 	back_button.pressed.connect(_on_back_button_pressed)
 	save_game_button.pressed.connect(_on_save_game_button_pressed)
-	pause_resume_button.pressed.connect(_on_pause_resume_button_pressed)
 	pause_save_button.pressed.connect(_on_pause_save_button_pressed)
-	pause_back_button.pressed.connect(_on_pause_back_button_pressed)
+	pause_save_quit_button.pressed.connect(_on_pause_save_quit_button_pressed)
+	pause_return_main_menu_button.pressed.connect(_on_pause_return_main_menu_button_pressed)
+	pause_options_button.pressed.connect(_on_pause_options_button_pressed)
+	pause_exit_game_button.pressed.connect(_on_pause_exit_game_button_pressed)
 	_initialize_chest_popup_grids()
 	seed_input.text_submitted.connect(func(_text: String) -> void:
 		_generate_city()
@@ -595,15 +601,23 @@ func _unhandled_input(event: InputEvent) -> void:
 func _on_back_button_pressed() -> void:
 	get_tree().change_scene_to_file(OVERWORLD_SCENE_PATH)
 
-func _on_pause_resume_button_pressed() -> void:
-	_toggle_pause_menu(false)
-
 func _on_pause_save_button_pressed() -> void:
 	_on_save_game_button_pressed()
 
-func _on_pause_back_button_pressed() -> void:
+func _on_pause_save_quit_button_pressed() -> void:
+	_on_save_game_button_pressed()
+	get_tree().quit()
+
+func _on_pause_return_main_menu_button_pressed() -> void:
 	_toggle_pause_menu(false)
-	_on_back_button_pressed()
+	get_tree().change_scene_to_file(MAIN_MENU_SCENE_PATH)
+
+func _on_pause_options_button_pressed() -> void:
+	_toggle_pause_menu(false)
+	get_tree().change_scene_to_file(OPTIONS_MENU_SCENE_PATH)
+
+func _on_pause_exit_game_button_pressed() -> void:
+	get_tree().quit()
 
 func _on_save_game_button_pressed() -> void:
 	var game_session := get_node_or_null("/root/GameSession")

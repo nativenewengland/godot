@@ -344,9 +344,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -140.0
-offset_top = -90.0
-offset_right = 140.0
-offset_bottom = 90.0
+offset_top = -150.0
+offset_right = 170.0
+offset_bottom = 150.0
 grow_horizontal = 2
 grow_vertical = 2
 
@@ -359,20 +359,30 @@ layout_mode = 2
 horizontal_alignment = 1
 text = "Paused"
 
-[node name="PauseResumeButton" type="Button" parent="PauseMenu/Content" unique_id=711234567]
-unique_name_in_owner = true
-layout_mode = 2
-text = "Resume"
-
 [node name="PauseSaveButton" type="Button" parent="PauseMenu/Content" unique_id=811234567]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Save Game"
+text = "Save"
 
-[node name="PauseBackButton" type="Button" parent="PauseMenu/Content" unique_id=911234567]
+[node name="PauseSaveQuitButton" type="Button" parent="PauseMenu/Content" unique_id=912234567]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Return to Overworld"
+text = "Save and Quit"
+
+[node name="PauseReturnMainMenuButton" type="Button" parent="PauseMenu/Content" unique_id=913234567]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Return to Main Menu"
+
+[node name="PauseOptionsButton" type="Button" parent="PauseMenu/Content" unique_id=914234567]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Options"
+
+[node name="PauseExitGameButton" type="Button" parent="PauseMenu/Content" unique_id=915234567]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Exit Game"
 
 [node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=2022403230]
 tile_set = SubResource("TileSet_3ixrg")
