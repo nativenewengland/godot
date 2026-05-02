@@ -167,6 +167,14 @@ theme_override_font_sizes/font_size = 28
 disabled = true
 text = "Load Game"
 
+[node name="ContinueButton" type="Button" parent="CenterContainer/VBoxContainer" unique_id=958377151]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(344, 72)
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+disabled = true
+text = "Continue"
+
 [node name="OptionsButton" type="TextureButton" parent="CenterContainer/VBoxContainer" unique_id=903604802]
 custom_minimum_size = Vector2(344, 72)
 layout_mode = 2
@@ -181,7 +189,13 @@ texture_normal = ExtResource("6_jnu17")
 ignore_texture_size = true
 stretch_mode = 5
 
+[node name="LoadErrorDialog" type="AcceptDialog" parent="." unique_id=404325474]
+unique_name_in_owner = true
+title = "Load Failed"
+dialog_text = "Unable to load save data."
+
 [connection signal="pressed" from="CenterContainer/VBoxContainer/StartButton" to="." method="_on_start_button_pressed"]
 [connection signal="pressed" from="CenterContainer/VBoxContainer/LoadGameButton" to="." method="_on_load_game_button_pressed"]
+[connection signal="pressed" from="CenterContainer/VBoxContainer/ContinueButton" to="." method="_on_continue_button_pressed"]
 [connection signal="pressed" from="CenterContainer/VBoxContainer/OptionsButton" to="." method="_on_options_button_pressed"]
 [connection signal="pressed" from="CenterContainer/VBoxContainer/ReturnButton" to="." method="_on_return_button_pressed"]
