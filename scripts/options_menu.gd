@@ -1,7 +1,44 @@
 extends Control
 
+const RESOLUTIONS: Array[Vector2i] = [
+	Vector2i(1280, 720),
+	Vector2i(1600, 900),
+	Vector2i(1920, 1080)
+]
+
+@onready var fullscreen_check_box: CheckBox = $Panel/MarginContainer/VBoxContainer/FullscreenCheckBox
+@onready var vsync_check_box: CheckBox = $Panel/MarginContainer/VBoxContainer/VsyncCheckBox
+@onready var resolution_option_button: OptionButton = $Panel/MarginContainer/VBoxContainer/ResolutionRow/ResolutionOptionButton
+@onready var master_volume_slider: HSlider = $Panel/MarginContainer/VBoxContainer/MasterVolumeRow/MasterVolumeSlider
+@onready var music_volume_slider: HSlider = $Panel/MarginContainer/VBoxContainer/MusicVolumeRow/MusicVolumeSlider
+@onready var sfx_volume_slider: HSlider = $Panel/MarginContainer/VBoxContainer/SfxVolumeRow/SfxVolumeSlider
+@onready var state_toggle_check_box: CheckBox = $Panel/MarginContainer/VBoxContainer/StateToggleCheckBox
+@onready var back_button: Button = $Panel/MarginContainer/VBoxContainer/BackButton
 
 var state_toggle_enabled: bool = false
+
+func _ready() -> void:
+	var settings: Dictionary = GameSession.get_settings()
+	fullscreen_check_box.set_pressed_no_signal(bool(settings.get("fullscreen", false)))
+	vsync_check_box.set_pressed_no_signal(bool(settings.get("vsync", true)))
+	master_volume_slider.set_value_no_signal(float(settings.get("master_volume", 100.0)))
+	music_volume_slider.set_value_no_signal(float(settings.get("music_volume", 80.0)))
+	sfx_volume_slider.set_value_no_signal(float(settings.get("sfx_volume", 80.0)))
+	state_toggle_enabled = bool(settings.get("state_toggle_enabled", false))
+	state_toggle_check_box.set_pressed_no_signal(state_toggle_enabled)
+
+	var resolution: Vector2i = settings.get("resolution", Vector2i(1920, 1080))
+	var resolution_index: int = RESOLUTIONS.find(resolution)
+	resolution_option_button.select(resolution_index if resolution_index >= 0 else RESOLUTIONS.size() - 1)
+
+	back_button.pressed.connect(_on_back_button_pressed)
+	fullscreen_check_box.toggled.connect(_on_fullscreen_toggled)
+	vsync_check_box.toggled.connect(_on_vsync_toggled)
+	resolution_option_button.item_selected.connect(_on_resolution_item_selected)
+	master_volume_slider.value_changed.connect(_on_master_volume_value_changed)
+	music_volume_slider.value_changed.connect(_on_music_volume_value_changed)
+	sfx_volume_slider.value_changed.connect(_on_sfx_volume_value_changed)
+	state_toggle_check_box.toggled.connect(_on_state_toggle_toggled)
 
 
 func _on_back_button_pressed() -> void:
@@ -9,45 +46,31 @@ func _on_back_button_pressed() -> void:
 
 
 func _on_fullscreen_toggled(toggled_on: bool) -> void:
-	DisplayServer.window_set_mode(
-		DisplayServer.WINDOW_MODE_FULLSCREEN if toggled_on else DisplayServer.WINDOW_MODE_WINDOWED
-	)
+	GameSession.update_settings({"fullscreen": toggled_on})
 
 
 func _on_master_volume_value_changed(value: float) -> void:
-	AudioServer.set_bus_volume_db(0, linear_to_db(value / 100.0))
+	GameSession.update_settings({"master_volume": value})
 
 
 func _on_music_volume_value_changed(value: float) -> void:
-	var music_bus: int = AudioServer.get_bus_index("Music")
-	if music_bus == -1:
-		return
-	AudioServer.set_bus_volume_db(music_bus, linear_to_db(value / 100.0))
+	GameSession.update_settings({"music_volume": value})
 
 
 func _on_sfx_volume_value_changed(value: float) -> void:
-	var sfx_bus: int = AudioServer.get_bus_index("SFX")
-	if sfx_bus == -1:
-		return
-	AudioServer.set_bus_volume_db(sfx_bus, linear_to_db(value / 100.0))
+	GameSession.update_settings({"sfx_volume": value})
 
 
 func _on_resolution_item_selected(index: int) -> void:
-	var resolutions: Array[Vector2i] = [
-		Vector2i(1280, 720),
-		Vector2i(1600, 900),
-		Vector2i(1920, 1080)
-	]
-	if index < 0 or index >= resolutions.size():
+	if index < 0 or index >= RESOLUTIONS.size():
 		return
-	DisplayServer.window_set_size(resolutions[index])
+	GameSession.update_settings({"resolution": RESOLUTIONS[index]})
 
 
 func _on_vsync_toggled(toggled_on: bool) -> void:
-	DisplayServer.window_set_vsync_mode(
-		DisplayServer.VSYNC_ENABLED if toggled_on else DisplayServer.VSYNC_DISABLED
-	)
+	GameSession.update_settings({"vsync": toggled_on})
 
 
 func _on_state_toggle_toggled(toggled_on: bool) -> void:
 	state_toggle_enabled = toggled_on
+	GameSession.update_settings({"state_toggle_enabled": toggled_on})
