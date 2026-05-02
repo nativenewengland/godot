@@ -145,11 +145,3 @@ text = "State Toggle"
 layout_mode = 2
 text = "Back"
 
-[connection signal="pressed" from="Panel/MarginContainer/VBoxContainer/BackButton" to="." method="_on_back_button_pressed"]
-[connection signal="toggled" from="Panel/MarginContainer/VBoxContainer/FullscreenCheckBox" to="." method="_on_fullscreen_toggled"]
-[connection signal="toggled" from="Panel/MarginContainer/VBoxContainer/VsyncCheckBox" to="." method="_on_vsync_toggled"]
-[connection signal="item_selected" from="Panel/MarginContainer/VBoxContainer/ResolutionRow/ResolutionOptionButton" to="." method="_on_resolution_item_selected"]
-[connection signal="value_changed" from="Panel/MarginContainer/VBoxContainer/MasterVolumeRow/MasterVolumeSlider" to="." method="_on_master_volume_value_changed"]
-[connection signal="value_changed" from="Panel/MarginContainer/VBoxContainer/MusicVolumeRow/MusicVolumeSlider" to="." method="_on_music_volume_value_changed"]
-[connection signal="value_changed" from="Panel/MarginContainer/VBoxContainer/SfxVolumeRow/SfxVolumeSlider" to="." method="_on_sfx_volume_value_changed"]
-[connection signal="toggled" from="Panel/MarginContainer/VBoxContainer/StateToggleCheckBox" to="." method="_on_state_toggle_toggled"]
