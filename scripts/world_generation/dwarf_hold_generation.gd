@@ -2420,7 +2420,7 @@ func _building_subtype_summary_text() -> String:
 	return DwarfHoldTileService.building_subtype_summary_text(_latest_civic_buildings_by_id)
 
 func _tooltip_global_position_from_mouse(mouse_position: Vector2) -> Vector2:
-	var desired_global := city_panel.global_position + mouse_position + Vector2(16, 16)
+	var desired_global := mouse_position + Vector2(16, 16)
 	return _clamp_tooltip_global_position(desired_global)
 
 func _clamp_tooltip_global_position(desired_global_position: Vector2) -> Vector2:
